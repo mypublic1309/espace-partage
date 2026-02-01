@@ -181,6 +181,18 @@ with st.sidebar:
 # --- CORPS PRINCIPAL ---
 st.title("📄 Espace Client Collaboratif")
 
+# --- SECTION GUIDE D'UTILISATION ---
+with st.expander("📖 Guide d'utilisation : Comment ça marche ?"):
+    st.markdown("""
+    Bienvenue dans votre espace de création ! Voici les étapes simples pour obtenir votre fichier :
+    
+    1. **Faire une demande** : Allez dans l'onglet **'Nouvelle Demande'**.
+    2. **Identification** : Entrez votre **nom ou identifiant** dans le premier champ.
+    3. **Description** : Décrivez précisément ce que vous voulez (ex: "Un tableau Excel de budget" ou "Une affiche publicitaire").
+    4. **Envoi** : Appuyez sur le bouton **'Transmettre le dossier'**. Votre demande est alors envoyée directement à Arsène.
+    5. **Récupération** : Une fois prêt, allez dans l'onglet **'Consulter mes Livrables'**, tapez votre nom et téléchargez votre fichier !
+    """)
+
 # Bannière Premium Professionnelle avec Bouton d'Action
 st.markdown(f"""
     <div class="premium-box">
