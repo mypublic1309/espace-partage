@@ -5,7 +5,7 @@ import os
 # --- CONFIGURATION DE LA PAGE ---
 st.set_page_config(page_title="Arsène Solutions - Espace Partagé", page_icon="👑", layout="wide")
 
-# --- STYLE CSS PERSONNALISÉ (DESIGN ARSÈNE) ---
+# --- STYLE CSS PERSONNALISÉ (DESIGN RESPONSIVE) ---
 st.markdown("""
     <style>
     /* Fond dégradé premium */
@@ -26,20 +26,21 @@ st.markdown("""
         background-color: rgba(255, 255, 255, 0.05);
         border-radius: 15px;
         border: 1px solid rgba(0, 210, 255, 0.2);
-        padding: 20px;
-        margin-bottom: 20px;
+        padding: 15px;
+        margin-bottom: 15px;
     }
 
-    /* Boutons personnalisés */
+    /* Boutons personnalisés et tactiles */
     .stButton>button {
         background: linear-gradient(45deg, #00d2ff, #3a7bd5);
         color: white !important;
         border-radius: 25px;
         border: none;
-        padding: 10px 25px;
+        padding: 12px 25px;
         font-weight: bold;
         transition: 0.3s ease;
         width: 100%;
+        min-height: 45px; /* Meilleur pour le tactile */
         box-shadow: 0px 4px 15px rgba(0, 210, 255, 0.2);
     }
     
@@ -48,51 +49,60 @@ st.markdown("""
         box-shadow: 0px 6px 20px rgba(0, 210, 255, 0.5);
     }
 
-    /* Section Premium Spécifique */
+    /* Section Premium Adaptative */
     .premium-box {
         background: rgba(255, 215, 0, 0.08);
         border: 2px solid #ffd700;
         border-radius: 15px;
-        padding: 25px;
+        padding: 20px;
         margin-top: 10px;
         box-shadow: 0px 0px 20px rgba(255, 215, 0, 0.15);
         text-align: center;
     }
 
-    /* Bouton Premium Doré */
+    /* Bouton Premium Responsive */
     .premium-btn {
-        display: inline-block;
-        padding: 12px 30px;
+        display: block; /* Prend toute la largeur sur mobile par défaut */
+        padding: 15px 20px;
         background: linear-gradient(45deg, #ffd700, #ff8c00);
         color: #000 !important;
         text-decoration: none;
         font-weight: bold;
         border-radius: 25px;
-        margin-top: 15px;
+        margin: 15px auto 0 auto;
+        max-width: 300px;
         transition: 0.3s;
         box-shadow: 0px 4px 15px rgba(255, 215, 0, 0.3);
     }
 
-    .premium-btn:hover {
-        transform: scale(1.05);
-        box-shadow: 0px 6px 20px rgba(255, 215, 0, 0.5);
-    }
-
-    /* Bouton Relance Argenté */
+    /* Bouton Relance Responsive */
     .reminder-btn {
-        display: inline-block;
-        padding: 10px 20px;
+        display: block;
+        padding: 12px 20px;
         background: linear-gradient(45deg, #bdc3c7, #2c3e50);
         color: white !important;
         text-decoration: none;
-        font-size: 0.9em;
+        font-size: 0.95em;
         border-radius: 20px;
-        margin-top: 10px;
+        margin: 10px auto;
+        max-width: 280px;
         transition: 0.3s;
     }
 
-    .reminder-btn:hover {
-        opacity: 0.8;
+    /* Optimisations pour mobiles (écrans < 768px) */
+    @media (max-width: 768px) {
+        .premium-box p {
+            font-size: 0.95em !important;
+        }
+        h1 { font-size: 1.8em !important; }
+        h2 { font-size: 1.5em !important; }
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 10px;
+        }
+        .stTabs [data-baseweb="tab"] {
+            font-size: 0.85em;
+            padding: 10px 5px;
+        }
     }
 
     /* Sidebar (Barre latérale) */
@@ -166,17 +176,17 @@ with st.sidebar:
     st.markdown("<h1 style='text-align: center;'>👑<br>ARSÈNE</h1>", unsafe_allow_html=True)
     st.write("---")
     st.markdown("### ✨ Solutions Arsène")
-    st.info("Ingénierie documentaire et conception digitale. Solutions Word, Excel, PowerShell et Design Graphique en accès libre.")
+    st.info("Ingénierie documentaire et conception digitale. Solutions Word, Excel, PowerShell et Design Graphique.")
     
     st.markdown("---")
     st.markdown("### ⚡ Délais de traitement")
-    st.warning("Les demandes standard sont traitées sous un délai de quelques heures, selon la charge du serveur.")
+    st.warning("Traitement standard sous quelques heures.")
     
     # Bouton WhatsApp Service Client
-    st.markdown(f'<a href="https://wa.me/{WHATSAPP_NUMBER}" target="_blank" class="whatsapp-btn">💬 Contacter l\'Expertise Premium</a>', unsafe_allow_html=True)
+    st.markdown(f'<a href="https://wa.me/{WHATSAPP_NUMBER}" target="_blank" class="whatsapp-btn">💬 Aide & Expertise</a>', unsafe_allow_html=True)
     
     st.write("---")
-    st.caption("© 2025 - Arsène Investissement | Excellence Digitale")
+    st.caption("© 2025 - Arsène Investissement")
 
 # --- CORPS PRINCIPAL ---
 st.title("📄 Espace Client Collaboratif")
@@ -184,103 +194,89 @@ st.title("📄 Espace Client Collaboratif")
 # --- SECTION GUIDE D'UTILISATION ---
 with st.expander("📖 Guide d'utilisation : Comment ça marche ?"):
     st.markdown("""
-    Bienvenue dans votre espace de création ! Voici les étapes simples pour obtenir votre fichier :
-    
-    1. **Faire une demande** : Allez dans l'onglet **'Nouvelle Demande'**.
-    2. **Identification** : Entrez votre **nom ou identifiant** dans le premier champ.
-    3. **Description** : Décrivez précisément ce que vous voulez (ex: "Un tableau Excel de budget" ou "Une affiche publicitaire").
-    4. **Envoi** : Appuyez sur le bouton **'Transmettre le dossier'**. Votre demande est alors envoyée directement à Arsène.
-    5. **Récupération** : Une fois prêt, allez dans l'onglet **'Consulter mes Livrables'**, tapez votre nom et téléchargez votre fichier !
+    **Étapes simples pour obtenir votre fichier :**
+    1. **Demande** : Onglet **'Nouvelle Demande'**.
+    2. **Identification** : Entrez votre **identifiant**.
+    3. **Description** : Expliquez votre besoin précisément.
+    4. **Envoi** : Appuyez sur **'Transmettre'**.
+    5. **Récupération** : Onglet **'Mes Livrables'** pour télécharger !
     """)
 
-# Bannière Premium Professionnelle avec Bouton d'Action
+# Bannière Premium (Optimisée Mobile)
 st.markdown(f"""
     <div class="premium-box">
         <h3 style="margin:0; color:#ffd700 !important;">⭐ ACCOMPAGNEMENT PREMIUM</h3>
-        <p style="margin:10px 0; font-size: 1.1em; line-height: 1.6;">
-            Bénéficiez d'une <b>analyse approfondie et d'une ingénierie de pointe</b> pour vos projets les plus complexes. 
-            L'option Premium garantit une compréhension méticuleuse de vos besoins : chaque détail est étudié avec rigueur 
-            pour concevoir une solution qui dépasse vos attentes et reflète parfaitement votre vision.
-            <br><b>Priorité absolue de traitement et livrables haute définition.</b>
+        <p style="margin:10px 0; font-size: 1.05em; line-height: 1.5;">
+            <b>Ingénierie de pointe</b> pour vos projets complexes. 
+            Priorité absolue et étude méticuleuse de chaque détail.
         </p>
-        <a href="{whatsapp_premium_url}" target="_blank" class="premium-btn">✨ PASSER À LA VERSION PREMIUM</a>
+        <a href="{whatsapp_premium_url}" target="_blank" class="premium-btn">✨ PASSER AU PREMIUM</a>
     </div>
 """, unsafe_allow_html=True)
 
-st.write("### 🚀 Formalisez votre projet")
-st.write("Soumettez vos besoins en **bureautique avancée, automatisation système ou identité visuelle**.")
+st.write("") # Espacement
 
-# Utilisation d'onglets
-tab_user, tab_files = st.tabs(["🆕 Nouvelle Demande", "📂 Consulter mes Livrables"])
+# Utilisation d'onglets (Adaptés mobile)
+tab_user, tab_files = st.tabs(["🆕 Nouvelle Demande", "📂 Mes Livrables"])
 
 with tab_user:
-    st.subheader("Cahier des charges simplifié")
+    st.subheader("Cahier des charges")
     with st.container():
         nom = st.text_input("Identifiant / Prénom", placeholder="Ex: Jean Dupont").strip()
-        message = st.text_area("Description détaillée du livrable souhaité", placeholder="Précisez la nature du fichier (Fonctionnalités Excel, Structure Word, Script PowerShell, etc.)")
+        message = st.text_area("Description du livrable souhaité", placeholder="Précisez votre besoin (Excel, Word, Script, Design...)", height=150)
         
-        st.caption("🔍 Note : Le service standard est gracieux. Pour une étude de cas prioritaire et personnalisée, veuillez solliciter l'assistance Premium via le bouton doré ci-dessus.")
+        st.caption("💡 Note : Service standard gracieux. Priorité disponible via l'option Premium.")
         
         if st.button("🚀 TRANSMETTRE LE DOSSIER"):
             if nom and message:
                 st.session_state["demandes"][nom] = message
                 save_data()
                 st.balloons()
-                st.success(f"Dossier transmis avec succès, {nom}. Votre demande est en file d'attente.")
+                st.success(f"Dossier transmis, {nom}. En attente.")
             else:
-                st.warning("Veuillez renseigner votre identifiant et la description du projet.")
+                st.warning("Identifiant et description requis.")
 
 with tab_files:
-    st.subheader("Accès aux documents finalisés")
-    client_nom = st.text_input("Saisissez votre identifiant pour accéder à vos fichiers :", key="search").strip()
+    st.subheader("Accès aux documents")
+    client_nom = st.text_input("Identifiant :", key="search", placeholder="Votre nom...").strip()
     
     if client_nom:
         if client_nom in st.session_state["liens"]:
-            st.success(f"Analyse terminée, {client_nom}. Votre livrable est disponible ci-dessous.")
+            st.success(f"Disponible, {client_nom} !")
             lien = st.session_state["liens"][client_nom]
-            st.markdown(f'<a href="{lien}" target="_blank" class="download-btn">⬇️ TÉLÉCHARGER LE LIVRABLE</a>', unsafe_allow_html=True)
+            st.markdown(f'<a href="{lien}" target="_blank" class="download-btn">⬇️ TÉLÉCHARGER LE FICHIER</a>', unsafe_allow_html=True)
         elif client_nom in st.session_state["demandes"]:
-            st.warning("⏳ Statut : Traitement en cours. Votre document fait l'objet d'une attention particulière.")
+            st.warning("⏳ Statut : Traitement en cours...")
             
-            # --- FONCTIONNALITÉ DE RELANCE ---
-            st.info("💡 Le délai de traitement est trop long ?")
-            reminder_msg = f"Bonjour Arsène, je me permets de vous relancer concernant ma demande (Identifiant : {client_nom}) car j'en ai besoin au plus vite."
+            # --- RELANCE ---
+            reminder_msg = f"Bonjour Arsène, je me permets de vous relancer (Identifiant : {client_nom})."
             whatsapp_reminder_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={reminder_msg.replace(' ', '%20')}"
             
             st.markdown(f"""
                 <div style="text-align: center;">
-                    <a href="{whatsapp_reminder_url}" target="_blank" class="reminder-btn">🔔 Relancer ma demande via WhatsApp</a>
-                    <p style="font-size:0.8em; margin-top:5px; opacity:0.7;">Cette action attirera l'attention de l'expert sur votre dossier.</p>
+                    <a href="{whatsapp_reminder_url}" target="_blank" class="reminder-btn">🔔 Relancer via WhatsApp</a>
                 </div>
             """, unsafe_allow_html=True)
-            
-            st.info("💡 Optimisation : Pour un traitement instantané et une étude plus rigoureuse, cliquez sur 'Passer à la version Premium' en haut de page.")
         else:
-            st.error("Aucun dossier correspondant n'a été identifié.")
+            st.error("Aucun dossier identifié.")
 
-# --- INTERFACE ADMINISTRATION ---
+# --- ADMINISTRATION ---
 st.write("")
 st.divider()
-with st.expander("🔐 Console d'Administration"):
-    pwd = st.text_input("Code de Sécurité", type="password")
+with st.expander("🔐 Administration"):
+    pwd = st.text_input("Code", type="password")
     if pwd == "02110240":
-        st.write("### 🛠️ Gestion du Workflow")
         if not st.session_state["demandes"]:
-            st.info("Système opérationnel. Aucune tâche en attente.")
+            st.info("Aucune tâche.")
         else:
             for n in list(st.session_state["demandes"].keys()):
                 with st.container():
-                    col_info, col_action = st.columns([3, 2])
-                    with col_info:
-                        st.markdown(f"**👤 Client :** {n}")
-                        st.markdown(f"**📝 Cahier des charges :** {st.session_state['demandes'][n]}")
-                    with col_action:
-                        lien_u = st.text_input("URL du livrable finalisé", key=f"link_{n}")
-                        if st.button(f"Clôturer le dossier {n}", key=f"v_{n}"):
-                            if lien_u:
-                                st.session_state["liens"][n] = lien_u
-                                del st.session_state["demandes"][n]
-                                save_data()
-                                st.rerun()
-                            else:
-                                st.error("Lien de destination manquant.")
+                    st.write(f"**Client :** {n}")
+                    st.write(f"**Besoin :** {st.session_state['demandes'][n]}")
+                    lien_u = st.text_input("Lien du fichier", key=f"link_{n}")
+                    if st.button(f"Clôturer {n}", key=f"v_{n}"):
+                        if lien_u:
+                            st.session_state["liens"][n] = lien_u
+                            del st.session_state["demandes"][n]
+                            save_data()
+                            st.rerun()
