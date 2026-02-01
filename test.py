@@ -1,4 +1,6 @@
 import streamlit as st
+import json
+import os
 
 # --- CONFIGURATION DE LA PAGE ---
 st.set_page_config(page_title="Mon Espace Fichiers")
@@ -6,11 +8,25 @@ st.set_page_config(page_title="Mon Espace Fichiers")
 st.title("📄 Espace Partagé")
 st.write("Décris ce dont tu as besoin (Excel ou Word) et je t'envoie le lien ici.")
 
-# --- STOCKAGE EN MÉMOIRE ---
-if "demandes" not in st.session_state:
-    st.session_state["demandes"] = {}
-if "liens" not in st.session_state:
-    st.session_state["liens"] = {}
+# --- FONCTIONS DE SAUVEGARDE ---
+DATA_FILE = "data.json"
+
+def load_data():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {"demandes": {}, "liens": {}}
+
+def save_data():
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump({"demandes": st.session_state["demandes"],
+                   "liens": st.session_state["liens"]}, f, indent=4)
+
+# --- INITIALISATION ---
+if "demandes" not in st.session_state or "liens" not in st.session_state:
+    data = load_data()
+    st.session_state["demandes"] = data["demandes"]
+    st.session_state["liens"] = data["liens"]
 
 # --- PARTIE CLIENT : Faire une demande ---
 with st.expander("➕ Faire une nouvelle demande", expanded=True):
@@ -20,6 +36,7 @@ with st.expander("➕ Faire une nouvelle demande", expanded=True):
     if st.button("Envoyer la demande"):
         if nom and message:
             st.session_state["demandes"][nom] = message
+            save_data()
             st.success("Ta demande est enregistrée. Arsène la traitera bientôt.")
         else:
             st.warning("Merci de remplir tous les champs.")
@@ -51,6 +68,8 @@ if password == "02110240":
         lien = st.text_input(f"Lien pour {nom}", key=f"lien_{nom}")
         if lien:
             st.session_state["liens"][nom] = lien
+            save_data()
 else:
     if password:
         st.error("Mot de passe incorrect ❌")
+
