@@ -72,4 +72,3 @@ if password == "02110240":
 else:
     if password:
         st.error("Mot de passe incorrect ❌")
-
