@@ -62,7 +62,17 @@ st.markdown("""
         text-align: center;
     }
 
-    /* Badge Rapidité */
+    /* Badge IA & Rapidité */
+    .ia-badge {
+        background: linear-gradient(45deg, #00d2ff, #00ff88);
+        color: #000;
+        padding: 2px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 0.85em;
+        margin-right: 5px;
+    }
+    
     .speed-badge {
         background: #ffd700;
         color: #000;
@@ -147,7 +157,7 @@ if "demandes" not in st.session_state:
 
 # --- VARIABLES DE CONTACT ---
 WHATSAPP_NUMBER = "2250171542505"
-PREMIUM_MSG = "J'aimerais passer à la version premium pour bénéficier de la rapidité 10^10"
+PREMIUM_MSG = "J'aimerais passer à la version premium pour bénéficier de la puissance de l'IA et de la rapidité 10^10"
 whatsapp_premium_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={PREMIUM_MSG.replace(' ', '%20')}"
 
 # --- BARRE LATÉRALE ---
@@ -155,69 +165,74 @@ with st.sidebar:
     st.markdown("<h1 style='text-align: center;'>👑<br>ARSÈNE</h1>", unsafe_allow_html=True)
     st.write("---")
     st.markdown("### ✨ Solutions Arsène")
-    st.info("Ingénierie documentaire et conception digitale haute performance.")
-    st.markdown(f'<a href="https://wa.me/{WHATSAPP_NUMBER}" target="_blank" class="whatsapp-btn">💬 Aide & Expertise</a>', unsafe_allow_html=True)
+    st.info("Ingénierie documentaire et conception digitale propulsée par l'Intelligence Artificielle.")
+    st.markdown(f'<a href="https://wa.me/{WHATSAPP_NUMBER}" target="_blank" class="whatsapp-btn">💬 Aide & Expertise IA</a>', unsafe_allow_html=True)
     st.write("---")
     st.caption("© 2025 - Arsène Investissement")
 
 # --- CORPS PRINCIPAL ---
 st.title("📄 Espace Client Collaboratif")
 
-# Bannière Premium (Avec Rapidité 10^10)
+# Bannière Premium (Mise en avant IA + Rapidité 10^10)
 st.markdown(f"""
     <div class="premium-box">
-        <h3 style="margin:0; color:#ffd700 !important;">⭐ ACCOMPAGNEMENT PREMIUM</h3>
+        <h3 style="margin:0; color:#ffd700 !important;">⭐ EXCELLENCE PREMIUM & IA</h3>
         <p style="margin:10px 0; font-size: 1.1em; line-height: 1.5;">
-            <b>Ingénierie de pointe</b> & <span class="speed-badge">RAPIDITÉ +10<sup>10</sup></span><br>
-            Étude méticuleuse et livraison instantanée pour vos projets stratégiques.
+            <span class="ia-badge">🤖 GÉNÉRATION PAR IA</span> & <span class="speed-badge">RAPIDITÉ +10<sup>10</sup></span><br>
+            Nos algorithmes d'IA créent vos structures Word, Excel et Scripts avec une précision chirurgicale et une livraison instantanée.
         </p>
-        <a href="{whatsapp_premium_url}" target="_blank" class="premium-btn">✨ PASSER AU PREMIUM (IMMÉDIAT)</a>
+        <a href="{whatsapp_premium_url}" target="_blank" class="premium-btn">✨ ACTIVER LA PUISSANCE IA (PREMIUM)</a>
     </div>
 """, unsafe_allow_html=True)
 
 st.write("") 
 
 # --- SECTION ONGLETS ---
-# Mise en évidence visuelle de "Mes Livrables"
 tab_user, tab_files = st.tabs(["🆕 Nouvelle Demande", "📂 RÉCUPÉRER MES LIVRABLES (ICI)"])
 
 with tab_user:
-    st.subheader("Cahier des charges")
+    st.subheader("🤖 Donnez vie à votre imagination avec Arsène IA")
     with st.container():
         nom = st.text_input("Identifiant / Prénom", placeholder="Ex: Jean Dupont").strip()
-        message = st.text_area("Description du livrable souhaité", placeholder="Précisez votre besoin précisément...", height=120)
+        message = st.text_area("Décrivez votre besoin (L'IA s'occupe du reste)", placeholder="Ex: Un tableau de suivi de stock automatisé avec alertes par mail...", height=120)
         
-        if st.button("🚀 TRANSMETTRE LE DOSSIER"):
+        st.markdown("""
+            <div style="font-size:0.85em; opacity:0.8; margin-bottom:10px;">
+                🔹 <b>Nos capacités IA :</b> Automatisation Excel (VBA/Macros), Rédaction structurée, Scripts PowerShell, Design graphique assisté.
+            </div>
+        """, unsafe_allow_html=True)
+        
+        if st.button("🚀 LANCER LA GÉNÉRATION"):
             if nom and message:
                 st.session_state["demandes"][nom] = message
                 save_data()
                 st.balloons()
-                st.success(f"Dossier transmis, {nom}. Consultez l'onglet voisin pour le résultat.")
+                st.success(f"Dossier transmis, {nom}. L'IA commence le traitement. Consultez l'onglet 'Mes Livrables' d'ici peu.")
             else:
-                st.warning("Identifiant et description requis.")
+                st.warning("Identifiant et description requis pour l'analyse IA.")
 
 with tab_files:
     st.subheader("📁 Zone de Téléchargement")
-    st.info("💡 **C'est ici que vous récupérez vos fichiers.** Saisissez l'identifiant utilisé lors de votre demande.")
+    st.info("💡 **C'est ici que vous récupérez vos fichiers générés.** Saisissez l'identifiant utilisé lors de votre demande.")
     
     client_nom = st.text_input("Tapez votre Identifiant / Prénom :", key="search", placeholder="Rechercher mon fichier...").strip()
     
     if client_nom:
         if client_nom in st.session_state["liens"]:
-            st.success(f"✅ Analyse terminée ! Votre fichier est prêt, {client_nom}.")
+            st.success(f"✅ Analyse terminée ! Votre fichier IA est prêt, {client_nom}.")
             lien = st.session_state["liens"][client_nom]
             st.markdown(f'<a href="{lien}" target="_blank" class="download-btn">⬇️ TÉLÉCHARGER MON LIVRABLE</a>', unsafe_allow_html=True)
             st.caption("Le lien s'ouvrira dans un nouvel onglet sécurisé.")
         elif client_nom in st.session_state["demandes"]:
-            st.warning(f"⏳ Statut : Traitement en cours pour '{client_nom}'...")
-            st.info("Délai standard : Quelques heures. Pour une vitesse de 10^10, passez au Premium en haut de page.")
+            st.warning(f"⏳ Statut : Analyse IA en cours pour '{client_nom}'...")
+            st.info("Traitement standard : Quelques heures. Pour une génération instantanée par IA prioritaire, passez au Premium.")
             
             # --- RELANCE ---
-            reminder_msg = f"Bonjour Arsène, je me permets de vous relancer (Identifiant : {client_nom}). J'en ai besoin rapidement."
+            reminder_msg = f"Bonjour Arsène, je relance mon projet IA (Identifiant : {client_nom})."
             whatsapp_reminder_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={reminder_msg.replace(' ', '%20')}"
-            st.markdown(f'<div style="text-align: center;"><a href="{whatsapp_reminder_url}" target="_blank" style="color:#bdc3c7; text-decoration:none; font-size:0.9em;">🔔 Relancer via WhatsApp</a></div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="text-align: center;"><a href="{whatsapp_reminder_url}" target="_blank" style="color:#bdc3c7; text-decoration:none; font-size:0.9em;">🔔 Relancer le serveur IA via WhatsApp</a></div>', unsafe_allow_html=True)
         else:
-            st.error("❌ Aucun dossier identifié à ce nom. Vérifiez l'orthographe ou créez une demande.")
+            st.error("❌ Aucun dossier identifié. Vérifiez l'orthographe ou lancez une nouvelle génération.")
 
 # --- ADMINISTRATION ---
 st.write("")
@@ -231,8 +246,8 @@ with st.expander("🔐 Console Arsène"):
             for n in list(st.session_state["demandes"].keys()):
                 with st.container():
                     st.write(f"**Client :** {n}")
-                    st.write(f"**Besoin :** {st.session_state['demandes'][n]}")
-                    lien_u = st.text_input("Lien de téléchargement", key=f"link_{n}")
+                    st.write(f"**Besoin IA :** {st.session_state['demandes'][n]}")
+                    lien_u = st.text_input("Lien du livrable généré", key=f"link_{n}")
                     if st.button(f"Livrer à {n}", key=f"v_{n}"):
                         if lien_u:
                             st.session_state["liens"][n] = lien_u
