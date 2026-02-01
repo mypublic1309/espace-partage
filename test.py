@@ -128,6 +128,20 @@ st.markdown("""
         font-weight: bold;
         margin-top: 10px;
     }
+
+    .support-btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        background: transparent;
+        color: #00d2ff !important;
+        text-align: center;
+        border: 1px solid #00d2ff;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: 10px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -159,6 +173,8 @@ if "demandes" not in st.session_state:
 WHATSAPP_NUMBER = "2250171542505"
 PREMIUM_MSG = "J'aimerais passer à la version premium pour bénéficier de la puissance de l'IA et de la rapidité 10^10"
 whatsapp_premium_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={PREMIUM_MSG.replace(' ', '%20')}"
+SUPPORT_MSG = "Bonjour, j'ai besoin d'aide avec mon projet sur l'espace client."
+whatsapp_support_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={SUPPORT_MSG.replace(' ', '%20')}"
 
 # --- BARRE LATÉRALE ---
 with st.sidebar:
@@ -166,12 +182,29 @@ with st.sidebar:
     st.write("---")
     st.markdown("### ✨ Solutions Arsène")
     st.info("Ingénierie documentaire et conception digitale propulsée par l'Intelligence Artificielle.")
-    st.markdown(f'<a href="https://wa.me/{WHATSAPP_NUMBER}" target="_blank" class="whatsapp-btn">💬 Aide & Expertise IA</a>', unsafe_allow_html=True)
+    
+    # Options de contact
+    st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="whatsapp-btn">💬 Service Client WhatsApp</a>', unsafe_allow_html=True)
+    
     st.write("---")
     st.caption("© 2025 - Arsène Investissement")
 
 # --- CORPS PRINCIPAL ---
 st.title("📄 Espace Client Collaboratif")
+
+# --- OPTION : COMMENT ÇA MARCHE ? ---
+with st.expander("❓ COMMENT ÇA MARCHE ?"):
+    st.markdown("""
+    ### 🚀 Le processus est simple :
+    1. **Identifiez-vous** : Entrez votre prénom ou un identifiant unique dans l'onglet 'Nouvelle Demande'.
+    2. **Exprimez-vous** : Décrivez votre besoin (fichier Excel, Word, Script, etc.).
+    3. **Analyse IA** : Nos algorithmes commencent la structuration de votre projet.
+    4. **Récupération** : Une fois prêt, rendez-vous dans l'onglet **'MES LIVRABLES'** avec votre identifiant pour télécharger votre fichier.
+    
+    ⚠️ **Note sur les délais :**
+    - **Version Gratuite** : Le traitement peut prendre **1 à 2 heures** selon la charge du serveur.
+    - **Version Premium** : Livraison **immédiate** (Vitesse $10^{10}$).
+    """)
 
 # Bannière Premium (Mise en avant IA + Rapidité 10^10)
 st.markdown(f"""
@@ -179,7 +212,7 @@ st.markdown(f"""
         <h3 style="margin:0; color:#ffd700 !important;">⭐ EXCELLENCE PREMIUM & IA</h3>
         <p style="margin:10px 0; font-size: 1.1em; line-height: 1.5;">
             <span class="ia-badge">🤖 GÉNÉRATION PAR IA</span> & <span class="speed-badge">RAPIDITÉ +10<sup>10</sup></span><br>
-            Nos algorithmes d'IA créent vos structures Word, Excel et Scripts avec une précision chirurgicale et une livraison instantanée.
+            Évitez les attentes de 2h. Obtenez une précision chirurgicale et une livraison instantanée.
         </p>
         <a href="{whatsapp_premium_url}" target="_blank" class="premium-btn">✨ ACTIVER LA PUISSANCE IA (PREMIUM)</a>
     </div>
@@ -198,7 +231,8 @@ with tab_user:
         
         st.markdown("""
             <div style="font-size:0.85em; opacity:0.8; margin-bottom:10px;">
-                🔹 <b>Nos capacités IA :</b> Automatisation Excel (VBA/Macros), Rédaction structurée, Scripts PowerShell, Design graphique assisté.
+                🕒 <b>Version Gratuite :</b> Temps de traitement estimé entre 1h et 2h.<br>
+                🔹 <b>Capacités :</b> Excel, Word, Scripts PowerShell, Design.
             </div>
         """, unsafe_allow_html=True)
         
@@ -207,7 +241,7 @@ with tab_user:
                 st.session_state["demandes"][nom] = message
                 save_data()
                 st.balloons()
-                st.success(f"Dossier transmis, {nom}. L'IA commence le traitement. Consultez l'onglet 'Mes Livrables' d'ici peu.")
+                st.success(f"Dossier transmis, {nom}. Analyse lancée (Prévoyez 1 à 2h pour la version gratuite).")
             else:
                 st.warning("Identifiant et description requis pour l'analyse IA.")
 
@@ -225,12 +259,20 @@ with tab_files:
             st.caption("Le lien s'ouvrira dans un nouvel onglet sécurisé.")
         elif client_nom in st.session_state["demandes"]:
             st.warning(f"⏳ Statut : Analyse IA en cours pour '{client_nom}'...")
-            st.info("Traitement standard : Quelques heures. Pour une génération instantanée par IA prioritaire, passez au Premium.")
+            st.info("Traitement gratuit en cours (Délai estimé : 1h à 2h).")
             
-            # --- RELANCE ---
-            reminder_msg = f"Bonjour Arsène, je relance mon projet IA (Identifiant : {client_nom})."
-            whatsapp_reminder_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={reminder_msg.replace(' ', '%20')}"
-            st.markdown(f'<div style="text-align: center;"><a href="{whatsapp_reminder_url}" target="_blank" style="color:#bdc3c7; text-decoration:none; font-size:0.9em;">🔔 Relancer le serveur IA via WhatsApp</a></div>', unsafe_allow_html=True)
+            # --- RELANCE & SERVICE CLIENT ---
+            st.write("---")
+            st.write("Le délai est trop long ?")
+            
+            relance_msg = f"Bonjour, je relance ma demande IA (Identifiant : {client_nom}). Le traitement semble prendre du temps."
+            whatsapp_relance_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={relance_msg.replace(' ', '%20')}"
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f'<a href="{whatsapp_relance_url}" target="_blank" class="support-btn">🔔 Relancer la demande</a>', unsafe_allow_html=True)
+            with col2:
+                st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">🙋 Aide Service Client</a>', unsafe_allow_html=True)
         else:
             st.error("❌ Aucun dossier identifié. Vérifiez l'orthographe ou lancez une nouvelle génération.")
 
