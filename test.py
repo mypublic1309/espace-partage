@@ -78,6 +78,23 @@ st.markdown("""
         box-shadow: 0px 6px 20px rgba(255, 215, 0, 0.5);
     }
 
+    /* Bouton Relance Argenté */
+    .reminder-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: linear-gradient(45deg, #bdc3c7, #2c3e50);
+        color: white !important;
+        text-decoration: none;
+        font-size: 0.9em;
+        border-radius: 20px;
+        margin-top: 10px;
+        transition: 0.3s;
+    }
+
+    .reminder-btn:hover {
+        opacity: 0.8;
+    }
+
     /* Sidebar (Barre latérale) */
     [data-testid="stSidebar"] {
         background-color: #0b0b15;
@@ -212,6 +229,19 @@ with tab_files:
             st.markdown(f'<a href="{lien}" target="_blank" class="download-btn">⬇️ TÉLÉCHARGER LE LIVRABLE</a>', unsafe_allow_html=True)
         elif client_nom in st.session_state["demandes"]:
             st.warning("⏳ Statut : Traitement en cours. Votre document fait l'objet d'une attention particulière.")
+            
+            # --- FONCTIONNALITÉ DE RELANCE ---
+            st.info("💡 Le délai de traitement est trop long ?")
+            reminder_msg = f"Bonjour Arsène, je me permets de vous relancer concernant ma demande (Identifiant : {client_nom}) car j'en ai besoin au plus vite."
+            whatsapp_reminder_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={reminder_msg.replace(' ', '%20')}"
+            
+            st.markdown(f"""
+                <div style="text-align: center;">
+                    <a href="{whatsapp_reminder_url}" target="_blank" class="reminder-btn">🔔 Relancer ma demande via WhatsApp</a>
+                    <p style="font-size:0.8em; margin-top:5px; opacity:0.7;">Cette action attirera l'attention de l'expert sur votre dossier.</p>
+                </div>
+            """, unsafe_allow_html=True)
+            
             st.info("💡 Optimisation : Pour un traitement instantané et une étude plus rigoureuse, cliquez sur 'Passer à la version Premium' en haut de page.")
         else:
             st.error("Aucun dossier correspondant n'a été identifié.")
