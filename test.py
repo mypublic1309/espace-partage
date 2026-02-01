@@ -56,6 +56,26 @@ st.markdown("""
         padding: 25px;
         margin-top: 10px;
         box-shadow: 0px 0px 20px rgba(255, 215, 0, 0.15);
+        text-align: center;
+    }
+
+    /* Bouton Premium Doré */
+    .premium-btn {
+        display: inline-block;
+        padding: 12px 30px;
+        background: linear-gradient(45deg, #ffd700, #ff8c00);
+        color: #000 !important;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 25px;
+        margin-top: 15px;
+        transition: 0.3s;
+        box-shadow: 0px 4px 15px rgba(255, 215, 0, 0.3);
+    }
+
+    .premium-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 6px 20px rgba(255, 215, 0, 0.5);
     }
 
     /* Sidebar (Barre latérale) */
@@ -119,6 +139,11 @@ if "demandes" not in st.session_state:
     st.session_state["demandes"] = data["demandes"]
     st.session_state["liens"] = data["liens"]
 
+# --- VARIABLES DE CONTACT ---
+WHATSAPP_NUMBER = "2250171542505"
+PREMIUM_MSG = "J'aimerais passer à la version premium"
+whatsapp_premium_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={PREMIUM_MSG.replace(' ', '%20')}"
+
 # --- BARRE LATÉRALE ---
 with st.sidebar:
     st.markdown("<h1 style='text-align: center;'>👑<br>ARSÈNE</h1>", unsafe_allow_html=True)
@@ -131,8 +156,7 @@ with st.sidebar:
     st.warning("Les demandes standard sont traitées sous un délai de quelques heures, selon la charge du serveur.")
     
     # Bouton WhatsApp Service Client
-    whatsapp_url = "https://wa.me/2250171542505"
-    st.markdown(f'<a href="{whatsapp_url}" target="_blank" class="whatsapp-btn">💬 Contacter l\'Expertise Premium</a>', unsafe_allow_html=True)
+    st.markdown(f'<a href="https://wa.me/{WHATSAPP_NUMBER}" target="_blank" class="whatsapp-btn">💬 Contacter l\'Expertise Premium</a>', unsafe_allow_html=True)
     
     st.write("---")
     st.caption("© 2025 - Arsène Investissement | Excellence Digitale")
@@ -140,8 +164,8 @@ with st.sidebar:
 # --- CORPS PRINCIPAL ---
 st.title("📄 Espace Client Collaboratif")
 
-# Bannière Premium Professionnelle
-st.markdown("""
+# Bannière Premium Professionnelle avec Bouton d'Action
+st.markdown(f"""
     <div class="premium-box">
         <h3 style="margin:0; color:#ffd700 !important;">⭐ ACCOMPAGNEMENT PREMIUM</h3>
         <p style="margin:10px 0; font-size: 1.1em; line-height: 1.6;">
@@ -150,6 +174,7 @@ st.markdown("""
             pour concevoir une solution qui dépasse vos attentes et reflète parfaitement votre vision.
             <br><b>Priorité absolue de traitement et livrables haute définition.</b>
         </p>
+        <a href="{whatsapp_premium_url}" target="_blank" class="premium-btn">✨ PASSER À LA VERSION PREMIUM</a>
     </div>
 """, unsafe_allow_html=True)
 
@@ -165,7 +190,7 @@ with tab_user:
         nom = st.text_input("Identifiant / Prénom", placeholder="Ex: Jean Dupont").strip()
         message = st.text_area("Description détaillée du livrable souhaité", placeholder="Précisez la nature du fichier (Fonctionnalités Excel, Structure Word, Script PowerShell, etc.)")
         
-        st.caption("🔍 Note : Le service standard est gracieux. Pour une étude de cas prioritaire et personnalisée, veuillez solliciter l'assistance Premium via la barre latérale.")
+        st.caption("🔍 Note : Le service standard est gracieux. Pour une étude de cas prioritaire et personnalisée, veuillez solliciter l'assistance Premium via le bouton doré ci-dessus.")
         
         if st.button("🚀 TRANSMETTRE LE DOSSIER"):
             if nom and message:
@@ -187,7 +212,7 @@ with tab_files:
             st.markdown(f'<a href="{lien}" target="_blank" class="download-btn">⬇️ TÉLÉCHARGER LE LIVRABLE</a>', unsafe_allow_html=True)
         elif client_nom in st.session_state["demandes"]:
             st.warning("⏳ Statut : Traitement en cours. Votre document fait l'objet d'une attention particulière.")
-            st.info("💡 Optimisation : Pour un traitement instantané et une étude plus rigoureuse, contactez-nous pour activer le protocole Premium.")
+            st.info("💡 Optimisation : Pour un traitement instantané et une étude plus rigoureuse, cliquez sur 'Passer à la version Premium' en haut de page.")
         else:
             st.error("Aucun dossier correspondant n'a été identifié.")
 
