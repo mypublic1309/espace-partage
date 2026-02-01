@@ -190,7 +190,7 @@ with st.sidebar:
     st.caption("© 2025 - Arsène Investissement")
 
 # --- CORPS PRINCIPAL ---
-st.title("📄 Espace Client Collaboratif")
+st.title("📄 Vos textes en Word, Excel et plus avec l'IA")
 
 # --- OPTION : COMMENT ÇA MARCHE ? ---
 with st.expander("❓ COMMENT ÇA MARCHE ?"):
