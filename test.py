@@ -190,7 +190,7 @@ with st.sidebar:
     st.caption("© 2025 - Arsène Investissement")
 
 # --- CORPS PRINCIPAL ---
-st.title("📄 transformer Vos textes en Word/Excel/cv/image/et...avec l'IA")
+st.title("📄 transformer_textes_en Word/Excel/cv/image/et..avec l'IA")
 
 # --- OPTION : COMMENT ÇA MARCHE ? ---
 with st.expander("❓ COMMENT ÇA MARCHE ?"):
@@ -297,4 +297,5 @@ with st.expander("🔐 Console Arsène"):
                             save_data()
 
                             st.rerun()
+
 
