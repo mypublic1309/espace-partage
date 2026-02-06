@@ -190,7 +190,7 @@ with st.sidebar:
     st.caption("© 2025 - Arsène Investissement")
 
 # --- CORPS PRINCIPAL ---
-st.title("📄 GENERATEUR_DE_fichier_EXEL_avec l'IA")
+st.title("📄 AutoExcelSheet")
 
 # --- OPTION : COMMENT ÇA MARCHE ? ---
 with st.expander("❓ COMMENT ÇA MARCHE ?"):
@@ -297,6 +297,7 @@ with st.expander("🔐 Console Arsène"):
                             save_data()
 
                             st.rerun()
+
 
 
 
