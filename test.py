@@ -93,13 +93,13 @@ def inject_custom_css():
 
         /* --- CARTE PREMIUM (Mise en avant) --- */
         .premium-card {
-            background: rgba(20, 20, 30, 0.6);
+            background: rgba(20, 20, 30, 0.8);
             border: 2px solid #FFD700;
             border-radius: 20px;
             padding: 25px;
             text-align: center;
             margin-bottom: 30px;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
             position: relative;
             overflow: hidden;
         }
@@ -112,7 +112,7 @@ def inject_custom_css():
         }
 
         .premium-title {
-            color: #FFD700;
+            color: #FFD700 !important;
             font-size: 1.5rem;
             font-weight: 800;
             text-transform: uppercase;
@@ -121,7 +121,7 @@ def inject_custom_css():
         }
 
         .premium-desc {
-            color: #eee;
+            color: #ffffff !important;
             font-size: 1rem;
             margin-bottom: 20px;
             line-height: 1.5;
@@ -155,7 +155,7 @@ def inject_custom_css():
         
         div[data-baseweb="input"], textarea, div[data-baseweb="select"] > div {
             border: 1px solid rgba(0, 210, 255, 0.3) !important;
-            background-color: rgba(0, 0, 0, 0.3) !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
             color: white !important;
             border-radius: 10px !important;
             font-size: 1rem;
@@ -180,30 +180,33 @@ def inject_custom_css():
             box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
         }
 
-        /* --- INFO BOX (Sidebar) --- */
+        /* --- INFO BOX (Sidebar) - CORRECTION LISIBILITÉ --- */
         .info-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.4) !important;
             border-left: 4px solid #00d2ff;
             padding: 15px;
             border-radius: 0 10px 10px 0;
             margin-bottom: 15px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
         }
         .info-title {
-            color: #00d2ff;
+            color: #00d2ff !important;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 1.1rem;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
         }
         .info-text {
-            color: #ddd;
-            font-size: 0.9rem;
-            line-height: 1.4;
+            color: #ffffff !important;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            display: block;
         }
 
         /* --- CARTE DE LIVRABLE --- */
         .file-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 15px;
             padding: 20px;
@@ -212,7 +215,7 @@ def inject_custom_css():
         }
         .file-card:hover {
             border-color: #00d2ff;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.12);
         }
 
         /* BOUTON SUPPORT */
@@ -248,7 +251,7 @@ def show_auth_page():
     
     with col1:
         st.markdown("""
-        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 1px solid rgba(0,210,255,0.2);">
+        <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; border: 1px solid rgba(0,210,255,0.2);">
             <h3 style="color:white; margin-top:0;">🔐 J'ai déjà un compte</h3>
         </div>
         """, unsafe_allow_html=True)
@@ -267,7 +270,7 @@ def show_auth_page():
 
     with col2:
         st.markdown("""
-        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.2);">
+        <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.2);">
             <h3 style="color:white; margin-top:0;">✨ Je suis nouveau</h3>
         </div>
         """, unsafe_allow_html=True)
@@ -314,7 +317,7 @@ def main_dashboard():
         
         st.divider()
         
-        # BOÎTES D'INFO STYLISÉES (Haute lisibilité)
+        # BOÎTES D'INFO STYLISÉES (Correction lisibilité : texte blanc forcé)
         st.markdown(f"""
             <div class="info-card">
                 <span class="info-title">🚀 LIVRAISON & ALERTES</span>
@@ -326,7 +329,7 @@ def main_dashboard():
             </div>
             
             <div class="info-card" style="border-color: #2ecc71;">
-                <span class="info-title" style="color: #2ecc71;">⚡ AUTOMATISATION</span>
+                <span class="info-title" style="color: #2ecc71 !important;">⚡ AUTOMATISATION</span>
                 <span class="info-text">
                     Notre spécialité : Transformer vos tâches manuelles Excel en processus instantanés.
                 </span>
