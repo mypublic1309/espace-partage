@@ -78,6 +78,19 @@ st.markdown("""
         font-weight: bold;
         text-decoration: none;
     }
+    /* Style pour le bouton WhatsApp Admin */
+    .wa-admin-btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #25D366;
+        color: white !important;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        width: 100%;
+        text-align: center;
+        margin-top: 5px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -156,23 +169,28 @@ def main_app():
         st.subheader("🤖 Nouvelle Analyse IA")
         with st.container():
             type_fichier = st.selectbox("Type de projet", ["Tableau Excel", "Document Word", "Script Python", "Design/Affiche"])
+            
+            # --- NOUVEAU : CHAMP WHATSAPP ---
+            whatsapp_num = st.text_input("Votre Numéro WhatsApp (Requis pour notification)", placeholder="Ex: 22507...")
+            
             description = st.text_area("Décrivez précisément votre besoin", height=150)
             
             if st.button("🚀 LANCER LA GÉNÉRATION"):
-                if description:
+                if description and whatsapp_num:
                     nouvelle_demande = {
                         "user": user,
                         "type": type_fichier,
                         "desc": description,
+                        "whatsapp": whatsapp_num, # Stockage du numéro
                         "status": "En cours d'analyse",
                         "date": str(datetime.now())
                     }
                     st.session_state["data"]["demandes"].append(nouvelle_demande)
                     save_data(st.session_state["data"])
                     st.balloons()
-                    st.success("Demande enregistrée ! Vous recevrez un mail dès que le lien sera disponible.")
+                    st.success("Demande enregistrée ! Vous serez notifié sur WhatsApp.")
                 else:
-                    st.warning("Veuillez décrire votre besoin.")
+                    st.warning("Veuillez remplir la description ET votre numéro WhatsApp.")
 
     with tab_status:
         st.subheader("Mes Projets")
@@ -202,26 +220,53 @@ def main_app():
         if pwd == "02110240":
             st.subheader("Gestion des demandes")
             for i, d in enumerate(st.session_state["data"]["demandes"]):
-                st.write(f"**Client:** {d['user']} | **Email:** {st.session_state['data']['users'][d['user']]['email']}")
-                st.write(f"**Besoin:** {d['desc']}")
+                st.markdown(f"""
+                **Client:** {d['user']} <br>
+                **Email:** {st.session_state['data']['users'][d['user']]['email']} <br>
+                **WhatsApp:** `{d.get('whatsapp', 'Non renseigné')}` <br>
+                **Besoin:** {d['desc']}
+                """, unsafe_allow_html=True)
+                
                 link_url = st.text_input(f"Lien pour {d['user']}", key=f"admin_link_{i}")
-                if st.button(f"Livrer & Notifier {d['user']}", key=f"btn_{i}"):
-                    if link_url:
-                        # Ajouter aux liens livrés
-                        if d['user'] not in st.session_state["data"]["liens"]:
-                            st.session_state["data"]["liens"][d['user']] = []
+                
+                col_admin_1, col_admin_2 = st.columns(2)
+                
+                # --- CHOIX 1 : LIVRER SUR L'APP ---
+                with col_admin_1:
+                    if st.button(f"📥 Livrer sur App", key=f"btn_app_{i}"):
+                        if link_url:
+                            # Ajouter aux liens livrés
+                            if d['user'] not in st.session_state["data"]["liens"]:
+                                st.session_state["data"]["liens"][d['user']] = []
+                            
+                            st.session_state["data"]["liens"][d['user']].append({
+                                "name": d['type'],
+                                "url": link_url,
+                                "date": str(datetime.now())
+                            })
+                            
+                            # Retirer de la liste des demandes
+                            st.session_state["data"]["demandes"].pop(i)
+                            save_data(st.session_state["data"])
+                            st.success(f"Fichier livré sur l'espace de {d['user']} !")
+                            st.rerun()
+                        else:
+                            st.error("Lien manquant")
+
+                # --- CHOIX 2 : NOTIFIER SUR WHATSAPP ---
+                with col_admin_2:
+                    if d.get('whatsapp') and link_url:
+                        # Création du message pré-rempli
+                        msg = f"Bonjour {d['user']}, votre commande Arsène ({d['type']}) est prête. Voici votre lien de téléchargement : {link_url}"
+                        wa_url = f"https://wa.me/{d['whatsapp']}?text={msg.replace(' ', '%20')}"
                         
-                        st.session_state["data"]["liens"][d['user']].append({
-                            "name": d['type'],
-                            "url": link_url,
-                            "date": str(datetime.now())
-                        })
-                        
-                        # Retirer de la liste des demandes
-                        st.session_state["data"]["demandes"].pop(i)
-                        save_data(st.session_state["data"])
-                        st.success(f"Notification envoyée à {d['user']} !")
-                        st.rerun()
+                        st.markdown(f'<a href="{wa_url}" target="_blank" class="wa-admin-btn">💬 Envoyer sur WhatsApp</a>', unsafe_allow_html=True)
+                    elif not link_url:
+                        st.caption("Entrez un lien pour activer le bouton WhatsApp")
+                    else:
+                        st.caption("Pas de numéro WhatsApp")
+                
+                st.divider()
 
 # --- ROUTAGE ---
 if st.session_state["user"] is None:
