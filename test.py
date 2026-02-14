@@ -1,152 +1,17 @@
 import streamlit as st
 import json
 import os
+import hashlib
+from datetime import datetime
 
 # --- CONFIGURATION DE LA PAGE ---
 st.set_page_config(page_title="Arsène Solutions - Espace Partagé", page_icon="👑", layout="wide")
 
-# --- STYLE CSS PERSONNALISÉ (DESIGN RESPONSIVE & ENHANCED) ---
-st.markdown("""
-    <style>
-    /* Fond dégradé premium */
-    .stApp {
-        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-        color: white;
-    }
-    
-    /* Titres avec effet néon bleu */
-    h1, h2, h3 {
-        color: #00d2ff !important;
-        text-shadow: 2px 2px 10px rgba(0, 210, 255, 0.4);
-        font-family: 'Segoe UI', sans-serif;
-    }
+# --- FONCTIONS DE SÉCURITÉ & DONNÉES ---
+DATA_FILE = "data_arsene_v2.json"
 
-    /* Style des conteneurs */
-    div[data-testid="stExpander"], .stContainer {
-        background-color: rgba(255, 255, 255, 0.05);
-        border-radius: 15px;
-        border: 1px solid rgba(0, 210, 255, 0.2);
-        padding: 15px;
-        margin-bottom: 15px;
-    }
-
-    /* Boutons tactiles */
-    .stButton>button {
-        background: linear-gradient(45deg, #00d2ff, #3a7bd5);
-        color: white !important;
-        border-radius: 25px;
-        border: none;
-        padding: 12px 25px;
-        font-weight: bold;
-        transition: 0.3s ease;
-        width: 100%;
-        min-height: 48px;
-        box-shadow: 0px 4px 15px rgba(0, 210, 255, 0.2);
-    }
-
-    /* Mise en évidence de l'onglet Livrables via CSS */
-    .stTabs [data-baseweb="tab-list"] button:nth-child(2) {
-        border: 1px solid #2ecc71 !important;
-        background-color: rgba(46, 204, 113, 0.1);
-        border-radius: 10px 10px 0 0;
-    }
-
-    /* Section Premium Adaptative */
-    .premium-box {
-        background: rgba(255, 215, 0, 0.08);
-        border: 2px solid #ffd700;
-        border-radius: 15px;
-        padding: 20px;
-        margin-top: 10px;
-        box-shadow: 0px 0px 25px rgba(255, 215, 0, 0.2);
-        text-align: center;
-    }
-
-    /* Badge IA & Rapidité */
-    .ia-badge {
-        background: linear-gradient(45deg, #00d2ff, #00ff88);
-        color: #000;
-        padding: 2px 10px;
-        border-radius: 5px;
-        font-weight: bold;
-        font-size: 0.85em;
-        margin-right: 5px;
-    }
-    
-    .speed-badge {
-        background: #ffd700;
-        color: #000;
-        padding: 2px 8px;
-        border-radius: 5px;
-        font-weight: bold;
-        font-size: 0.9em;
-    }
-
-    .premium-btn {
-        display: block;
-        padding: 15px 20px;
-        background: linear-gradient(45deg, #ffd700, #ff8c00);
-        color: #000 !important;
-        text-decoration: none;
-        font-weight: bold;
-        border-radius: 25px;
-        margin: 15px auto 0 auto;
-        max-width: 300px;
-        box-shadow: 0px 4px 15px rgba(255, 215, 0, 0.4);
-    }
-
-    /* Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: #0b0b15;
-        border-right: 1px solid #00d2ff;
-    }
-
-    .download-btn {
-        display: block;
-        width: 100%;
-        padding: 18px;
-        background: linear-gradient(45deg, #2ecc71, #27ae60);
-        color: white !important;
-        text-align: center;
-        border-radius: 12px;
-        text-decoration: none;
-        font-weight: bold;
-        font-size: 1.1em;
-        margin-top: 15px;
-        box-shadow: 0px 5px 15px rgba(46, 204, 113, 0.3);
-    }
-
-    .whatsapp-btn {
-        display: block;
-        width: 100%;
-        padding: 12px;
-        background-color: #25D366;
-        color: white;
-        text-align: center;
-        border-radius: 25px;
-        text-decoration: none;
-        font-weight: bold;
-        margin-top: 10px;
-    }
-
-    .support-btn {
-        display: block;
-        width: 100%;
-        padding: 12px;
-        background: transparent;
-        color: #00d2ff !important;
-        text-align: center;
-        border: 1px solid #00d2ff;
-        border-radius: 25px;
-        text-decoration: none;
-        font-weight: bold;
-        margin-top: 10px;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-# --- GESTION DES DONNÉES ---
-DATA_FILE = "data_arsene.json"
+def hash_password(password):
+    return hashlib.sha256(str.encode(password)).hexdigest()
 
 def load_data():
     if os.path.exists(DATA_FILE):
@@ -154,154 +19,212 @@ def load_data():
             with open(DATA_FILE, "r", encoding="utf-8") as f:
                 return json.load(f)
         except:
-            return {"demandes": {}, "liens": {}}
-    return {"demandes": {}, "liens": {}}
+            return {"users": {}, "demandes": [], "liens": {}}
+    return {"users": {}, "demandes": [], "liens": {}}
 
-def save_data():
+def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump({
-            "demandes": st.session_state["demandes"],
-            "liens": st.session_state["liens"]
-        }, f, indent=4)
+        json.dump(data, f, indent=4)
 
-if "demandes" not in st.session_state:
-    data = load_data()
-    st.session_state["demandes"] = data["demandes"]
-    st.session_state["liens"] = data["liens"]
+# Initialisation de l'état
+if "data" not in st.session_state:
+    st.session_state["data"] = load_data()
 
-# --- VARIABLES DE CONTACT ---
-WHATSAPP_NUMBER = "2250171542505"
-PREMIUM_MSG = "J'aimerais passer à la version premium pour bénéficier de la puissance de l'IA et de la rapidité 10^10"
-whatsapp_premium_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={PREMIUM_MSG.replace(' ', '%20')}"
-SUPPORT_MSG = "Bonjour, j'ai besoin d'aide avec mon projet sur l'espace client."
-whatsapp_support_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={SUPPORT_MSG.replace(' ', '%20')}"
+if "user" not in st.session_state:
+    st.session_state["user"] = None
 
-# --- BARRE LATÉRALE ---
-with st.sidebar:
-    st.markdown("<h1 style='text-align: center;'>👑<br>ARSÈNE</h1>", unsafe_allow_html=True)
-    st.write("---")
-    st.markdown("### ✨ Solutions Arsène")
-    st.info("Ingénierie documentaire et conception digitale propulsée par l'Intelligence Artificielle.")
+# --- STYLE CSS PERSONNALISÉ ---
+st.markdown("""
+    <style>
+    .stApp {
+        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        color: white;
+    }
+    h1, h2, h3 {
+        color: #00d2ff !important;
+        text-shadow: 2px 2px 10px rgba(0, 210, 255, 0.4);
+    }
+    .stButton>button {
+        background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+        color: white !important;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: 0.3s;
+        width: 100%;
+    }
+    .login-container {
+        max-width: 400px;
+        margin: auto;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 15px;
+        border: 1px solid rgba(0, 210, 255, 0.3);
+    }
+    .premium-box {
+        background: rgba(255, 215, 0, 0.08);
+        border: 2px solid #ffd700;
+        border-radius: 15px;
+        padding: 20px;
+        text-align: center;
+    }
+    .download-btn {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(45deg, #2ecc71, #27ae60);
+        color: white !important;
+        text-align: center;
+        border-radius: 12px;
+        font-weight: bold;
+        text-decoration: none;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- LOGIQUE D'AUTHENTIFICATION ---
+def auth_page():
+    st.markdown("<h1 style='text-align: center;'>🔐 Accès Client</h1>", unsafe_allow_html=True)
     
-    # Options de contact
-    st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="whatsapp-btn">💬 Service Client WhatsApp</a>', unsafe_allow_html=True)
+    col1, col2 = st.columns(2)
     
-    st.write("---")
-    st.caption("© 2025 - Arsène Investissement")
+    with col1:
+        st.subheader("Connexion")
+        with st.form("login_form"):
+            username = st.text_input("Identifiant")
+            password = st.text_input("Mot de passe", type="password")
+            submit = st.form_submit_button("Se connecter")
+            
+            if submit:
+                users = st.session_state["data"]["users"]
+                if username in users and users[username]["password"] == hash_password(password):
+                    st.session_state["user"] = username
+                    st.rerun()
+                else:
+                    st.error("Identifiant ou mot de passe incorrect")
 
-# --- CORPS PRINCIPAL ---
-st.title("📄 AUTO_EXCEL")
+    with col2:
+        st.subheader("Créer un compte")
+        with st.form("register_form"):
+            new_user = st.text_input("Choisir un identifiant")
+            email = st.text_input("Votre Email (pour les notifications)")
+            new_password = st.text_input("Mot de passe", type="password")
+            register_submit = st.form_submit_button("S'enregistrer")
+            
+            if register_submit:
+                if new_user and email and new_password:
+                    if new_user not in st.session_state["data"]["users"]:
+                        st.session_state["data"]["users"][new_user] = {
+                            "password": hash_password(new_password),
+                            "email": email,
+                            "created_at": str(datetime.now())
+                        }
+                        save_data(st.session_state["data"])
+                        st.success("Compte créé avec succès ! Connectez-vous à gauche.")
+                    else:
+                        st.warning("Cet identifiant existe déjà.")
+                else:
+                    st.error("Veuillez remplir tous les champs.")
 
-# --- OPTION : COMMENT ÇA MARCHE ? ---
-with st.expander("❓ COMMENT ÇA MARCHE ?"):
-    st.markdown("""
-    ### 🚀 Le processus est simple :
-    1. **Identifiez-vous** : Entrez votre prénom ou un identifiant unique dans l'onglet 'Nouvelle Demande'.
-    2. **Exprimez-vous** : Décrivez votre besoin (fichier Excel, Word, Script, etc.).
-    3. **Analyse IA** : Nos algorithmes commencent la structuration de votre projet.
-    4. **Récupération** : Une fois prêt, rendez-vous dans l'onglet **'MES LIVRABLES'** avec votre identifiant pour télécharger votre fichier.
+# --- PAGE PRINCIPALE (APRÈS LOGIN) ---
+def main_app():
+    user = st.session_state["user"]
     
-    ⚠️ **Note sur les délais :**
-    - **Version Gratuite** : Le traitement peut prendre **1 à 2 heures** selon la charge du serveur.
-    - **Version Premium** : Livraison **immédiate** (Vitesse $10^{10}$).
-    """)
-
-# Bannière Premium (Mise en avant IA + Rapidité 10^10)
-st.markdown(f"""
-    <div class="premium-box">
-        <h3 style="margin:0; color:#ffd700 !important;">⭐ EXCELLENCE PREMIUM & IA</h3>
-        <p style="margin:10px 0; font-size: 1.1em; line-height: 1.5;">
-            <span class="ia-badge">🤖 GÉNÉRATION PAR IA</span> & <span class="speed-badge">RAPIDITÉ +10<sup>10</sup></span><br>
-            Évitez les attentes de 2h. Obtenez une précision chirurgicale et une livraison instantanée.
-        </p>
-        <a href="{whatsapp_premium_url}" target="_blank" class="premium-btn">✨ ACTIVER LA PUISSANCE IA (PREMIUM)</a>
-    </div>
-""", unsafe_allow_html=True)
-
-st.write("") 
-
-# --- SECTION ONGLETS ---
-tab_user, tab_files = st.tabs(["🆕 Nouvelle Demande", "📂 RÉCUPÉRER MES LIVRABLES (ICI)"])
-
-with tab_user:
-    st.subheader("🤖 Donnez vie à votre imagination avec Arsène IA")
-    with st.container():
-        nom = st.text_input("Identifiant / Prénom", placeholder="Ex: Jean Dupont").strip()
-        message = st.text_area("Décrivez votre besoin (L'IA s'occupe du reste)", placeholder="Ex: Un tableau de suivi de stock automatisé avec alertes par mail...", height=120)
+    # Barre Latérale
+    with st.sidebar:
+        st.markdown(f"<h2 style='text-align: center;'>👑 Bonjour,<br>{user}</h2>", unsafe_allow_html=True)
+        if st.button("Déconnexion"):
+            st.session_state["user"] = None
+            st.rerun()
         
-        st.markdown("""
-            <div style="font-size:0.85em; opacity:0.8; margin-bottom:10px;">
-                🕒 <b>Version Gratuite :</b> Temps de traitement estimé entre 1h et 2h.<br>
-                🔹 <b>Capacités :</b> Excel, Word,affiche publicitaire, Design.
-            </div>
-        """, unsafe_allow_html=True)
+        st.write("---")
+        st.info("Système de notification activé par mail dès que votre fichier est prêt.")
+
+    st.title("📄 AUTO_EXCEL - Tableau de Bord")
+
+    # Bannière Premium
+    st.markdown(f"""
+        <div class="premium-box">
+            <h3 style="margin:0; color:#ffd700 !important;">⭐ EXCELLENCE PREMIUM & IA</h3>
+            <p>Notification Instantanée WhatsApp + Livraison Prioritaire (Vitesse 10<sup>10</sup>)</p>
+        </div>
+    """, unsafe_allow_html=True)
+    st.write("")
+
+    tab_request, tab_status = st.tabs(["🆕 Nouvelle Demande", "📂 Mes Livrables & Statut"])
+
+    with tab_request:
+        st.subheader("🤖 Nouvelle Analyse IA")
+        with st.container():
+            type_fichier = st.selectbox("Type de projet", ["Tableau Excel", "Document Word", "Script Python", "Design/Affiche"])
+            description = st.text_area("Décrivez précisément votre besoin", height=150)
+            
+            if st.button("🚀 LANCER LA GÉNÉRATION"):
+                if description:
+                    nouvelle_demande = {
+                        "user": user,
+                        "type": type_fichier,
+                        "desc": description,
+                        "status": "En cours d'analyse",
+                        "date": str(datetime.now())
+                    }
+                    st.session_state["data"]["demandes"].append(nouvelle_demande)
+                    save_data(st.session_state["data"])
+                    st.balloons()
+                    st.success("Demande enregistrée ! Vous recevrez un mail dès que le lien sera disponible.")
+                else:
+                    st.warning("Veuillez décrire votre besoin.")
+
+    with tab_status:
+        st.subheader("Mes Projets")
+        mes_demandes = [d for d in st.session_state["data"]["demandes"] if d["user"] == user]
+        mes_liens = st.session_state["data"]["liens"].get(user, [])
+
+        if not mes_demandes and not mes_liens:
+            st.info("Vous n'avez aucune demande en cours.")
         
-        if st.button("🚀 LANCER LA GÉNÉRATION"):
-            if nom and message:
-                st.session_state["demandes"][nom] = message
-                save_data()
-                st.balloons()
-                st.success(f"Dossier transmis, {nom}. Analyse lancée (Prévoyez 1 à 2h pour la version gratuite).")
-            else:
-                st.warning("Identifiant et description requis pour l'analyse IA.")
+        # Affichage des fichiers prêts
+        if user in st.session_state["data"]["liens"]:
+            for i, item in enumerate(st.session_state["data"]["liens"][user]):
+                with st.expander(f"✅ PRÊT : {item['name']}", expanded=True):
+                    st.markdown(f'<a href="{item["url"]}" target="_blank" class="download-btn">⬇️ TÉLÉCHARGER LE FICHIER</a>', unsafe_allow_html=True)
 
-with tab_files:
-    st.subheader("📁 Zone de Téléchargement")
-    st.info("💡 **C'est ici que vous récupérez vos fichiers générés.** Saisissez l'identifiant utilisé lors de votre demande.")
-    
-    client_nom = st.text_input("Tapez votre Identifiant / Prénom :", key="search", placeholder="Rechercher mon fichier...").strip()
-    
-    if client_nom:
-        if client_nom in st.session_state["liens"]:
-            st.success(f"✅ Analyse terminée ! Votre fichier IA est prêt, {client_nom}.")
-            lien = st.session_state["liens"][client_nom]
-            st.markdown(f'<a href="{lien}" target="_blank" class="download-btn">⬇️ TÉLÉCHARGER MON LIVRABLE</a>', unsafe_allow_html=True)
-            st.caption("Le lien s'ouvrira dans un nouvel onglet sécurisé.")
-        elif client_nom in st.session_state["demandes"]:
-            st.warning(f"⏳ Statut : Analyse IA en cours pour '{client_nom}'...")
-            st.info("Traitement gratuit en cours (Délai estimé : 1h à 2h).")
-            
-            # --- RELANCE & SERVICE CLIENT ---
-            st.write("---")
-            st.write("Le délai est trop long ?")
-            
-            relance_msg = f"Bonjour, je relance ma demande IA (Identifiant : {client_nom}). Le traitement semble prendre du temps."
-            whatsapp_relance_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={relance_msg.replace(' ', '%20')}"
-            
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown(f'<a href="{whatsapp_relance_url}" target="_blank" class="support-btn">🔔 Relancer la demande</a>', unsafe_allow_html=True)
-            with col2:
-                st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">🙋 Aide Service Client</a>', unsafe_allow_html=True)
-        else:
-            st.error("❌ Aucun dossier identifié. Vérifiez l'orthographe ou lancez une nouvelle génération.")
+        # Affichage des demandes en cours
+        for d in mes_demandes:
+            with st.container():
+                st.write(f"⏳ **{d['type']}** - *Demande faite le {d['date'][:16]}*")
+                st.caption(f"Statut : {d['status']} (Délai estimé : 1-2h)")
+                st.divider()
 
-# --- ADMINISTRATION ---
-st.write("")
-st.divider()
-with st.expander("🔐 Console Arsène"):
-    pwd = st.text_input("Accès sécurisé", type="password")
-    if pwd == "02110240":
-        if not st.session_state["demandes"]:
-            st.info("Aucune tâche en attente.")
-        else:
-            for n in list(st.session_state["demandes"].keys()):
-                with st.container():
-                    st.write(f"**Client :** {n}")
-                    st.write(f"**Besoin IA :** {st.session_state['demandes'][n]}")
-                    lien_u = st.text_input("Lien du livrable généré", key=f"link_{n}")
-                    if st.button(f"Livrer à {n}", key=f"v_{n}"):
-                        if lien_u:
-                            st.session_state["liens"][n] = lien_u
-                            del st.session_state["demandes"][n]
-                            save_data()
+    # --- SECTION ADMIN ---
+    st.write("")
+    with st.expander("🔐 Console Arsène (Admin)"):
+        pwd = st.text_input("Accès sécurisé", type="password", key="admin_pwd")
+        if pwd == "02110240":
+            st.subheader("Gestion des demandes")
+            for i, d in enumerate(st.session_state["data"]["demandes"]):
+                st.write(f"**Client:** {d['user']} | **Email:** {st.session_state['data']['users'][d['user']]['email']}")
+                st.write(f"**Besoin:** {d['desc']}")
+                link_url = st.text_input(f"Lien pour {d['user']}", key=f"admin_link_{i}")
+                if st.button(f"Livrer & Notifier {d['user']}", key=f"btn_{i}"):
+                    if link_url:
+                        # Ajouter aux liens livrés
+                        if d['user'] not in st.session_state["data"]["liens"]:
+                            st.session_state["data"]["liens"][d['user']] = []
+                        
+                        st.session_state["data"]["liens"][d['user']].append({
+                            "name": d['type'],
+                            "url": link_url,
+                            "date": str(datetime.now())
+                        })
+                        
+                        # Retirer de la liste des demandes
+                        st.session_state["data"]["demandes"].pop(i)
+                        save_data(st.session_state["data"])
+                        st.success(f"Notification envoyée à {d['user']} !")
+                        st.rerun()
 
-                            st.rerun()
-
-
-
-
-
-
-
-
+# --- ROUTAGE ---
+if st.session_state["user"] is None:
+    auth_page()
+else:
+    main_app()
