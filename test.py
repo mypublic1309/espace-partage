@@ -17,6 +17,7 @@ st.set_page_config(
 
 DATA_FILE = "data_arsene_v3.json"
 ADMIN_CODE = "02110240"
+WHATSAPP_NUMBER = "2250102030405" # Remplacez par votre numéro de support réel
 
 # ==========================================
 # LOGIQUE DE DONNÉES (DATA LAYER)
@@ -102,6 +103,18 @@ def inject_custom_css():
             border-radius: 15px;
             padding: 1.5rem;
             margin-bottom: 1rem;
+        }
+        .support-btn {
+            display: inline-block;
+            text-decoration: none;
+            background: #25D366;
+            color: white !important;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            width: 100%;
+            margin-top: 10px;
         }
         .premium-banner {
             background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
@@ -267,6 +280,23 @@ def main_dashboard():
             
             if not user_links and not user_reqs:
                 st.info("Vous n'avez pas encore de commandes.")
+            
+            # --- RELANCE & SERVICE CLIENT ---
+            st.write("---")
+            st.write("### 🆘 Besoin d'aide ?")
+            st.write("Si le délai de traitement vous semble trop long ou si vous avez une question :")
+            
+            relance_msg = f"Bonjour, je relance ma demande IA (Client : {user}). Le traitement semble prendre du temps."
+            support_msg = f"Bonjour Arsène Solutions, j'ai besoin d'aide concernant mon espace client (Identifiant : {user})."
+            
+            whatsapp_relance_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={relance_msg.replace(' ', '%20')}"
+            whatsapp_support_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={support_msg.replace(' ', '%20')}"
+            
+            col_rel, col_sup = st.columns(2)
+            with col_rel:
+                st.markdown(f'<a href="{whatsapp_relance_url}" target="_blank" class="support-btn">🔔 Relancer la demande</a>', unsafe_allow_html=True)
+            with col_sup:
+                st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn" style="background:#3a7bd5;">🙋 Aide Service Client</a>', unsafe_allow_html=True)
 
     # --- ADMINISTRATION ---
     with st.expander("🛠 Console Administrateur"):
