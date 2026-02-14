@@ -517,7 +517,7 @@ def main_dashboard():
                                 <div class="spinner" style="width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #f1c40f; border-radius: 50%; animation: spin 1s linear infinite;"></div>
                             </div>
                         </div>
-                        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+                        <style>@keyframes spin {{ 0%% {{ transform: rotate(0deg); }} 100%% {{ transform: rotate(360deg); }} }}</style>
                     """, unsafe_allow_html=True)
             
             if not user_links and not user_reqs:
