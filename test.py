@@ -232,7 +232,7 @@ with tab_user:
         st.markdown("""
             <div style="font-size:0.85em; opacity:0.8; margin-bottom:10px;">
                 🕒 <b>Version Gratuite :</b> Temps de traitement estimé entre 1h et 2h.<br>
-                🔹 <b>Capacités :</b> Excel, Word, Scripts PowerShell, Design.
+                🔹 <b>Capacités :</b> Excel, Word,affiche publicitaire, Design.
             </div>
         """, unsafe_allow_html=True)
         
@@ -297,6 +297,7 @@ with st.expander("🔐 Console Arsène"):
                             save_data()
 
                             st.rerun()
+
 
 
 
