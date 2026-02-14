@@ -362,7 +362,18 @@ def main_dashboard():
         col_f, col_wa = st.columns([1, 1])
         with col_f:
             st.markdown("#### 🛠️ Sélectionnez un service")
-            service = st.selectbox("Type de demande", ["📊 Automatisation Excel Avancée", "📝 Rédaction & Correction", "⚙️ Script Python", "🎨 Création Visuelle"])
+            service = st.selectbox(
+                "Type de demande", 
+                [
+                    "📊 Automatisation Excel Avancée", 
+                    "📝 Rédaction & Correction", 
+                    "⚙️ Script Python", 
+                    "🎨 Création Visuelle",
+                    "📚 Exposé Scolaire Complet",
+                    "👔 Création de CV Professionnel",
+                    "📄 Structuration Document Word"
+                ]
+            )
         with col_wa:
             st.markdown("#### 📞 Confirmation WhatsApp")
             default_wa = db["users"][user]["whatsapp"] if user else ""
