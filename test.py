@@ -55,6 +55,9 @@ if "current_user" not in st.session_state:
 if "view" not in st.session_state:
     st.session_state["view"] = "home"
 
+if "is_glowing" not in st.session_state:
+    st.session_state["is_glowing"] = False
+
 # Reconnaissance automatique via URL (Session persistante)
 if st.session_state["current_user"] is None:
     stored_user = st.query_params.get("user_id")
@@ -78,8 +81,20 @@ def inject_custom_css():
             background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);
             background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
             color: #ffffff;
+            transition: filter 0.5s ease;
         }
         
+        /* EFFET D'ILLUMINATION GLOBALE */
+        @keyframes glow-pulse {
+            0% { filter: brightness(1) saturate(1); box-shadow: inset 0 0 0px transparent; }
+            50% { filter: brightness(1.8) saturate(1.5); box-shadow: inset 0 0 100px rgba(0, 210, 255, 0.5); }
+            100% { filter: brightness(1) saturate(1); box-shadow: inset 0 0 0px transparent; }
+        }
+
+        .glowing-site {
+            animation: glow-pulse 1.5s ease-in-out infinite;
+        }
+
         /* TITRE PRINCIPAL */
         .main-title {
             background: linear-gradient(90deg, #00d2ff, #3a7bd5);
@@ -239,6 +254,10 @@ def inject_custom_css():
         }
         </style>
     """, unsafe_allow_html=True)
+    
+    # Injection dynamique de la classe d'illumination
+    if st.session_state["is_glowing"]:
+        st.markdown('<style>.stApp { animation: glow-pulse 1.5s ease-in-out infinite; }</style>', unsafe_allow_html=True)
 
 # ==========================================
 # PAGES ET COMPOSANTS
@@ -385,45 +404,50 @@ def main_dashboard():
         
         if st.button("LANCER L'INTELLIGENCE ARTIFICIELLE"):
             if prompt and wa_display:
-                # EFFET VISUEL : BARRE DE PROGRESSION ANIMÉE
-                progress_placeholder = st.empty()
-                status_text = st.empty()
-                
-                bar = progress_placeholder.progress(0)
-                for percent_complete in range(100):
-                    time.sleep(0.01)  # Animation rapide
-                    bar.progress(percent_complete + 1)
-                    status_text.markdown(f"<p style='text-align:center; color:#00d2ff;'>Analyse du projet : <b>{percent_complete + 1}%</b>...</p>", unsafe_allow_html=True)
-                
-                status_text.markdown("<p style='text-align:center; color:#2ecc71;'><b>Projet enregistré avec succès !</b></p>", unsafe_allow_html=True)
-                time.sleep(0.5)
-                
-                # Nettoyage visuel
-                progress_placeholder.empty()
-                status_text.empty()
-
-                new_req = {
-                    "id": hashlib.md5(str(datetime.now()).encode()).hexdigest()[:8],
-                    "user": user if user else "guest",
-                    "service": service,
-                    "desc": prompt,
-                    "whatsapp": wa_display,
-                    "status": "Traitement IA...",
-                    "timestamp": str(datetime.now())
-                }
-                
-                st.session_state["db"]["demandes"].append(new_req)
-                save_db(st.session_state["db"])
-                
-                if user:
-                    st.success("✅ C'est parti ! L'IA travaille sur votre dossier.")
-                    st.balloons()
-                    st.rerun()
-                else:
-                    st.session_state["view"] = "auth"
-                    st.rerun()
+                # EFFET VISUEL : ILLUMINATION TOTALE
+                st.session_state["is_glowing"] = True
+                st.rerun() # Pour appliquer le CSS d'illumination immédiatement
             else:
                 st.error("Veuillez remplir tous les champs.")
+
+        # LOGIQUE DE TRAITEMENT APRÈS RELANCE (POUR L'ANIMATION)
+        if st.session_state["is_glowing"]:
+            # EFFET VISUEL : BARRE DE PROGRESSION ANIMÉE
+            progress_placeholder = st.empty()
+            status_text = st.empty()
+            
+            bar = progress_placeholder.progress(0)
+            for percent_complete in range(100):
+                time.sleep(0.02)  # Un peu plus lent pour profiter de l'illumination
+                bar.progress(percent_complete + 1)
+                status_text.markdown(f"<p style='text-align:center; color:#00d2ff; font-size:1.2rem; font-weight:bold;'>L'IA S'ILLUMINE : {percent_complete + 1}%</p>", unsafe_allow_html=True)
+            
+            # Finalisation
+            new_req = {
+                "id": hashlib.md5(str(datetime.now()).encode()).hexdigest()[:8],
+                "user": user if user else "guest",
+                "service": service,
+                "desc": prompt,
+                "whatsapp": wa_display,
+                "status": "Traitement IA...",
+                "timestamp": str(datetime.now())
+            }
+            
+            st.session_state["db"]["demandes"].append(new_req)
+            save_db(st.session_state["db"])
+            
+            # Arrêt de l'illumination et notification
+            st.session_state["is_glowing"] = False
+            progress_placeholder.empty()
+            status_text.empty()
+            
+            if user:
+                st.success("✅ C'est parti ! L'IA travaille sur votre dossier.")
+                st.balloons()
+                st.rerun()
+            else:
+                st.session_state["view"] = "auth"
+                st.rerun()
 
     with tab2:
         if not user:
