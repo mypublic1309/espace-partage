@@ -62,7 +62,7 @@ if st.session_state["current_user"] is None:
         st.session_state["current_user"] = stored_user
 
 # ==========================================
-# DESIGN ET STYLE (CSS AVANCÉ & RESPONSIVE)
+# DESIGN ET STYLE (CSS AVANCÉ)
 # ==========================================
 
 def inject_custom_css():
@@ -80,24 +80,24 @@ def inject_custom_css():
             color: #ffffff;
         }
         
-        /* TITRE PRINCIPAL RESPONSIVE */
+        /* TITRE PRINCIPAL */
         .main-title {
             background: linear-gradient(90deg, #00d2ff, #3a7bd5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 800;
-            font-size: clamp(2rem, 8vw, 3.5rem) !important;
+            font-size: 3.5rem !important;
             text-align: center;
             margin-bottom: 20px;
             text-shadow: 0px 0px 20px rgba(0, 210, 255, 0.3);
         }
 
-        /* --- CARTE PREMIUM RESPONSIVE --- */
+        /* --- CARTE PREMIUM --- */
         .premium-card {
             background: rgba(20, 20, 30, 0.8);
             border: 2px solid #FFD700;
             border-radius: 20px;
-            padding: clamp(15px, 5vw, 25px);
+            padding: 25px;
             text-align: center;
             margin-bottom: 30px;
             box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
@@ -114,7 +114,7 @@ def inject_custom_css():
 
         .premium-title {
             color: #FFD700 !important;
-            font-size: clamp(1.1rem, 4vw, 1.5rem);
+            font-size: 1.5rem;
             font-weight: 800;
             text-transform: uppercase;
             margin-bottom: 10px;
@@ -123,7 +123,7 @@ def inject_custom_css():
 
         .premium-desc {
             color: #ffffff !important;
-            font-size: clamp(0.9rem, 3vw, 1rem);
+            font-size: 1rem;
             margin-bottom: 20px;
             line-height: 1.5;
         }
@@ -140,7 +140,6 @@ def inject_custom_css():
             display: inline-block;
             box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
             transition: transform 0.2s, box-shadow 0.2s;
-            max-width: 100%;
         }
         .btn-gold:hover {
             transform: scale(1.05);
@@ -151,7 +150,7 @@ def inject_custom_css():
         .stTextInput label, .stSelectbox label, .stTextArea label {
             color: #00d2ff !important;
             font-weight: 600 !important;
-            font-size: 1rem !important;
+            font-size: 1.1rem !important;
             margin-bottom: 5px;
         }
         
@@ -160,7 +159,6 @@ def inject_custom_css():
             background-color: rgba(0, 0, 0, 0.5) !important;
             color: white !important;
             border-radius: 10px !important;
-            font-size: 1rem;
         }
 
         /* BOUTONS STREAMLIT */
@@ -171,7 +169,7 @@ def inject_custom_css():
             border: none;
             color: white !important;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 1.1rem;
             width: 100%;
             margin-top: 10px;
             box-shadow: 0 4px 10px rgba(0, 210, 255, 0.3);
@@ -239,21 +237,6 @@ def inject_custom_css():
         .stProgress > div > div > div > div {
             background-image: linear-gradient(to right, #00d2ff , #3a7bd5);
         }
-
-        /* --- MEDIA QUERIES POUR MOBILE --- */
-        @media (max-width: 768px) {
-            .stApp {
-                padding: 10px !important;
-            }
-            .premium-card {
-                padding: 15px;
-            }
-            .btn-gold {
-                width: 100%;
-                padding: 15px 10px;
-                font-size: 1rem;
-            }
-        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -265,11 +248,11 @@ def show_auth_page():
     """Page de connexion Simplifiée (ID + WhatsApp)."""
     st.markdown("<h1 class='main-title'>CONNEXION CLIENT</h1>", unsafe_allow_html=True)
     
-    col1, col2 = st.columns([1, 1]) # Utilisation de colonnes qui s'empilent sur mobile
+    col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("""
-        <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; border: 1px solid rgba(0,210,255,0.2); margin-bottom: 20px;">
+        <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; border: 1px solid rgba(0,210,255,0.2);">
             <h3 style="color:white; margin-top:0;">🔐 J'ai déjà un compte</h3>
         </div>
         """, unsafe_allow_html=True)
@@ -288,7 +271,7 @@ def show_auth_page():
 
     with col2:
         st.markdown("""
-        <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.2); margin-bottom: 20px;">
+        <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.2);">
             <h3 style="color:white; margin-top:0;">✨ Je suis nouveau</h3>
         </div>
         """, unsafe_allow_html=True)
@@ -377,7 +360,7 @@ def main_dashboard():
     tab1, tab2 = st.tabs(["🚀 LANCER UNE TÂCHE", "📂 MES FICHIERS"])
 
     with tab1:
-        col_f, col_wa = st.columns([1, 1])
+        col_f, col_wa = st.columns(2)
         with col_f:
             st.markdown("#### 🛠️ Sélectionnez un service")
             service = st.selectbox(
@@ -484,11 +467,11 @@ def main_dashboard():
             st.write("---")
             st.markdown("### 🆘 Besoin d'assistance ?")
             
-            col_rel, col_sup = st.columns([1, 1])
+            col_rel, col_sup = st.columns(2)
             with col_rel:
                 relance_msg = f"Bonjour, je relance ma demande IA (ID: {user})."
                 wa_relance = f"https://wa.me/{WHATSAPP_NUMBER}?text={relance_msg.replace(' ', '%20')}"
-                st.markdown(f'<a href="{wa_relance}" target="_blank" class="support-btn" style="border-color:#f1c40f; color:#f1c40f !important; margin-bottom:10px;">🔔 Relancer (Délai long)</a>', unsafe_allow_html=True)
+                st.markdown(f'<a href="{wa_relance}" target="_blank" class="support-btn" style="border-color:#f1c40f; color:#f1c40f !important;">🔔 Relancer (Délai long)</a>', unsafe_allow_html=True)
             with col_sup:
                 st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">🙋 Aide Service Client</a>', unsafe_allow_html=True)
 
