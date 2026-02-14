@@ -10,19 +10,19 @@ import streamlit.components.v1 as components
 # CONFIGURATION ET CONSTANTES
 # ==========================================
 st.set_page_config(
-    page_title="Arsène Solutions - Accès Rapide", 
-    page_icon="👑", 
+    page_title="Nova AI - Performance Illimitée", 
+    page_icon="⚡", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-DATA_FILE = "data_arsene_v3.json"
+DATA_FILE = "data_nova_v3.json"
 ADMIN_CODE = "02110240"
 
 # --- CONFIGURATION WHATSAPP ---
 WHATSAPP_NUMBER = "2250171542505"
-PREMIUM_MSG = "J'aimerais passer à la version premium pour bénéficier de la puissance de l'IA et de la rapidité 10^10"
-SUPPORT_MSG = "Bonjour, j'ai besoin d'aide avec mon projet sur l'espace client."
+PREMIUM_MSG = "J'aimerais passer à la version Nova Premium pour bénéficier de la puissance 10^10 et de l'IA de pointe."
+SUPPORT_MSG = "Bonjour, j'ai besoin d'assistance sur mon espace Nova AI."
 
 # Encodage manuel des espaces pour les liens
 whatsapp_premium_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={PREMIUM_MSG.replace(' ', '%20')}"
@@ -342,20 +342,20 @@ def inject_custom_css():
 
 def show_auth_page():
     """Page de connexion Simplifiée (ID + WhatsApp)."""
-    st.markdown("<h1 class='main-title'>CONNEXION CLIENT</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-title'>ESPACE NOVA AI</h1>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("""
         <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; border: 1px solid rgba(0,210,255,0.2);">
-            <h3 style="color:white; margin-top:0;">🔐 J'ai déjà un compte</h3>
+            <h3 style="color:white; margin-top:0;">🔐 Accès Membre</h3>
         </div>
         """, unsafe_allow_html=True)
         with st.form("login"):
-            uid = st.text_input("Votre Identifiant")
-            wa_auth = st.text_input("Votre Numéro WhatsApp", placeholder="Ex: 22501...")
-            if st.form_submit_button("ACCÉDER À MON ESPACE"):
+            uid = st.text_input("Identifiant Nova")
+            wa_auth = st.text_input("Numéro WhatsApp", placeholder="Ex: 22501...")
+            if st.form_submit_button("S'IDENTIFIER"):
                 db = st.session_state["db"]
                 if uid in db["users"] and db["users"][uid]["whatsapp"] == wa_auth:
                     st.session_state["current_user"] = uid
@@ -363,18 +363,18 @@ def show_auth_page():
                     st.query_params["user_id"] = uid
                     st.rerun()
                 else:
-                    st.error("❌ Identifiant ou numéro incorrect.")
+                    st.error("❌ Identifiant ou numéro inconnu.")
 
     with col2:
         st.markdown("""
         <div style="background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.2);">
-            <h3 style="color:white; margin-top:0;">✨ Je suis nouveau</h3>
+            <h3 style="color:white; margin-top:0;">✨ Nouveau Compte</h3>
         </div>
         """, unsafe_allow_html=True)
         with st.form("signup"):
-            new_uid = st.text_input("Choisissez un Identifiant")
-            new_wa = st.text_input("Votre Numéro WhatsApp (Sera votre mot de passe)")
-            if st.form_submit_button("CRÉER MON COMPTE GRATUIT"):
+            new_uid = st.text_input("Identifiant au choix")
+            new_wa = st.text_input("Votre WhatsApp (Sera votre clé d'accès)")
+            if st.form_submit_button("REJOINDRE NOVA AI"):
                 if new_uid and new_wa:
                     db = st.session_state["db"]
                     if new_uid not in db["users"]:
@@ -389,9 +389,9 @@ def show_auth_page():
                         st.query_params["user_id"] = new_uid
                         st.rerun()
                     else:
-                        st.warning("⚠️ Cet identifiant est déjà pris.")
+                        st.warning("⚠️ Identifiant déjà utilisé.")
                 else:
-                    st.error("Champs obligatoires manquants.")
+                    st.error("Champs obligatoires.")
 
 def main_dashboard():
     """Tableau de bord principal."""
@@ -399,15 +399,15 @@ def main_dashboard():
     db = st.session_state["db"]
     
     with st.sidebar:
-        st.markdown(f"### 👤 {user if user else 'Invité'}")
+        st.markdown(f"### 👤 {user if user else 'Visiteur'}")
         if user:
             st.markdown(f"📱 **{db['users'][user]['whatsapp']}**")
-            if st.button("Déconnexion"):
+            if st.button("Quitter la session"):
                 st.session_state["current_user"] = None
                 st.query_params.clear()
                 st.rerun()
         else:
-            if st.button("Se connecter"):
+            if st.button("Connexion"):
                 st.session_state["view"] = "auth"
                 st.rerun()
         
@@ -415,58 +415,58 @@ def main_dashboard():
         
         st.markdown(f"""
             <div class="info-card">
-                <span class="info-title">🚀 LIVRAISON & ALERTES</span>
+                <span class="info-title">🚀 LIVRAISON NOVA</span>
                 <span style="color:#eee; font-size:0.9rem;">
-                    Vos fichiers apparaissent directement dans l'onglet <b>"📂 MES FICHIERS"</b>.
+                    Vos résultats IA apparaissent dans l'onglet <b>"📂 MES LIVRABLES"</b>.
                     <br><br>
-                    Une notification WhatsApp vous informe dès que le travail est prêt.
+                    Suivi instantané 24h/24.
                 </span>
             </div>
         """, unsafe_allow_html=True)
         
-        st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">💬 Service Client</a>', unsafe_allow_html=True)
+        st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">💬 Support Nova</a>', unsafe_allow_html=True)
 
-    st.markdown("<h1 class='main-title'>ARSÈNE SOLUTIONS</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-title'>NOVA AI PLATFORM</h1>", unsafe_allow_html=True)
 
     st.markdown(f"""
         <div class="premium-card">
-            <div class="premium-title">⭐ PASSEZ À LA VITESSE SUPÉRIEURE ⭐</div>
+            <div class="premium-title">⭐ ACCÉLÉRATEUR NOVA PREMIUM ⭐</div>
             <div class="premium-desc">
-                Débloquez la <b>puissance totale de l'IA</b> et une vitesse de traitement de <b>10<sup>10</sup></b>.
+                Passez au niveau supérieur : IA illimitée et puissance de calcul <b>10<sup>10</sup></b>.
             </div>
             <a href="{whatsapp_premium_url}" target="_blank" class="btn-gold">
-                💎 ACTIVER LE PREMIUM
+                💎 ACTIVER NOVA PREMIUM
             </a>
         </div>
     """, unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["🚀 LANCER UNE TÂCHE", "📂 MES FICHIERS (ESPACE CLIENT)"])
+    tab1, tab2 = st.tabs(["🚀 DÉPLOYER UNE TÂCHE", "📂 MES LIVRABLES (CLOUD)"])
 
     with tab1:
         col_f, col_wa = st.columns(2)
         with col_f:
-            st.markdown("#### 🛠️ Sélectionnez un service")
+            st.markdown("#### 🛠️ Service Nova")
             service = st.selectbox(
-                "Type de demande", 
+                "Type d'intervention", 
                 [
-                    "📊 Automatisation Excel Avancée", 
-                    "📝 Rédaction & Correction", 
-                    "⚙️ Script Python", 
-                    "🎨 Création Visuelle",
-                    "📚 Exposé Scolaire Complet",
-                    "👔 Création de CV Professionnel",
-                    "📄 Structuration Document Word"
+                    "📊 Data & Excel Analytics", 
+                    "📝 Rédaction IA Haute Précision", 
+                    "⚙️ Développement & Scripts", 
+                    "🎨 Création Design IA",
+                    "📚 Recherche Académique",
+                    "👔 Optimisation Carrière (CV)",
+                    "📄 Ingénierie Documentaire"
                 ]
             )
         with col_wa:
-            st.markdown("#### 📞 Confirmation WhatsApp")
+            st.markdown("#### 📞 Notification")
             default_wa = db["users"][user]["whatsapp"] if user else ""
-            wa_display = st.text_input("Numéro", value=default_wa, placeholder="Ex: 225...")
+            wa_display = st.text_input("WhatsApp de contact", value=default_wa, placeholder="225...")
         
-        st.markdown("#### 📝 Description du besoin")
-        prompt = st.text_area("Cahier des charges", height=150, placeholder="Soyez précis pour un meilleur résultat...")
+        st.markdown("#### 📝 Spécifications de la mission")
+        prompt = st.text_area("Cahier des charges Nova", height=150, placeholder="Détaillez votre projet pour une exécution parfaite...")
         
-        # LOGO STRIP (VISUEL EN BAS DE LA ZONE DE TEXTE)
+        # LOGO STRIP
         st.markdown("""
         <div class="logo-container">
             <svg class="logo-item" viewBox="0 0 24 24" fill="#217346"><path d="M16.2 21H2.8c-.4 0-.8-.4-.8-.8V3.8c0-.4.4-.8.8-.8h13.4c.4 0 .8.4.8.8v16.4c0 .4-.4.8-.8.8z"/><path d="M14.7 15.3l-2.2-3.3 2.2-3.3h-1.6l-1.4 2.2-1.4-2.2H8.7l2.2 3.3-2.2 3.3h1.6l1.4-2.2 1.4 2.2z" fill="white"/></svg>
@@ -475,15 +475,15 @@ def main_dashboard():
             <svg class="logo-item" viewBox="0 0 24 24" fill="#d24726"><path d="M16.2 21H2.8c-.4 0-.8-.4-.8-.8V3.8c0-.4.4-.8.8-.8h13.4c.4 0 .8.4.8.8v16.4c0 .4-.4.8-.8.8z"/><path d="M8.7 8.7h1.5v5.1h2.5v1.5H8.7V8.7z" fill="white"/></svg>
             <svg class="logo-item" viewBox="0 0 24 24" fill="#ff9900"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
-        <p style="text-align:center; color:rgba(255,255,255,0.4); font-size:0.8rem; margin-top:5px;">Excel • Word • Python • PDF • Design</p>
+        <p style="text-align:center; color:rgba(255,255,255,0.4); font-size:0.8rem; margin-top:5px;">Data • Dev • Design • Expertise • Rapidité</p>
         """, unsafe_allow_html=True)
 
-        if st.button("LANCER L'INTELLIGENCE ARTIFICIELLE"):
+        if st.button("ACTIVER L'ALGORITHME NOVA"):
             if prompt and wa_display:
                 st.session_state["is_glowing"] = True
                 st.rerun()
             else:
-                st.error("Veuillez remplir tous les champs.")
+                st.error("Détails manquants.")
 
         if st.session_state["is_glowing"]:
             progress_placeholder = st.empty()
@@ -492,7 +492,7 @@ def main_dashboard():
             for percent_complete in range(100):
                 time.sleep(0.02)
                 bar.progress(percent_complete + 1)
-                status_text.markdown(f"<p style='text-align:center; color:#00d2ff; font-size:1.2rem; font-weight:bold;'>PROCESSUS IA EN COURS : {percent_complete + 1}%</p>", unsafe_allow_html=True)
+                status_text.markdown(f"<p style='text-align:center; color:#00d2ff; font-size:1.2rem; font-weight:bold;'>NOVA PROCESSING : {percent_complete + 1}%</p>", unsafe_allow_html=True)
             
             new_req = {
                 "id": hashlib.md5(str(datetime.now()).encode()).hexdigest()[:8],
@@ -500,7 +500,7 @@ def main_dashboard():
                 "service": service,
                 "desc": prompt,
                 "whatsapp": wa_display,
-                "status": "Traitement IA...",
+                "status": "Traitement Nova en cours...",
                 "timestamp": str(datetime.now())
             }
             st.session_state["db"]["demandes"].append(new_req)
@@ -509,7 +509,7 @@ def main_dashboard():
             progress_placeholder.empty()
             status_text.empty()
             if user:
-                st.success("✅ Demande envoyée ! Consultez l'onglet 'MES FICHIERS' pour voir l'avancement.")
+                st.success("✅ Mission enregistrée ! Suivez l'avancement dans vos livrables.")
                 st.balloons()
                 st.rerun()
             else:
@@ -518,7 +518,7 @@ def main_dashboard():
 
     with tab2:
         if not user:
-            st.warning("🔒 Connectez-vous pour accéder à vos livrables personnels.")
+            st.warning("🔒 Authentification requise pour accéder au Cloud Nova.")
         else:
             fresh_db = load_db()
             user_links = fresh_db["liens"].get(user, [])
@@ -526,8 +526,8 @@ def main_dashboard():
             
             st.markdown("""
                 <div style="background: rgba(46, 204, 113, 0.1); padding: 15px; border-radius: 10px; border: 1px dashed #2ecc71; margin-bottom: 20px; text-align: center;">
-                    <h2 style="color: #2ecc71; margin: 0;">📥 VOTRE ESPACE DE TÉLÉCHARGEMENT</h2>
-                    <p style="color: white; font-size: 0.9rem;">Tous vos fichiers terminés apparaissent ici instantanément.</p>
+                    <h2 style="color: #2ecc71; margin: 0;">📥 HUB DE TÉLÉCHARGEMENT NOVA</h2>
+                    <p style="color: white; font-size: 0.9rem;">Accédez à vos actifs numériques terminés.</p>
                 </div>
             """, unsafe_allow_html=True)
 
@@ -537,12 +537,12 @@ def main_dashboard():
                     <div class="file-card">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
-                                <h3 style="color:#00d2ff; margin:0;">📄 {link['name']}</h3>
-                                <p style="color:#aaa; font-size:0.85rem; margin: 5px 0;">Livré le {link.get('date', 'Récent')}</p>
+                                <h3 style="color:#00d2ff; margin:0;">💎 {link['name']}</h3>
+                                <p style="color:#aaa; font-size:0.85rem; margin: 5px 0;">Finalisé le {link.get('date', 'Aujourd\'hui')}</p>
                             </div>
                             <a href="{link['url']}" target="_blank" style="text-decoration:none;">
                                 <button style="padding:10px 25px; background:#2ecc71; color:white; border:none; border-radius:30px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 10px rgba(46,204,113,0.3);">
-                                    📥 RÉCUPÉRER
+                                    📥 TÉLÉCHARGER
                                 </button>
                             </a>
                         </div>
@@ -550,14 +550,14 @@ def main_dashboard():
                     """, unsafe_allow_html=True)
             
             if user_reqs:
-                st.markdown("#### ⏳ Travaux en cours de préparation")
+                st.markdown("#### ⏳ Missions Nova en préparation")
                 for r in user_reqs:
                     st.markdown(f"""
                         <div class="file-card" style="border-left: 5px solid #f1c40f; border-color: rgba(241, 196, 15, 0.3);">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <div>
                                     <strong style="color: #f1c40f;">{r['service']}</strong><br>
-                                    <span style="color:#eee; font-size: 0.9rem;">Statut : {r['status']}</span>
+                                    <span style="color:#eee; font-size: 0.9rem;">Status: {r['status']}</span>
                                 </div>
                                 <div class="spinner" style="width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #f1c40f; border-radius: 50%; animation: spin 1s linear infinite;"></div>
                             </div>
@@ -566,25 +566,25 @@ def main_dashboard():
                     """, unsafe_allow_html=True)
             
             if not user_links and not user_reqs:
-                st.info("Vous n'avez pas encore de fichiers. Lancez une tâche pour commencer !")
+                st.info("Votre espace Nova est vide. Déployez votre première tâche !")
             
             st.write("---")
-            st.markdown("### 🆘 Besoin d'aide pour vos fichiers ?")
+            st.markdown("### 🆘 Support Nova Direct")
             col_rel, col_sup = st.columns(2)
             with col_rel:
-                relance_msg = f"Bonjour, je relance ma demande IA (ID: {user})."
+                relance_msg = f"Bonjour, je souhaite un status sur ma mission Nova (ID: {user})."
                 wa_relance = f"https://wa.me/{WHATSAPP_NUMBER}?text={relance_msg.replace(' ', '%20')}"
-                st.markdown(f'<a href="{wa_relance}" target="_blank" class="support-btn" style="border-color:#f1c40f; color:#f1c40f !important;">🔔 Relancer la livraison</a>', unsafe_allow_html=True)
+                st.markdown(f'<a href="{wa_relance}" target="_blank" class="support-btn" style="border-color:#f1c40f; color:#f1c40f !important;">🔔 Relancer Nova</a>', unsafe_allow_html=True)
             with col_sup:
-                st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">🙋 Parler à un agent</a>', unsafe_allow_html=True)
+                st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">🙋 Agent Nova</a>', unsafe_allow_html=True)
 
-    with st.expander("🛠 Console de Livraison (Admin)"):
-        if st.text_input("Code Secret", type="password") == ADMIN_CODE:
+    with st.expander("🛠 Console Admin Nova"):
+        if st.text_input("Master Key", type="password") == ADMIN_CODE:
             current_db = st.session_state["db"]
             for i, req in enumerate(current_db["demandes"]):
                 st.write(f"📦 **{req['user']}** - {req['service']}")
-                url_dl = st.text_input(f"Lien pour {req['id']}", key=f"url_{i}")
-                if st.button(f"LIVRER MAINTENANT", key=f"btn_{i}"):
+                url_dl = st.text_input(f"Lien {req['id']}", key=f"url_{i}")
+                if st.button(f"LIVRER MISSION", key=f"btn_{i}"):
                     if url_dl:
                         if req['user'] not in current_db["liens"]: current_db["liens"][req['user']] = []
                         current_db["liens"][req['user']].append({
@@ -604,7 +604,7 @@ inject_custom_css()
 
 components.html("""
     <script>
-    const user = localStorage.getItem('arsene_user');
+    const user = localStorage.getItem('nova_user');
     const urlParams = new URLSearchParams(window.parent.location.search);
     const currentUser = urlParams.get('user_id');
     
@@ -612,10 +612,10 @@ components.html("""
         window.parent.location.href = window.parent.location.origin + window.parent.location.pathname + '?user_id=' + user;
     }
     if (!currentUser && user && window.parent.location.href.includes('logout')) {
-        localStorage.removeItem('arsene_user');
+        localStorage.removeItem('nova_user');
     }
     if (currentUser && user !== currentUser) {
-        localStorage.setItem('arsene_user', currentUser);
+        localStorage.setItem('nova_user', currentUser);
     }
     </script>
 """, height=0)
