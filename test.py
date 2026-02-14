@@ -91,10 +91,6 @@ def inject_custom_css():
             100% { filter: brightness(1) saturate(1); box-shadow: inset 0 0 0px transparent; }
         }
 
-        .glowing-site {
-            animation: glow-pulse 1.5s ease-in-out infinite;
-        }
-
         /* TITRE PRINCIPAL */
         .main-title {
             background: linear-gradient(90deg, #00d2ff, #3a7bd5);
@@ -105,6 +101,46 @@ def inject_custom_css():
             text-align: center;
             margin-bottom: 20px;
             text-shadow: 0px 0px 20px rgba(0, 210, 255, 0.3);
+        }
+
+        /* --- STYLISATION DES ONGLETS (TABS) --- */
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stTabs [data-baseweb="tab"] {
+            height: 60px;
+            white-space: pre-wrap;
+            background-color: rgba(0, 210, 255, 0.1);
+            border-radius: 10px;
+            color: white !important;
+            font-weight: 700 !important;
+            font-size: 1.2rem !important;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            padding: 0 25px;
+        }
+
+        /* Animation spécifique pour l'onglet "Mes Fichiers" (le 2ème onglet) */
+        .stTabs [data-baseweb="tab"]:nth-child(2) {
+            border: 1px solid #2ecc71 !important;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
+            background-color: rgba(46, 204, 113, 0.1);
+        }
+
+        .stTabs [data-baseweb="tab"]:hover {
+            background-color: rgba(0, 210, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .stTabs [aria-selected="true"] {
+            background-color: rgba(0, 210, 255, 0.6) !important;
+            border: 1px solid #00d2ff !important;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
         }
 
         /* --- CARTE PREMIUM --- */
@@ -212,21 +248,21 @@ def inject_custom_css():
             margin-bottom: 8px;
             text-transform: uppercase;
         }
-        .info-text {
-            color: #ffffff !important;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            display: block;
-        }
 
         /* --- CARTE DE LIVRABLE --- */
         .file-card {
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(46, 204, 113, 0.5);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 15px;
-            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* BOUTON SUPPORT */
@@ -341,17 +377,10 @@ def main_dashboard():
         st.markdown(f"""
             <div class="info-card">
                 <span class="info-title">🚀 LIVRAISON & ALERTES</span>
-                <span class="info-text">
-                    Vos fichiers apparaissent directement dans l'onglet <b>"Mes Livrables"</b>.
+                <span style="color:#eee; font-size:0.9rem;">
+                    Vos fichiers apparaissent directement dans l'onglet <b>"📂 MES FICHIERS"</b>.
                     <br><br>
-                    Une notification automatique est envoyée sur votre <b>WhatsApp</b> dès que l'IA a fini le travail.
-                </span>
-            </div>
-            
-            <div class="info-card" style="border-color: #2ecc71;">
-                <span class="info-title" style="color: #2ecc71 !important;">⚡ AUTOMATISATION</span>
-                <span class="info-text">
-                    Notre spécialité : Transformer vos tâches manuelles Excel en processus instantanés.
+                    Une notification WhatsApp vous informe dès que le travail est prêt.
                 </span>
             </div>
         """, unsafe_allow_html=True)
@@ -362,21 +391,21 @@ def main_dashboard():
     # --- CORPS DE PAGE ---
     st.markdown("<h1 class='main-title'>ARSÈNE SOLUTIONS</h1>", unsafe_allow_html=True)
 
-    # --- BANNIÈRE PREMIUM (DESIGN AMÉLIORÉ) ---
+    # --- BANNIÈRE PREMIUM ---
     st.markdown(f"""
         <div class="premium-card">
             <div class="premium-title">⭐ PASSEZ À LA VITESSE SUPÉRIEURE ⭐</div>
             <div class="premium-desc">
                 Débloquez la <b>puissance totale de l'IA</b> et une vitesse de traitement de <b>10<sup>10</sup></b>.
-                <br>Ne perdez plus une seconde avec le traitement standard.
             </div>
             <a href="{whatsapp_premium_url}" target="_blank" class="btn-gold">
-                💎 ACTIVER LE PREMIUM MAINTENANT
+                💎 ACTIVER LE PREMIUM
             </a>
         </div>
     """, unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["🚀 LANCER UNE TÂCHE", "📂 MES FICHIERS"])
+    # UTILISATION D'ONGLETS TRÈS VISIBLES
+    tab1, tab2 = st.tabs(["🚀 LANCER UNE TÂCHE", "📂 MES FICHIERS (ESPACE CLIENT)"])
 
     with tab1:
         col_f, col_wa = st.columns(2)
@@ -400,29 +429,24 @@ def main_dashboard():
             wa_display = st.text_input("Numéro", value=default_wa, placeholder="Ex: 225...")
         
         st.markdown("#### 📝 Description du besoin")
-        prompt = st.text_area("Cahier des charges", height=150, placeholder="Soyez précis : 'Je veux un tableau qui calcule automatiquement la TVA et qui m'alerte si le stock est bas...'")
+        prompt = st.text_area("Cahier des charges", height=150, placeholder="Soyez précis pour un meilleur résultat...")
         
         if st.button("LANCER L'INTELLIGENCE ARTIFICIELLE"):
             if prompt and wa_display:
-                # EFFET VISUEL : ILLUMINATION TOTALE
                 st.session_state["is_glowing"] = True
-                st.rerun() # Pour appliquer le CSS d'illumination immédiatement
+                st.rerun()
             else:
                 st.error("Veuillez remplir tous les champs.")
 
-        # LOGIQUE DE TRAITEMENT APRÈS RELANCE (POUR L'ANIMATION)
         if st.session_state["is_glowing"]:
-            # EFFET VISUEL : BARRE DE PROGRESSION ANIMÉE
             progress_placeholder = st.empty()
             status_text = st.empty()
-            
             bar = progress_placeholder.progress(0)
             for percent_complete in range(100):
-                time.sleep(0.02)  # Un peu plus lent pour profiter de l'illumination
+                time.sleep(0.02)
                 bar.progress(percent_complete + 1)
-                status_text.markdown(f"<p style='text-align:center; color:#00d2ff; font-size:1.2rem; font-weight:bold;'>L'IA S'ILLUMINE : {percent_complete + 1}%</p>", unsafe_allow_html=True)
+                status_text.markdown(f"<p style='text-align:center; color:#00d2ff; font-size:1.2rem; font-weight:bold;'>PROCESSUS IA EN COURS : {percent_complete + 1}%</p>", unsafe_allow_html=True)
             
-            # Finalisation
             new_req = {
                 "id": hashlib.md5(str(datetime.now()).encode()).hexdigest()[:8],
                 "user": user if user else "guest",
@@ -432,17 +456,13 @@ def main_dashboard():
                 "status": "Traitement IA...",
                 "timestamp": str(datetime.now())
             }
-            
             st.session_state["db"]["demandes"].append(new_req)
             save_db(st.session_state["db"])
-            
-            # Arrêt de l'illumination et notification
             st.session_state["is_glowing"] = False
             progress_placeholder.empty()
             status_text.empty()
-            
             if user:
-                st.success("✅ C'est parti ! L'IA travaille sur votre dossier.")
+                st.success("✅ Demande envoyée ! Consultez l'onglet 'MES FICHIERS' pour voir l'avancement.")
                 st.balloons()
                 st.rerun()
             else:
@@ -451,64 +471,77 @@ def main_dashboard():
 
     with tab2:
         if not user:
-            st.warning("🔒 Connectez-vous pour accéder à vos fichiers.")
+            st.warning("🔒 Connectez-vous pour accéder à vos livrables personnels.")
         else:
             fresh_db = load_db()
             user_links = fresh_db["liens"].get(user, [])
             user_reqs = [r for r in fresh_db["demandes"] if r["user"] == user]
             
-            # FICHIERS PRÊTS
+            # --- ZONE DE RÉCEPTION (CRITIQUE) ---
+            st.markdown("""
+                <div style="background: rgba(46, 204, 113, 0.1); padding: 15px; border-radius: 10px; border: 1px dashed #2ecc71; margin-bottom: 20px; text-align: center;">
+                    <h2 style="color: #2ecc71; margin: 0;">📥 VOTRE ESPACE DE TÉLÉCHARGEMENT</h2>
+                    <p style="color: white; font-size: 0.9rem;">Tous vos fichiers terminés apparaissent ici instantanément.</p>
+                </div>
+            """, unsafe_allow_html=True)
+
             if user_links:
-                st.subheader("✅ Livrables Disponibles")
                 for link in user_links:
                     st.markdown(f"""
                     <div class="file-card">
-                        <h3 style="color:#00d2ff; margin:0;">{link['name']}</h3>
-                        <p style="color:#aaa; font-size:0.9rem;">Généré le {link.get('date', 'Récent')}</p>
-                        <a href="{link['url']}" target="_blank" style="text-decoration:none;">
-                            <button style="width:100%; padding:12px; background:#2ecc71; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px;">
-                                📥 TÉLÉCHARGER
-                            </button>
-                        </a>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="color:#00d2ff; margin:0;">📄 {link['name']}</h3>
+                                <p style="color:#aaa; font-size:0.85rem; margin: 5px 0;">Livré le {link.get('date', 'Récent')}</p>
+                            </div>
+                            <a href="{link['url']}" target="_blank" style="text-decoration:none;">
+                                <button style="padding:10px 25px; background:#2ecc71; color:white; border:none; border-radius:30px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 10px rgba(46,204,113,0.3);">
+                                    📥 RÉCUPÉRER
+                                </button>
+                            </a>
+                        </div>
                     </div>
                     """, unsafe_allow_html=True)
             
             # EN COURS
             if user_reqs:
-                st.subheader("⏳ En cours de traitement")
+                st.markdown("#### ⏳ Travaux en cours de préparation")
                 for r in user_reqs:
                     st.markdown(f"""
-                        <div class="file-card" style="border-left: 4px solid #f1c40f;">
-                            <strong style="color: #f1c40f; font-size:1.1rem;">{r['service']}</strong><br>
-                            <span style="color:#eee;">Statut : {r['status']}</span>
+                        <div class="file-card" style="border-left: 5px solid #f1c40f; border-color: rgba(241, 196, 15, 0.3);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong style="color: #f1c40f;">{r['service']}</strong><br>
+                                    <span style="color:#eee; font-size: 0.9rem;">Statut : {r['status']}</span>
+                                </div>
+                                <div class="spinner" style="width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid #f1c40f; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                            </div>
                         </div>
+                        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
                     """, unsafe_allow_html=True)
             
             if not user_links and not user_reqs:
-                st.info("Aucun historique pour le moment.")
+                st.info("Vous n'avez pas encore de fichiers. Lancez une tâche pour commencer !")
             
             # --- SUPPORT ---
             st.write("---")
-            st.markdown("### 🆘 Besoin d'assistance ?")
-            
+            st.markdown("### 🆘 Besoin d'aide pour vos fichiers ?")
             col_rel, col_sup = st.columns(2)
             with col_rel:
                 relance_msg = f"Bonjour, je relance ma demande IA (ID: {user})."
                 wa_relance = f"https://wa.me/{WHATSAPP_NUMBER}?text={relance_msg.replace(' ', '%20')}"
-                st.markdown(f'<a href="{wa_relance}" target="_blank" class="support-btn" style="border-color:#f1c40f; color:#f1c40f !important;">🔔 Relancer (Délai long)</a>', unsafe_allow_html=True)
+                st.markdown(f'<a href="{wa_relance}" target="_blank" class="support-btn" style="border-color:#f1c40f; color:#f1c40f !important;">🔔 Relancer la livraison</a>', unsafe_allow_html=True)
             with col_sup:
-                st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">🙋 Aide Service Client</a>', unsafe_allow_html=True)
+                st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">🙋 Parler à un agent</a>', unsafe_allow_html=True)
 
     # --- ADMIN ---
-    with st.expander("🛠 Console Admin"):
+    with st.expander("🛠 Console de Livraison (Admin)"):
         if st.text_input("Code Secret", type="password") == ADMIN_CODE:
             current_db = st.session_state["db"]
             for i, req in enumerate(current_db["demandes"]):
-                st.write(f"**{req['user']}** ({req['whatsapp']})")
-                st.caption(f"Besoin : {req['desc']}")
-                url_dl = st.text_input(f"Lien {i}", key=f"url_{i}")
-                
-                if st.button(f"Livrer {req['id']}", key=f"btn_{i}"):
+                st.write(f"📦 **{req['user']}** - {req['service']}")
+                url_dl = st.text_input(f"Lien pour {req['id']}", key=f"url_{i}")
+                if st.button(f"LIVRER MAINTENANT", key=f"btn_{i}"):
                     if url_dl:
                         if req['user'] not in current_db["liens"]: current_db["liens"][req['user']] = []
                         current_db["liens"][req['user']].append({
