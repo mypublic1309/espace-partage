@@ -181,6 +181,28 @@ def inject_custom_css():
             animation: border-rainbow 1.5s linear infinite; /* Accélère quand on tape */
         }
 
+        /* --- LOGO STRIP --- */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+        }
+        .logo-item {
+            width: 45px;
+            height: 45px;
+            filter: grayscale(0.5) opacity(0.7);
+            transition: all 0.3s ease;
+        }
+        .logo-item:hover {
+            filter: grayscale(0) opacity(1);
+            transform: translateY(-5px) scale(1.1);
+        }
+
         /* --- CARTE PREMIUM --- */
         .premium-card {
             background: rgba(20, 20, 30, 0.8);
@@ -444,6 +466,18 @@ def main_dashboard():
         st.markdown("#### 📝 Description du besoin")
         prompt = st.text_area("Cahier des charges", height=150, placeholder="Soyez précis pour un meilleur résultat...")
         
+        # LOGO STRIP (VISUEL EN BAS DE LA ZONE DE TEXTE)
+        st.markdown("""
+        <div class="logo-container">
+            <svg class="logo-item" viewBox="0 0 24 24" fill="#217346"><path d="M16.2 21H2.8c-.4 0-.8-.4-.8-.8V3.8c0-.4.4-.8.8-.8h13.4c.4 0 .8.4.8.8v16.4c0 .4-.4.8-.8.8z"/><path d="M14.7 15.3l-2.2-3.3 2.2-3.3h-1.6l-1.4 2.2-1.4-2.2H8.7l2.2 3.3-2.2 3.3h1.6l1.4-2.2 1.4 2.2z" fill="white"/></svg>
+            <svg class="logo-item" viewBox="0 0 24 24" fill="#2b579a"><path d="M16.2 21H2.8c-.4 0-.8-.4-.8-.8V3.8c0-.4.4-.8.8-.8h13.4c.4 0 .8.4.8.8v16.4c0 .4-.4.8-.8.8z"/><path d="M11.5 15.3V8.7h1.4c.8 0 1.4.3 1.8.8.4.5.6 1.1.6 1.8s-.2 1.3-.6 1.8c-.4.5-1 .8-1.8.8h-1.4z" fill="white"/></svg>
+            <svg class="logo-item" viewBox="0 0 24 24" fill="#3776ab"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm-1 14.5h-1v-5h1v5zm0-6.5h-1V9h1v1z"/></svg>
+            <svg class="logo-item" viewBox="0 0 24 24" fill="#d24726"><path d="M16.2 21H2.8c-.4 0-.8-.4-.8-.8V3.8c0-.4.4-.8.8-.8h13.4c.4 0 .8.4.8.8v16.4c0 .4-.4.8-.8.8z"/><path d="M8.7 8.7h1.5v5.1h2.5v1.5H8.7V8.7z" fill="white"/></svg>
+            <svg class="logo-item" viewBox="0 0 24 24" fill="#ff9900"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <p style="text-align:center; color:rgba(255,255,255,0.4); font-size:0.8rem; margin-top:5px;">Excel • Word • Python • PDF • Design</p>
+        """, unsafe_allow_html=True)
+
         if st.button("LANCER L'INTELLIGENCE ARTIFICIELLE"):
             if prompt and wa_display:
                 st.session_state["is_glowing"] = True
