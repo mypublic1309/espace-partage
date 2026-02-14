@@ -2,6 +2,7 @@ import streamlit as st
 import json
 import os
 import hashlib
+import time
 from datetime import datetime
 import streamlit.components.v1 as components
 
@@ -236,6 +237,11 @@ def inject_custom_css():
             background: #25D366;
             color: white !important;
         }
+
+        /* STYLE POUR LA BARRE DE PROGRESSION CUSTOM */
+        .stProgress > div > div > div > div {
+            background-image: linear-gradient(to right, #00d2ff , #3a7bd5);
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -384,6 +390,23 @@ def main_dashboard():
         
         if st.button("LANCER L'INTELLIGENCE ARTIFICIELLE"):
             if prompt and wa_display:
+                # EFFET VISUEL : BARRE DE PROGRESSION ANIMÉE
+                progress_placeholder = st.empty()
+                status_text = st.empty()
+                
+                bar = progress_placeholder.progress(0)
+                for percent_complete in range(100):
+                    time.sleep(0.01)  # Animation rapide
+                    bar.progress(percent_complete + 1)
+                    status_text.markdown(f"<p style='text-align:center; color:#00d2ff;'>Analyse du projet : <b>{percent_complete + 1}%</b>...</p>", unsafe_allow_html=True)
+                
+                status_text.markdown("<p style='text-align:center; color:#2ecc71;'><b>Projet enregistré avec succès !</b></p>", unsafe_allow_html=True)
+                time.sleep(0.5)
+                
+                # Nettoyage visuel
+                progress_placeholder.empty()
+                status_text.empty()
+
                 new_req = {
                     "id": hashlib.md5(str(datetime.now()).encode()).hexdigest()[:8],
                     "user": user if user else "guest",
