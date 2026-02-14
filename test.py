@@ -17,14 +17,22 @@ st.set_page_config(
 
 DATA_FILE = "data_arsene_v3.json"
 ADMIN_CODE = "02110240"
-WHATSAPP_NUMBER = "2250102030405" # Remplacez par votre numéro de support réel
+
+# --- CONFIGURATION WHATSAPP ---
+WHATSAPP_NUMBER = "2250171542505"
+PREMIUM_MSG = "J'aimerais passer à la version premium pour bénéficier de la puissance de l'IA et de la rapidité 10^10"
+SUPPORT_MSG = "Bonjour, j'ai besoin d'aide avec mon projet sur l'espace client."
+
+# Encodage manuel des espaces pour les liens
+whatsapp_premium_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={PREMIUM_MSG.replace(' ', '%20')}"
+whatsapp_support_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={SUPPORT_MSG.replace(' ', '%20')}"
+
 
 # ==========================================
 # LOGIQUE DE DONNÉES (DATA LAYER)
 # ==========================================
 
 def load_db():
-    """Charge la base de données simulée."""
     if os.path.exists(DATA_FILE):
         try:
             with open(DATA_FILE, "r", encoding="utf-8") as f:
@@ -34,11 +42,9 @@ def load_db():
     return {"users": {}, "demandes": [], "liens": {}}
 
 def save_db(data):
-    """Sauvegarde les modifications."""
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4)
 
-# Initialisation du State Streamlit
 if "db" not in st.session_state:
     st.session_state["db"] = load_db()
 
@@ -48,128 +54,184 @@ if "current_user" not in st.session_state:
 if "view" not in st.session_state:
     st.session_state["view"] = "home"
 
-# ==========================================
-# LOGIQUE DE RECONNEXION AUTOMATIQUE
-# ==========================================
-
+# Reconnaissance automatique via URL (Session persistante)
 if st.session_state["current_user"] is None:
     stored_user = st.query_params.get("user_id")
     if stored_user and stored_user in st.session_state["db"]["users"]:
         st.session_state["current_user"] = stored_user
 
 # ==========================================
-# DESIGN ET STYLE (UI/UX LAYER)
+# DESIGN ET STYLE (CSS AVANCÉ)
 # ==========================================
 
 def inject_custom_css():
     st.markdown("""
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
         
-        * { font-family: 'Inter', sans-serif; }
+        * { font-family: 'Poppins', sans-serif; }
 
+        /* FOND APP */
         .stApp {
-            background: linear-gradient(145deg, #0a0a12 0%, #1a1a2e 100%);
-            color: #e0e0e0;
+            background: #0f0c29;
+            background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);
+            background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+            color: #ffffff;
         }
         
+        /* TITRE PRINCIPAL */
         .main-title {
             background: linear-gradient(90deg, #00d2ff, #3a7bd5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 800;
-            font-size: 3rem !important;
+            font-size: 3.5rem !important;
             text-align: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0px 0px 20px rgba(0, 210, 255, 0.3);
         }
 
-        /* Styling Sidebar Box */
-        .info-box {
-            background: rgba(0, 210, 255, 0.1);
-            border: 1px solid rgba(0, 210, 255, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            margin: 10px 0;
+        /* --- CARTE PREMIUM (Mise en avant) --- */
+        .premium-card {
+            background: rgba(20, 20, 30, 0.6);
+            border: 2px solid #FFD700;
+            border-radius: 20px;
+            padding: 25px;
             text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
+            position: relative;
+            overflow: hidden;
         }
         
-        .info-box-title {
-            color: #00d2ff;
-            font-weight: 800;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            display: block;
+        .premium-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 5px;
+            background: linear-gradient(90deg, #FFD700, #FF8C00, #FFD700);
         }
 
+        .premium-title {
+            color: #FFD700;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .premium-desc {
+            color: #eee;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* BOUTON PREMIUM OR */
+        .btn-gold {
+            background: linear-gradient(45deg, #FFD700, #FF8C00);
+            color: #000 !important;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.1rem;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-gold:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
+        }
+
+        /* --- ELEMENTS DE FORMULAIRE --- */
         .stTextInput label, .stSelectbox label, .stTextArea label {
             color: #00d2ff !important;
             font-weight: 600 !important;
-            text-transform: uppercase;
-            font-size: 0.85rem !important;
+            font-size: 1rem !important;
+            margin-bottom: 5px;
         }
         
-        div[data-baseweb="input"], textarea {
-            border: 1px solid rgba(0, 210, 255, 0.2) !important;
-            background-color: rgba(255, 255, 255, 0.03) !important;
+        div[data-baseweb="input"], textarea, div[data-baseweb="select"] > div {
+            border: 1px solid rgba(0, 210, 255, 0.3) !important;
+            background-color: rgba(0, 0, 0, 0.3) !important;
+            color: white !important;
             border-radius: 10px !important;
+            font-size: 1rem;
         }
 
+        /* BOUTONS STREAMLIT */
         .stButton>button {
             border-radius: 12px;
-            padding: 0.6rem 2rem;
+            padding: 0.8rem 2rem;
             background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
             border: none;
             color: white !important;
             font-weight: 700;
+            font-size: 1rem;
             width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0, 210, 255, 0.3);
             transition: 0.3s;
         }
-
         .stButton>button:hover {
-            transform: scale(1.02);
-            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.03);
+        /* --- INFO BOX (Sidebar) --- */
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #00d2ff;
+            padding: 15px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 15px;
+        }
+        .info-title {
+            color: #00d2ff;
+            font-weight: bold;
+            font-size: 1rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .info-text {
+            color: #ddd;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* --- CARTE DE LIVRABLE --- */
+        .file-card {
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 15px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: 0.3s;
+        }
+        .file-card:hover {
+            border-color: #00d2ff;
+            background: rgba(255, 255, 255, 0.08);
         }
 
-        .excel-badge {
-            background: #1D6F42;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            display: inline-block;
-            margin-bottom: 10px;
-        }
-
+        /* BOUTON SUPPORT */
         .support-btn {
-            display: inline-block;
+            display: block;
             text-decoration: none;
-            background: #25D366;
-            color: white !important;
-            padding: 10px 20px;
+            background: transparent;
+            border: 2px solid #25D366;
+            color: #25D366 !important;
+            padding: 10px;
             border-radius: 10px;
             font-weight: bold;
             text-align: center;
-            width: 100%;
             margin-top: 10px;
+            transition: 0.3s;
         }
-        
-        .premium-banner {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), rgba(0, 210, 255, 0.1));
-            border: 1px solid #ffd700;
-            border-radius: 15px;
-            padding: 1rem;
-            text-align: center;
-            margin-bottom: 2rem;
+        .support-btn:hover {
+            background: #25D366;
+            color: white !important;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -180,16 +242,20 @@ def inject_custom_css():
 
 def show_auth_page():
     """Page de connexion Simplifiée (ID + WhatsApp)."""
-    st.markdown("<h1 class='main-title'>ESPACE CLIENT</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-title'>CONNEXION CLIENT</h1>", unsafe_allow_html=True)
     
     col1, col2 = st.columns(2)
     
     with col1:
-        st.subheader("Se connecter")
+        st.markdown("""
+        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 1px solid rgba(0,210,255,0.2);">
+            <h3 style="color:white; margin-top:0;">🔐 J'ai déjà un compte</h3>
+        </div>
+        """, unsafe_allow_html=True)
         with st.form("login"):
-            uid = st.text_input("Identifiant")
-            wa_auth = st.text_input("Numéro WhatsApp", placeholder="Ex: 22501020304")
-            if st.form_submit_button("ACCÉDER À MON COMPTE"):
+            uid = st.text_input("Votre Identifiant")
+            wa_auth = st.text_input("Votre Numéro WhatsApp", placeholder="Ex: 22501...")
+            if st.form_submit_button("ACCÉDER À MON ESPACE"):
                 db = st.session_state["db"]
                 if uid in db["users"] and db["users"][uid]["whatsapp"] == wa_auth:
                     st.session_state["current_user"] = uid
@@ -197,21 +263,24 @@ def show_auth_page():
                     st.query_params["user_id"] = uid
                     st.rerun()
                 else:
-                    st.error("Identifiant ou numéro WhatsApp incorrect.")
+                    st.error("❌ Identifiant ou numéro incorrect.")
 
     with col2:
-        st.subheader("Créer un compte")
+        st.markdown("""
+        <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,215,0,0.2);">
+            <h3 style="color:white; margin-top:0;">✨ Je suis nouveau</h3>
+        </div>
+        """, unsafe_allow_html=True)
         with st.form("signup"):
-            new_uid = st.text_input("Identifiant souhaité")
-            new_wa = st.text_input("Votre numéro WhatsApp (clé d'accès)")
-            new_email = st.text_input("Email (Optionnel)")
-            if st.form_submit_button("CRÉER MON ESPACE"):
+            new_uid = st.text_input("Choisissez un Identifiant")
+            new_wa = st.text_input("Votre Numéro WhatsApp (Sera votre mot de passe)")
+            if st.form_submit_button("CRÉER MON COMPTE GRATUIT"):
                 if new_uid and new_wa:
                     db = st.session_state["db"]
                     if new_uid not in db["users"]:
                         db["users"][new_uid] = {
                             "whatsapp": new_wa,
-                            "email": new_email if new_email else "Non renseigné",
+                            "email": "Non renseigné",
                             "joined": str(datetime.now())
                         }
                         st.session_state["current_user"] = new_uid
@@ -220,77 +289,86 @@ def show_auth_page():
                         st.query_params["user_id"] = new_uid
                         st.rerun()
                     else:
-                        st.warning("Cet identifiant est déjà utilisé.")
+                        st.warning("⚠️ Cet identifiant est déjà pris.")
                 else:
-                    st.error("L'identifiant et le numéro WhatsApp sont obligatoires.")
+                    st.error("Champs obligatoires manquants.")
 
 def main_dashboard():
     """Tableau de bord principal."""
     user = st.session_state["current_user"]
     db = st.session_state["db"]
     
-    # Barre Latérale - DESIGN AMÉLIORÉ
+    # --- BARRE LATÉRALE ---
     with st.sidebar:
         st.markdown(f"### 👤 {user if user else 'Invité'}")
         if user:
-            st.markdown(f"""
-                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
-                    <small style="color: #aaa;">Compte vérifié</small><br>
-                    <span style="color: #00d2ff; font-weight: bold;">{db['users'][user]['whatsapp']}</span>
-                </div>
-            """, unsafe_allow_html=True)
-            if st.button("🚪 Déconnexion"):
+            st.markdown(f"📱 **{db['users'][user]['whatsapp']}**")
+            if st.button("Déconnexion"):
                 st.session_state["current_user"] = None
                 st.query_params.clear()
                 st.rerun()
         else:
-            if st.button("🔐 Se connecter"):
+            if st.button("Se connecter"):
                 st.session_state["view"] = "auth"
                 st.rerun()
         
         st.divider()
         
-        # ZONE LIVRAISON MISE EN VALEUR
+        # BOÎTES D'INFO STYLISÉES (Haute lisibilité)
         st.markdown(f"""
-            <div class="info-box">
-                <span class="info-box-title">🚀 LIVRAISON SMART</span>
-                <p style="font-size: 0.85rem; line-height: 1.4; color: #e0e0e0; margin: 0;">
-                    Vos fichiers sont livrés <b>directement ici</b> et une alerte vous est envoyée sur <b>WhatsApp</b> dès que l'IA a terminé.
-                </p>
+            <div class="info-card">
+                <span class="info-title">🚀 LIVRAISON & ALERTES</span>
+                <span class="info-text">
+                    Vos fichiers apparaissent directement dans l'onglet <b>"Mes Livrables"</b>.
+                    <br><br>
+                    Une notification automatique est envoyée sur votre <b>WhatsApp</b> dès que l'IA a fini le travail.
+                </span>
+            </div>
+            
+            <div class="info-card" style="border-color: #2ecc71;">
+                <span class="info-title" style="color: #2ecc71;">⚡ AUTOMATISATION</span>
+                <span class="info-text">
+                    Notre spécialité : Transformer vos tâches manuelles Excel en processus instantanés.
+                </span>
             </div>
         """, unsafe_allow_html=True)
         
-        st.markdown(f"""
-            <div class="info-box" style="border-color: rgba(29, 111, 66, 0.4); background: rgba(29, 111, 66, 0.1);">
-                <span class="info-box-title" style="color: #2ecc71;">📊 EXPERT EXCEL</span>
-                <p style="font-size: 0.82rem; color: #eee; margin: 0;">
-                    Nettoyage de données, Tableaux de bord automatiques et calculs complexes en un clic.
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+        # Bouton d'aide Sidebar
+        st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">💬 Service Client</a>', unsafe_allow_html=True)
 
-    st.markdown("<h1 class='main-title'>ARSÈNE SOLUTIONS IA</h1>", unsafe_allow_html=True)
-    st.markdown("""
-        <div class='premium-banner'>
-            <span style='color:#ffd700; font-weight:bold;'>✨ PUISSANCE IA ACTIVÉE</span> : 
-            Transformez vos fichiers Excel statiques en outils intelligents et automatisés.
+    # --- CORPS DE PAGE ---
+    st.markdown("<h1 class='main-title'>ARSÈNE SOLUTIONS</h1>", unsafe_allow_html=True)
+
+    # --- BANNIÈRE PREMIUM (DESIGN AMÉLIORÉ) ---
+    st.markdown(f"""
+        <div class="premium-card">
+            <div class="premium-title">⭐ PASSEZ À LA VITESSE SUPÉRIEURE ⭐</div>
+            <div class="premium-desc">
+                Débloquez la <b>puissance totale de l'IA</b> et une vitesse de traitement de <b>10<sup>10</sup></b>.
+                <br>Ne perdez plus une seconde avec le traitement standard.
+            </div>
+            <a href="{whatsapp_premium_url}" target="_blank" class="btn-gold">
+                💎 ACTIVER LE PREMIUM MAINTENANT
+            </a>
         </div>
     """, unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["🚀 NOUVELLE DEMANDE", "📂 MES LIVRABLES"])
+    tab1, tab2 = st.tabs(["🚀 LANCER UNE TÂCHE", "📂 MES FICHIERS"])
 
     with tab1:
         col_f, col_wa = st.columns([1, 1])
         with col_f:
-            st.markdown('<div class="excel-badge">⚡ SPÉCIALITÉ EXCEL</div>', unsafe_allow_html=True)
-            service = st.selectbox("Type de service", ["📊 Automatisation Excel & Data", "📝 Rédaction Documentaire IA", "⚙️ Script Python sur mesure", "🎨 Design Graphique IA"])
+            st.markdown("#### 🛠️ Sélectionnez un service")
+            service = st.selectbox("Type de demande", ["📊 Automatisation Excel Avancée", "📝 Rédaction & Correction", "⚙️ Script Python", "🎨 Création Visuelle"])
         with col_wa:
+            st.markdown("#### 📞 Confirmation WhatsApp")
             default_wa = db["users"][user]["whatsapp"] if user else ""
-            wa_display = st.text_input("WhatsApp pour la notification", value=default_wa, placeholder="Ex: 225...")
+            wa_display = st.text_input("Numéro", value=default_wa, placeholder="Ex: 225...")
         
-        prompt = st.text_area("Cahier des charges", height=200, placeholder="Ex: Automatise ce fichier Excel pour qu'il calcule les commissions et génère un graphique de performance mensuel...")
+        st.markdown("#### 📝 Description du besoin")
+        prompt = st.text_area("Cahier des charges", height=150, placeholder="Soyez précis : 'Je veux un tableau qui calcule automatiquement la TVA et qui m'alerte si le stock est bas...'")
         
-        if st.button("LANCER LA GÉNÉRATION PAR L'IA"):
+        if st.button("LANCER L'INTELLIGENCE ARTIFICIELLE"):
             if prompt and wa_display:
                 new_req = {
                     "id": hashlib.md5(str(datetime.now()).encode()).hexdigest()[:8],
@@ -298,7 +376,7 @@ def main_dashboard():
                     "service": service,
                     "desc": prompt,
                     "whatsapp": wa_display,
-                    "status": "Analyse du fichier & Traitement...",
+                    "status": "Traitement IA...",
                     "timestamp": str(datetime.now())
                 }
                 
@@ -306,83 +384,75 @@ def main_dashboard():
                 save_db(st.session_state["db"])
                 
                 if user:
-                    st.success("✅ Intelligence Artificielle en action ! Votre fichier arrive bientôt.")
+                    st.success("✅ C'est parti ! L'IA travaille sur votre dossier.")
                     st.balloons()
                     st.rerun()
                 else:
                     st.session_state["view"] = "auth"
                     st.rerun()
             else:
-                st.error("Veuillez remplir la description et le numéro WhatsApp.")
+                st.error("Veuillez remplir tous les champs.")
 
     with tab2:
         if not user:
-            st.info("⚠️ Connectez-vous pour voir vos fichiers générés.")
+            st.warning("🔒 Connectez-vous pour accéder à vos fichiers.")
         else:
             fresh_db = load_db()
             user_links = fresh_db["liens"].get(user, [])
             user_reqs = [r for r in fresh_db["demandes"] if r["user"] == user]
             
+            # FICHIERS PRÊTS
             if user_links:
-                st.subheader("✅ Livrables Prêts")
+                st.subheader("✅ Livrables Disponibles")
                 for link in user_links:
                     st.markdown(f"""
-                    <div class="card">
-                        <div style="display: flex; justify-content: space-between; align-items: start;">
-                            <div>
-                                <h4 style="margin:0; color:#00d2ff;">{link['name']}</h4>
-                                <p style="font-size:0.8rem; color:#aaa; margin-top:5px;">Prêt le {link.get('date', 'Récent')}</p>
-                            </div>
-                            <span style="background: rgba(46, 204, 113, 0.2); color: #2ecc71; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem;">DISPONIBLE</span>
-                        </div>
+                    <div class="file-card">
+                        <h3 style="color:#00d2ff; margin:0;">{link['name']}</h3>
+                        <p style="color:#aaa; font-size:0.9rem;">Généré le {link.get('date', 'Récent')}</p>
                         <a href="{link['url']}" target="_blank" style="text-decoration:none;">
-                            <button style="width:100%; padding:12px; background:#2ecc71; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:15px; transition: 0.3s;">
-                                📥 TÉLÉCHARGER MAINTENANT
+                            <button style="width:100%; padding:12px; background:#2ecc71; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:10px;">
+                                📥 TÉLÉCHARGER
                             </button>
                         </a>
                     </div>
                     """, unsafe_allow_html=True)
             
+            # EN COURS
             if user_reqs:
-                st.subheader("⏳ Commandes en cours")
+                st.subheader("⏳ En cours de traitement")
                 for r in user_reqs:
                     st.markdown(f"""
-                        <div class="card" style="border-left: 4px solid #f1c40f;">
-                            <strong style="color: #f1c40f;">{r['service']}</strong><br>
-                            <small>Statut actuel : {r['status']}</small><br>
-                            <small style="color: #666;">ID: {r['id']}</small>
+                        <div class="file-card" style="border-left: 4px solid #f1c40f;">
+                            <strong style="color: #f1c40f; font-size:1.1rem;">{r['service']}</strong><br>
+                            <span style="color:#eee;">Statut : {r['status']}</span>
                         </div>
                     """, unsafe_allow_html=True)
             
             if not user_links and not user_reqs:
-                st.info("Vous n'avez pas encore de commandes. Lancez votre première automatisation dans l'onglet précédent !")
+                st.info("Aucun historique pour le moment.")
             
-            # --- RELANCE & SERVICE CLIENT ---
+            # --- SUPPORT ---
             st.write("---")
-            st.write("### 🆘 Support & Assistance")
-            
-            relance_msg = f"Bonjour, je relance ma demande IA (Client : {user})."
-            support_msg = f"Bonjour Arsène Solutions, j'ai une question sur l'automatisation Excel."
-            
-            whatsapp_relance_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={relance_msg.replace(' ', '%20')}"
-            whatsapp_support_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={support_msg.replace(' ', '%20')}"
+            st.markdown("### 🆘 Besoin d'assistance ?")
             
             col_rel, col_sup = st.columns(2)
             with col_rel:
-                st.markdown(f'<a href="{whatsapp_relance_url}" target="_blank" class="support-btn" style="background: rgba(255,255,255,0.05); border: 1px solid #25D366; color: #25D366 !important;">🔔 Relancer le traitement</a>', unsafe_allow_html=True)
+                relance_msg = f"Bonjour, je relance ma demande IA (ID: {user})."
+                wa_relance = f"https://wa.me/{WHATSAPP_NUMBER}?text={relance_msg.replace(' ', '%20')}"
+                st.markdown(f'<a href="{wa_relance}" target="_blank" class="support-btn" style="border-color:#f1c40f; color:#f1c40f !important;">🔔 Relancer (Délai long)</a>', unsafe_allow_html=True)
             with col_sup:
-                st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn" style="background:#3a7bd5;">💬 Aide WhatsApp Directe</a>', unsafe_allow_html=True)
+                st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">🙋 Aide Service Client</a>', unsafe_allow_html=True)
 
-    # --- ADMINISTRATION ---
-    with st.expander("🛠 Console Administrateur"):
+    # --- ADMIN ---
+    with st.expander("🛠 Console Admin"):
         if st.text_input("Code Secret", type="password") == ADMIN_CODE:
             current_db = st.session_state["db"]
             for i, req in enumerate(current_db["demandes"]):
-                st.write(f"**Client :** {req['user']} ({req['whatsapp']})")
+                st.write(f"**{req['user']}** ({req['whatsapp']})")
                 st.caption(f"Besoin : {req['desc']}")
-                url_dl = st.text_input(f"Lien de livraison pour {req['id']}", key=f"url_{i}")
+                url_dl = st.text_input(f"Lien {i}", key=f"url_{i}")
                 
-                if st.button(f"Valider Livraison {req['id']}", key=f"btn_{i}"):
+                if st.button(f"Livrer {req['id']}", key=f"btn_{i}"):
                     if url_dl:
                         if req['user'] not in current_db["liens"]: current_db["liens"][req['user']] = []
                         current_db["liens"][req['user']].append({
@@ -400,7 +470,7 @@ def main_dashboard():
 
 inject_custom_css()
 
-# Script de synchronisation localStorage
+# Synchronisation JS
 components.html("""
     <script>
     const user = localStorage.getItem('arsene_user');
