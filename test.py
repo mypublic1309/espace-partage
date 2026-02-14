@@ -64,10 +64,15 @@ if st.session_state["current_user"] is None:
 def inject_custom_css():
     st.markdown("""
         <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        
+        * { font-family: 'Inter', sans-serif; }
+
         .stApp {
             background: linear-gradient(145deg, #0a0a12 0%, #1a1a2e 100%);
             color: #e0e0e0;
         }
+        
         .main-title {
             background: linear-gradient(90deg, #00d2ff, #3a7bd5);
             -webkit-background-clip: text;
@@ -75,19 +80,41 @@ def inject_custom_css():
             font-weight: 800;
             font-size: 3rem !important;
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
+
+        /* Styling Sidebar Box */
+        .info-box {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        
+        .info-box-title {
+            color: #00d2ff;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: block;
+        }
+
         .stTextInput label, .stSelectbox label, .stTextArea label {
             color: #00d2ff !important;
             font-weight: 600 !important;
             text-transform: uppercase;
             font-size: 0.85rem !important;
         }
+        
         div[data-baseweb="input"], textarea {
             border: 1px solid rgba(0, 210, 255, 0.2) !important;
             background-color: rgba(255, 255, 255, 0.03) !important;
             border-radius: 10px !important;
         }
+
         .stButton>button {
             border-radius: 12px;
             padding: 0.6rem 2rem;
@@ -96,7 +123,14 @@ def inject_custom_css():
             color: white !important;
             font-weight: 700;
             width: 100%;
+            transition: 0.3s;
         }
+
+        .stButton>button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 210, 255, 0.4);
+        }
+
         .card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -104,6 +138,18 @@ def inject_custom_css():
             padding: 1.5rem;
             margin-bottom: 1rem;
         }
+
+        .excel-badge {
+            background: #1D6F42;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
         .support-btn {
             display: inline-block;
             text-decoration: none;
@@ -116,8 +162,9 @@ def inject_custom_css():
             width: 100%;
             margin-top: 10px;
         }
+        
         .premium-banner {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), rgba(0, 210, 255, 0.1));
             border: 1px solid #ffd700;
             border-radius: 15px;
             padding: 1rem;
@@ -182,11 +229,16 @@ def main_dashboard():
     user = st.session_state["current_user"]
     db = st.session_state["db"]
     
-    # Barre Latérale
+    # Barre Latérale - DESIGN AMÉLIORÉ
     with st.sidebar:
         st.markdown(f"### 👤 {user if user else 'Invité'}")
         if user:
-            st.caption(f"📞 WhatsApp : {db['users'][user]['whatsapp']}")
+            st.markdown(f"""
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                    <small style="color: #aaa;">Compte vérifié</small><br>
+                    <span style="color: #00d2ff; font-weight: bold;">{db['users'][user]['whatsapp']}</span>
+                </div>
+            """, unsafe_allow_html=True)
             if st.button("🚪 Déconnexion"):
                 st.session_state["current_user"] = None
                 st.query_params.clear()
@@ -197,13 +249,31 @@ def main_dashboard():
                 st.rerun()
         
         st.divider()
-        st.info("💡 Vos fichiers sont livrés directement sur votre espace et notifiés sur WhatsApp.")
+        
+        # ZONE LIVRAISON MISE EN VALEUR
+        st.markdown(f"""
+            <div class="info-box">
+                <span class="info-box-title">🚀 LIVRAISON SMART</span>
+                <p style="font-size: 0.85rem; line-height: 1.4; color: #e0e0e0; margin: 0;">
+                    Vos fichiers sont livrés <b>directement ici</b> et une alerte vous est envoyée sur <b>WhatsApp</b> dès que l'IA a terminé.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown(f"""
+            <div class="info-box" style="border-color: rgba(29, 111, 66, 0.4); background: rgba(29, 111, 66, 0.1);">
+                <span class="info-box-title" style="color: #2ecc71;">📊 EXPERT EXCEL</span>
+                <p style="font-size: 0.82rem; color: #eee; margin: 0;">
+                    Nettoyage de données, Tableaux de bord automatiques et calculs complexes en un clic.
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
     st.markdown("<h1 class='main-title'>ARSÈNE SOLUTIONS IA</h1>", unsafe_allow_html=True)
     st.markdown("""
         <div class='premium-banner'>
-            <span style='color:#ffd700; font-weight:bold;'>⭐ ACCÈS INSTANTANÉ</span> : 
-            Plus besoin de mot de passe, votre WhatsApp est votre clé.
+            <span style='color:#ffd700; font-weight:bold;'>✨ PUISSANCE IA ACTIVÉE</span> : 
+            Transformez vos fichiers Excel statiques en outils intelligents et automatisés.
         </div>
     """, unsafe_allow_html=True)
 
@@ -212,15 +282,15 @@ def main_dashboard():
     with tab1:
         col_f, col_wa = st.columns([1, 1])
         with col_f:
-            service = st.selectbox("Service demandé", ["Analyse Excel Profonde", "Rédaction Documentaire", "Automatisation Python", "Design Graphique IA"])
+            st.markdown('<div class="excel-badge">⚡ SPÉCIALITÉ EXCEL</div>', unsafe_allow_html=True)
+            service = st.selectbox("Type de service", ["📊 Automatisation Excel & Data", "📝 Rédaction Documentaire IA", "⚙️ Script Python sur mesure", "🎨 Design Graphique IA"])
         with col_wa:
-            # Si l'utilisateur est connecté, on pré-remplit son WhatsApp
             default_wa = db["users"][user]["whatsapp"] if user else ""
-            wa_display = st.text_input("Numéro WhatsApp de réception", value=default_wa, placeholder="Ex: 225...")
+            wa_display = st.text_input("WhatsApp pour la notification", value=default_wa, placeholder="Ex: 225...")
         
-        prompt = st.text_area("Cahier des charges", height=200, placeholder="Expliquez ici ce que l'IA doit faire pour vous...")
+        prompt = st.text_area("Cahier des charges", height=200, placeholder="Ex: Automatise ce fichier Excel pour qu'il calcule les commissions et génère un graphique de performance mensuel...")
         
-        if st.button("LANCER LA GÉNÉRATION"):
+        if st.button("LANCER LA GÉNÉRATION PAR L'IA"):
             if prompt and wa_display:
                 new_req = {
                     "id": hashlib.md5(str(datetime.now()).encode()).hexdigest()[:8],
@@ -228,7 +298,7 @@ def main_dashboard():
                     "service": service,
                     "desc": prompt,
                     "whatsapp": wa_display,
-                    "status": "Traitement IA...",
+                    "status": "Analyse du fichier & Traitement...",
                     "timestamp": str(datetime.now())
                 }
                 
@@ -236,7 +306,7 @@ def main_dashboard():
                 save_db(st.session_state["db"])
                 
                 if user:
-                    st.success("✅ Commande enregistrée ! Vérifiez l'onglet 'Mes Livrables'.")
+                    st.success("✅ Intelligence Artificielle en action ! Votre fichier arrive bientôt.")
                     st.balloons()
                     st.rerun()
                 else:
@@ -247,7 +317,7 @@ def main_dashboard():
 
     with tab2:
         if not user:
-            st.info("Connectez-vous pour voir vos fichiers générés.")
+            st.info("⚠️ Connectez-vous pour voir vos fichiers générés.")
         else:
             fresh_db = load_db()
             user_links = fresh_db["liens"].get(user, [])
@@ -258,11 +328,16 @@ def main_dashboard():
                 for link in user_links:
                     st.markdown(f"""
                     <div class="card">
-                        <h4 style="margin:0;">{link['name']}</h4>
-                        <p style="font-size:0.8rem; color:#aaa;">Date : {link.get('date', 'Récent')}</p>
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <h4 style="margin:0; color:#00d2ff;">{link['name']}</h4>
+                                <p style="font-size:0.8rem; color:#aaa; margin-top:5px;">Prêt le {link.get('date', 'Récent')}</p>
+                            </div>
+                            <span style="background: rgba(46, 204, 113, 0.2); color: #2ecc71; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem;">DISPONIBLE</span>
+                        </div>
                         <a href="{link['url']}" target="_blank" style="text-decoration:none;">
-                            <button style="width:100%; padding:10px; background:#2ecc71; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
-                                TÉLÉCHARGER LE FICHIER
+                            <button style="width:100%; padding:12px; background:#2ecc71; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer; margin-top:15px; transition: 0.3s;">
+                                📥 TÉLÉCHARGER MAINTENANT
                             </button>
                         </a>
                     </div>
@@ -272,31 +347,31 @@ def main_dashboard():
                 st.subheader("⏳ Commandes en cours")
                 for r in user_reqs:
                     st.markdown(f"""
-                        <div class="card" style="border-left: 4px solid #00d2ff;">
-                            <strong>{r['service']}</strong><br>
-                            <small>Statut actuel : {r['status']}</small>
+                        <div class="card" style="border-left: 4px solid #f1c40f;">
+                            <strong style="color: #f1c40f;">{r['service']}</strong><br>
+                            <small>Statut actuel : {r['status']}</small><br>
+                            <small style="color: #666;">ID: {r['id']}</small>
                         </div>
                     """, unsafe_allow_html=True)
             
             if not user_links and not user_reqs:
-                st.info("Vous n'avez pas encore de commandes.")
+                st.info("Vous n'avez pas encore de commandes. Lancez votre première automatisation dans l'onglet précédent !")
             
             # --- RELANCE & SERVICE CLIENT ---
             st.write("---")
-            st.write("### 🆘 Besoin d'aide ?")
-            st.write("Si le délai de traitement vous semble trop long ou si vous avez une question :")
+            st.write("### 🆘 Support & Assistance")
             
-            relance_msg = f"Bonjour, je relance ma demande IA (Client : {user}). Le traitement semble prendre du temps."
-            support_msg = f"Bonjour Arsène Solutions, j'ai besoin d'aide concernant mon espace client (Identifiant : {user})."
+            relance_msg = f"Bonjour, je relance ma demande IA (Client : {user})."
+            support_msg = f"Bonjour Arsène Solutions, j'ai une question sur l'automatisation Excel."
             
             whatsapp_relance_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={relance_msg.replace(' ', '%20')}"
             whatsapp_support_url = f"https://wa.me/{WHATSAPP_NUMBER}?text={support_msg.replace(' ', '%20')}"
             
             col_rel, col_sup = st.columns(2)
             with col_rel:
-                st.markdown(f'<a href="{whatsapp_relance_url}" target="_blank" class="support-btn">🔔 Relancer la demande</a>', unsafe_allow_html=True)
+                st.markdown(f'<a href="{whatsapp_relance_url}" target="_blank" class="support-btn" style="background: rgba(255,255,255,0.05); border: 1px solid #25D366; color: #25D366 !important;">🔔 Relancer le traitement</a>', unsafe_allow_html=True)
             with col_sup:
-                st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn" style="background:#3a7bd5;">🙋 Aide Service Client</a>', unsafe_allow_html=True)
+                st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn" style="background:#3a7bd5;">💬 Aide WhatsApp Directe</a>', unsafe_allow_html=True)
 
     # --- ADMINISTRATION ---
     with st.expander("🛠 Console Administrateur"):
