@@ -125,7 +125,6 @@ def inject_custom_css():
             padding: 0 25px;
         }
 
-        /* Animation spécifique pour l'onglet "Mes Fichiers" (le 2ème onglet) */
         .stTabs [data-baseweb="tab"]:nth-child(2) {
             border: 1px solid #2ecc71 !important;
             box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
@@ -141,6 +140,45 @@ def inject_custom_css():
             background-color: rgba(0, 210, 255, 0.6) !important;
             border: 1px solid #00d2ff !important;
             box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+        }
+
+        /* --- ANIMATION BORDURE MULTICOLORE --- */
+        @keyframes border-rainbow {
+            0% { border-color: #00d2ff; box-shadow: 0 0 10px rgba(0, 210, 255, 0.3); }
+            25% { border-color: #3a7bd5; box-shadow: 0 0 10px rgba(58, 123, 213, 0.3); }
+            50% { border-color: #FFD700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); }
+            75% { border-color: #2ecc71; box-shadow: 0 0 10px rgba(46, 204, 113, 0.3); }
+            100% { border-color: #00d2ff; box-shadow: 0 0 10px rgba(0, 210, 255, 0.3); }
+        }
+
+        /* --- ELEMENTS DE FORMULAIRE --- */
+        .stTextInput label, .stSelectbox label, .stTextArea label {
+            color: #00d2ff !important;
+            font-weight: 600 !important;
+            font-size: 1.1rem !important;
+            margin-bottom: 5px;
+        }
+        
+        div[data-baseweb="input"], div[data-baseweb="select"] > div {
+            border: 1px solid rgba(0, 210, 255, 0.3) !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            color: white !important;
+            border-radius: 10px !important;
+        }
+
+        /* CIBLE SPÉCIFIQUE POUR LA ZONE DE TEXTE (CAHIER DES CHARGES) */
+        .stTextArea textarea {
+            background-color: rgba(0, 0, 0, 0.6) !important;
+            color: white !important;
+            border-radius: 10px !important;
+            border: 2px solid #00d2ff !important;
+            animation: border-rainbow 4s linear infinite;
+            transition: transform 0.3s;
+        }
+        
+        .stTextArea textarea:focus {
+            transform: scale(1.01);
+            animation: border-rainbow 1.5s linear infinite; /* Accélère quand on tape */
         }
 
         /* --- CARTE PREMIUM --- */
@@ -179,7 +217,6 @@ def inject_custom_css():
             line-height: 1.5;
         }
 
-        /* BOUTON PREMIUM OR */
         .btn-gold {
             background: linear-gradient(45deg, #FFD700, #FF8C00);
             color: #000 !important;
@@ -195,21 +232,6 @@ def inject_custom_css():
         .btn-gold:hover {
             transform: scale(1.05);
             box-shadow: 0 8px 25px rgba(255, 215, 0, 0.6);
-        }
-
-        /* --- ELEMENTS DE FORMULAIRE --- */
-        .stTextInput label, .stSelectbox label, .stTextArea label {
-            color: #00d2ff !important;
-            font-weight: 600 !important;
-            font-size: 1.1rem !important;
-            margin-bottom: 5px;
-        }
-        
-        div[data-baseweb="input"], textarea, div[data-baseweb="select"] > div {
-            border: 1px solid rgba(0, 210, 255, 0.3) !important;
-            background-color: rgba(0, 0, 0, 0.5) !important;
-            color: white !important;
-            border-radius: 10px !important;
         }
 
         /* BOUTONS STREAMLIT */
@@ -265,7 +287,6 @@ def inject_custom_css():
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* BOUTON SUPPORT */
         .support-btn {
             display: block;
             text-decoration: none;
@@ -284,14 +305,12 @@ def inject_custom_css():
             color: white !important;
         }
 
-        /* STYLE POUR LA BARRE DE PROGRESSION CUSTOM */
         .stProgress > div > div > div > div {
             background-image: linear-gradient(to right, #00d2ff , #3a7bd5);
         }
         </style>
     """, unsafe_allow_html=True)
     
-    # Injection dynamique de la classe d'illumination
     if st.session_state["is_glowing"]:
         st.markdown('<style>.stApp { animation: glow-pulse 1.5s ease-in-out infinite; }</style>', unsafe_allow_html=True)
 
@@ -357,7 +376,6 @@ def main_dashboard():
     user = st.session_state["current_user"]
     db = st.session_state["db"]
     
-    # --- BARRE LATÉRALE ---
     with st.sidebar:
         st.markdown(f"### 👤 {user if user else 'Invité'}")
         if user:
@@ -373,7 +391,6 @@ def main_dashboard():
         
         st.divider()
         
-        # BOÎTES D'INFO STYLISÉES
         st.markdown(f"""
             <div class="info-card">
                 <span class="info-title">🚀 LIVRAISON & ALERTES</span>
@@ -385,13 +402,10 @@ def main_dashboard():
             </div>
         """, unsafe_allow_html=True)
         
-        # Bouton d'aide Sidebar
         st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">💬 Service Client</a>', unsafe_allow_html=True)
 
-    # --- CORPS DE PAGE ---
     st.markdown("<h1 class='main-title'>ARSÈNE SOLUTIONS</h1>", unsafe_allow_html=True)
 
-    # --- BANNIÈRE PREMIUM ---
     st.markdown(f"""
         <div class="premium-card">
             <div class="premium-title">⭐ PASSEZ À LA VITESSE SUPÉRIEURE ⭐</div>
@@ -404,7 +418,6 @@ def main_dashboard():
         </div>
     """, unsafe_allow_html=True)
 
-    # UTILISATION D'ONGLETS TRÈS VISIBLES
     tab1, tab2 = st.tabs(["🚀 LANCER UNE TÂCHE", "📂 MES FICHIERS (ESPACE CLIENT)"])
 
     with tab1:
@@ -477,7 +490,6 @@ def main_dashboard():
             user_links = fresh_db["liens"].get(user, [])
             user_reqs = [r for r in fresh_db["demandes"] if r["user"] == user]
             
-            # --- ZONE DE RÉCEPTION (CRITIQUE) ---
             st.markdown("""
                 <div style="background: rgba(46, 204, 113, 0.1); padding: 15px; border-radius: 10px; border: 1px dashed #2ecc71; margin-bottom: 20px; text-align: center;">
                     <h2 style="color: #2ecc71; margin: 0;">📥 VOTRE ESPACE DE TÉLÉCHARGEMENT</h2>
@@ -503,7 +515,6 @@ def main_dashboard():
                     </div>
                     """, unsafe_allow_html=True)
             
-            # EN COURS
             if user_reqs:
                 st.markdown("#### ⏳ Travaux en cours de préparation")
                 for r in user_reqs:
@@ -523,7 +534,6 @@ def main_dashboard():
             if not user_links and not user_reqs:
                 st.info("Vous n'avez pas encore de fichiers. Lancez une tâche pour commencer !")
             
-            # --- SUPPORT ---
             st.write("---")
             st.markdown("### 🆘 Besoin d'aide pour vos fichiers ?")
             col_rel, col_sup = st.columns(2)
@@ -534,7 +544,6 @@ def main_dashboard():
             with col_sup:
                 st.markdown(f'<a href="{whatsapp_support_url}" target="_blank" class="support-btn">🙋 Parler à un agent</a>', unsafe_allow_html=True)
 
-    # --- ADMIN ---
     with st.expander("🛠 Console de Livraison (Admin)"):
         if st.text_input("Code Secret", type="password") == ADMIN_CODE:
             current_db = st.session_state["db"]
@@ -559,7 +568,6 @@ def main_dashboard():
 
 inject_custom_css()
 
-# Synchronisation JS
 components.html("""
     <script>
     const user = localStorage.getItem('arsene_user');
