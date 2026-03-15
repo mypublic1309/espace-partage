@@ -981,7 +981,7 @@ RÈGLE 2 — LONGUEUR SUBSTANTIELLE : Minimum 4 pages réelles (hors garde + som
 RÈGLE 3 — QUALITÉ LINGUISTIQUE : Orthographe et grammaire irréprochables, ponctuation soignée, style académique soutenu
 RÈGLE 4 — CONTEXTUALISATION OBLIGATOIRE : Min 3 exemples ivoiriens/africains concrets ET chiffrés par grande partie
 RÈGLE 5 — FORMULES NOVA : Utilise la notation x^{{2}}, H_{{2}}O, CO_{{2}}, √(expr), symboles Unicode α β γ π ω ≤ ≥ × → ⇌. LaTeX inline $...$ aussi accepté (converti auto). Voir Section 2 pour tous les exemples.
-RÈGLE 6 — STRUCTURE STRICTE : Séparateurs ════ et ---SAUT_DE_PAGE--- uniquement dans le corps (jamais dans page de garde ni sommaire)
+RÈGLE 6 — STRUCTURE STRICTE : Séparateurs ════ et ---SAUT_DE_PAGE--- uniquement dans le corps du document (jamais dans le sommaire). Tu ne génères PAS de page de garde — Nova Platform s'en charge.
 RÈGLE 6b — ANTI-ORPHELINES : Ne JAMAIS terminer une partie par une phrase de transition — la transition appartient au DÉBUT de la partie suivante (après le saut de page). Évite ainsi les 2-3 lignes orphelines en haut d'une page vide.
 RÈGLE 7 — ADAPTATION NIVEAU : Vocabulaire + profondeur + longueur strictement adaptés au niveau détecté
 RÈGLE 8 — PROSE DANS LE DÉVELOPPEMENT : Corps du document = paragraphes continus — jamais de listes à puces
@@ -1008,58 +1008,30 @@ Rédige un exposé scolaire COMPLET, STRUCTURÉ, PROFESSIONNEL et ENCYCLOPÉDIQU
 
 === STRUCTURE OBLIGATOIRE DU DOCUMENT — RESPECTER CET ORDRE EXACT ===
 
-⚠️ RÈGLES MISE EN PAGE ABSOLUES — NE JAMAIS VIOLER :
-- La PAGE DE GARDE = 1 PAGE PLEINE : utilise ###ESPACE### entre chaque bloc pour que le contenu occupe toute la page
-- Le SOMMAIRE = 1 PAGE PLEINE : ajoute ###ESPACE### entre chaque entrée pour remplir toute la page
-- JAMAIS de titre de section (# PAGE DE GARDE, # SOMMAIRE...) — commence directement avec le contenu
-- INTERDIT ABSOLU dans PAGE DE GARDE et SOMMAIRE : ne JAMAIS utiliser ────, ════, ---, ━━━
-- INTERDIT ABSOLU : Un tableau ne doit JAMAIS chevaucher deux pages. Si un tableau risque de dépasser la fin d'une page, insère un ---SAUT_DE_PAGE--- AVANT le tableau pour qu'il commence sur une nouvelle page. Un tableau commence et finit TOUJOURS sur la MÊME page.
-- Le titre de l'exposé DOIT utiliser le marqueur ###TITRE_ROUGE### pour être affiché en grand et en rouge
+⚠️ RÈGLE FONDAMENTALE — NE JAMAIS VIOLER :
+La PAGE DE GARDE est générée automatiquement par Nova Platform.
+Tu NE DOIS PAS générer de page de garde. INTERDIT ABSOLU.
+Commence directement par le SOMMAIRE — c'est la première chose que tu écris.
 
-###ESPACE###
-
-**[NOM COMPLET DE L'ÉTABLISSEMENT EN MAJUSCULES]**
-[Ville], Côte d'Ivoire — Année scolaire : 2025 - 2026
-
-###ESPACE###
-
-EXPOSÉ DE [MATIÈRE EN MAJUSCULES]
-
-###TITRE_ROUGE### [TITRE COMPLET ET ACCROCHEUR DE L'EXPOSÉ EN MAJUSCULES]
-
-###ESPACE###
-
-**Matière :** [Matière complète]
-**Niveau / Série :** [Niveau — ex: Terminale D]
-**Présenté par :** [Noms complets]
-**Sous la direction de :** [Titre + Nom du professeur]
-**Date de présentation :** [Date complète]
-**Année scolaire :** 2025 - 2026
-
-###ESPACE###
-
----SAUT_DE_PAGE---
+⚠️ AUTRES RÈGLES ABSOLUES :
+- INTERDIT ABSOLU : ne JAMAIS utiliser ────, ════, ---, ━━━ dans le SOMMAIRE
+- INTERDIT ABSOLU : Un tableau ne doit JAMAIS chevaucher deux pages. Insère un ---SAUT_DE_PAGE--- AVANT si nécessaire.
+- JAMAIS de titre de section (# SOMMAIRE, # PAGE DE GARDE...) — commence directement avec le contenu
 
 **SOMMAIRE**
 
-###ESPACE###
-
-Introduction ............................................................. p. 3
-###ESPACE###
-**I. [Titre 1re grande partie]** ........................................ p. 4
-   1.1 [Titre 1re sous-partie] ........................................... p. 4
-   1.2 [Titre 2e sous-partie] ............................................ p. 5
-###ESPACE###
-**II. [Titre 2e grande partie]** ......................................... p. 6
-   2.1 [Titre 1re sous-partie] ........................................... p. 6
-   2.2 [Titre 2e sous-partie] ............................................ p. 7
-###ESPACE###
-**III. [Titre 3e grande partie — lycée/université uniquement]** ......... p. 8
-   3.1 [Titre sous-partie] ............................................... p. 8
-   3.2 [Titre sous-partie] ............................................... p. 9
-###ESPACE###
-Conclusion ............................................................... p. 10
-Bibliographie ............................................................ p. 11
+Introduction ............................................................. p. 1
+**I. [Titre 1re grande partie]** ........................................ p. 2
+   1.1 [Titre 1re sous-partie] ........................................... p. 2
+   1.2 [Titre 2e sous-partie] ............................................ p. 3
+**II. [Titre 2e grande partie]** ......................................... p. 4
+   2.1 [Titre 1re sous-partie] ........................................... p. 4
+   2.2 [Titre 2e sous-partie] ............................................ p. 5
+**III. [Titre 3e grande partie — lycée/université uniquement]** ......... p. 6
+   3.1 [Titre sous-partie] ............................................... p. 6
+   3.2 [Titre sous-partie] ............................................... p. 7
+Conclusion ............................................................... p. 8
+Bibliographie ............................................................ p. 9
 
 ---SAUT_DE_PAGE---
 
@@ -2779,51 +2751,44 @@ def creer_page_garde_expose(doc, titre_expose, noms_exposants, matiere, annee_sc
     tbl_flag = doc.add_table(rows=1, cols=3)
     tbl_flag.alignment = WD_TABLE_ALIGNMENT.CENTER
     set_no_border(tbl_flag)
-    tbl_flag.columns[0].width = Cm(2.0)
-    tbl_flag.columns[1].width = Cm(2.0)
-    tbl_flag.columns[2].width = Cm(2.0)
-    set_cell_bg(tbl_flag.cell(0,0), "F77F00")
-    set_cell_bg(tbl_flag.cell(0,1), "FFFFFF")
-    set_cell_bg(tbl_flag.cell(0,2), "009A44")
-    for c in range(3):
-        cell = tbl_flag.cell(0,c)
+    for i, c in enumerate(["F77F00","FFFFFF","009A44"]):
+        tbl_flag.columns[i].width = Cm(1.8)
+        set_cell_bg(tbl_flag.cell(0,i), c)
+        cell = tbl_flag.cell(0,i)
         cell.paragraphs[0].paragraph_format.space_before = Pt(0)
         cell.paragraphs[0].paragraph_format.space_after  = Pt(0)
-        cell.height = Cm(0.18)
-    spacer(4)
+        cell.height = Cm(0.2)
+    spacer(3)
 
     # ══ 2. BLOC INSTITUTION ══════════════════════════════════════
     spacer(2)
     para("RÉPUBLIQUE DE CÔTE D'IVOIRE",
          font_name="Calibri", size=7, bold=True, color=GOLD, space_after=1)
-    # Nom de l'école saisi par le client
-    _nom_ecole = etablissement if etablissement and etablissement not in ("—", "Non précisé", "") else "Établissement"
+    _nom_ecole = etablissement if etablissement and etablissement not in ("—","Non précisé","") else "Établissement"
     para(_nom_ecole,
-         font_name="Calibri", size=13, bold=True, color=INK, space_after=1)
-    para("Un Peuple — Une Foi — Un Objectif",
-         font_name="EB Garamond", size=9, italic=True, color=INK_SOFT, space_after=1)
+         font_name="Calibri", size=14, bold=True, color=INK, space_after=1)
 
-    # Filière (si renseignée) sinon matière
-    if filiere and filiere not in ("—", "Non précisée", ""):
-        para(f"Filière  {filiere}",
-             font_name="Calibri", size=7, bold=True, color=GOLD, space_after=1)
-    elif matiere and matiere not in ("—", "Non précisée", ""):
-        para(f"Matière  {matiere}",
-             font_name="Calibri", size=7, bold=True, color=GOLD, space_after=1)
+    # Filière ou matière
+    if filiere and filiere not in ("—","Non précisée",""):
+        para(f"Filière  ·  {filiere}",
+             font_name="Calibri", size=8, bold=True, color=GOLD, space_after=1)
+    elif matiere and matiere not in ("—","Non précisée",""):
+        para(f"Matière  ·  {matiere}",
+             font_name="Calibri", size=8, bold=True, color=GOLD, space_after=1)
 
-    # Niveau / Classe
-    if niveau and niveau not in ("—", "Non précisé", ""):
-        para(f"Classe  {niveau}",
-             font_name="Calibri", size=7, bold=False, color=INK_FAINT, space_after=1)
+    # Niveau — seulement si non "Adapté automatiquement"
+    if niveau and niveau not in ("—","Non précisé","","Adapté automatiquement au niveau"):
+        para(f"Classe  ·  {niveau}",
+             font_name="Calibri", size=8, bold=False, color=INK_SOFT, space_after=1)
 
-    # Année scolaire
     para(f"Année scolaire  {annee_scolaire}",
-         font_name="EB Garamond", size=8, color=INK_FAINT, space_after=2)
+         font_name="EB Garamond", size=8, italic=True, color=INK_FAINT, space_after=3)
 
     # ══ SÉPARATEUR 1 ═════════════════════════════════════════════
     divider_diamonds()
+    spacer(2)
 
-    # ══ 3. BANDEAU MATIÈRE / NIVEAU ══════════════════════════════
+    # ══ 3. BANDEAU 4 COLONNES : MATIÈRE / CLASSE / ÉTABLISSEMENT / ANNÉE ═
     tbl_mat = doc.add_table(rows=1, cols=7)
     tbl_mat.alignment = WD_TABLE_ALIGNMENT.CENTER
     set_no_border(tbl_mat)
@@ -2850,70 +2815,97 @@ def creer_page_garde_expose(doc, titre_expose, noms_exposants, matiere, annee_sc
         r_val.font.name = "Calibri"; r_val.font.size = Pt(10)
         r_val.font.bold = True; r_val.font.color.rgb = INK
 
-    mat_cell(0, "MATIÈRE",     matiere       if matiere  not in ("—","","Non précisée") else "—")
-    mat_cell(2, "CLASSE",      niveau        if niveau   not in ("—","","Non précisé")  else "—")
+    _mat_val = matiere if matiere not in ("—","","Non précisée") else "—"
+    _niv_val = niveau  if niveau  not in ("—","","Non précisé","Adapté automatiquement au niveau") else "—"
+    mat_cell(0, "MATIÈRE",       _mat_val)
+    mat_cell(2, "CLASSE",        _niv_val)
     mat_cell(4, "ÉTABLISSEMENT", _nom_ecole)
-    mat_cell(6, "ANNÉE",       annee_scolaire if annee_scolaire else "—")
-    # Séparateurs verticaux
+    mat_cell(6, "ANNÉE",         annee_scolaire if annee_scolaire else "—")
     for col in [1, 3, 5]:
-        c = tbl_mat.cell(0, col)
-        set_cell_borders(c, ["left"], "C9A440", "3")
+        set_cell_borders(tbl_mat.cell(0, col), ["left"], "C9A440", "3")
 
     spacer(4)
-
-    # ══ SÉPARATEUR 2 ═════════════════════════════════════════════
     divider_diamonds()
-    spacer(2)
+    spacer(3)
 
     # ══ 4. BADGE EXPOSÉ ══════════════════════════════════════════
     p_badge = doc.add_paragraph()
     p_badge.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_badge.paragraph_format.space_before = Pt(2)
-    p_badge.paragraph_format.space_after  = Pt(4)
-    r_b = p_badge.add_run("✦     E X P O S É     ✦")
-    r_b.font.name      = "Calibri"
-    r_b.font.size      = Pt(8)
-    r_b.font.bold      = True
-    r_b.font.color.rgb = GOLD
+    p_badge.paragraph_format.space_after  = Pt(6)
+    r_b = p_badge.add_run("✦   E X P O S É   ✦")
+    r_b.font.name = "Calibri"; r_b.font.size = Pt(10)
+    r_b.font.bold = True; r_b.font.color.rgb = GOLD
 
-    # ══ 5. THÈME (titre principal) ════════════════════════════════
+    # ══ 5. PARCHEMIN HORIZONTAL — THÈME ══════════════════════════
+    # Simulé via un tableau avec fond doré pâle + bordures dorées épaisses
     titre_text = titre_expose.upper() if titre_expose else "TITRE DE L'EXPOSÉ"
-    # Taille adaptative selon longueur
-    if   len(titre_text) <= 35:  titre_pt = 24
-    elif len(titre_text) <= 60:  titre_pt = 20
-    elif len(titre_text) <= 90:  titre_pt = 16
-    else:                         titre_pt = 13
+    if   len(titre_text) <= 35:  titre_pt = 22
+    elif len(titre_text) <= 60:  titre_pt = 18
+    elif len(titre_text) <= 90:  titre_pt = 14
+    else:                         titre_pt = 12
 
-    para("Thème",
-         font_name="Calibri", size=6, bold=True, color=GOLD, space_after=1)
+    tbl_parchemin = doc.add_table(rows=3, cols=1)
+    tbl_parchemin.alignment = WD_TABLE_ALIGNMENT.CENTER
+    set_no_border(tbl_parchemin)
+    tbl_parchemin.columns[0].width = Cm(15.0)
 
-    p_titre = doc.add_paragraph()
+    # Ligne haut — filet doré épais
+    c_top = tbl_parchemin.cell(0, 0)
+    set_cell_bg(c_top, "F9F2E2")
+    set_cell_borders(c_top, ["top","left","right"], "B8932A", "18")
+    p_top = c_top.paragraphs[0]
+    p_top.paragraph_format.space_before = Pt(0)
+    p_top.paragraph_format.space_after  = Pt(0)
+
+    # Ligne centrale — thème
+    c_mid = tbl_parchemin.cell(1, 0)
+    set_cell_bg(c_mid, "F9F2E2")
+    set_cell_borders(c_mid, ["left","right"], "B8932A", "18")
+    for p in c_mid.paragraphs: p._element.getparent().remove(p._element)
+    # Label "Thème"
+    p_lbl_t = c_mid.add_paragraph("T H È M E")
+    p_lbl_t.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_lbl_t.paragraph_format.space_before = Pt(6)
+    p_lbl_t.paragraph_format.space_after  = Pt(4)
+    r_lbl_t = p_lbl_t.runs[0]
+    r_lbl_t.font.name = "Calibri"; r_lbl_t.font.size = Pt(7)
+    r_lbl_t.font.bold = True; r_lbl_t.font.color.rgb = GOLD
+    # Titre
+    p_titre = c_mid.add_paragraph(titre_text)
     p_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_titre.paragraph_format.space_before = Pt(2)
+    p_titre.paragraph_format.space_before = Pt(0)
     p_titre.paragraph_format.space_after  = Pt(6)
-    r_t = p_titre.add_run(titre_text)
-    r_t.font.name      = "Calibri"
-    r_t.font.size      = Pt(titre_pt)
-    r_t.font.bold      = True
-    r_t.font.color.rgb = INK
+    r_t = p_titre.runs[0]
+    r_t.font.name = "Calibri"; r_t.font.size = Pt(titre_pt)
+    r_t.font.bold = True; r_t.font.color.rgb = INK
 
-    # ══ ORNEMENT ONDULÉ ══════════════════════════════════════════
+    # Ligne bas — filet doré épais
+    c_bot = tbl_parchemin.cell(2, 0)
+    set_cell_bg(c_bot, "F9F2E2")
+    set_cell_borders(c_bot, ["bottom","left","right"], "B8932A", "18")
+    p_bot = c_bot.paragraphs[0]
+    p_bot.paragraph_format.space_before = Pt(0)
+    p_bot.paragraph_format.space_after  = Pt(0)
+
+    spacer(4)
+
+    # ══ ORNEMENT ══════════════════════════════════════════════════
     p_orn = doc.add_paragraph()
     p_orn.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p_orn.paragraph_format.space_before = Pt(2)
     p_orn.paragraph_format.space_after  = Pt(4)
-    r_orn = p_orn.add_run("〜〜〜  ✦  〜〜〜")
-    r_orn.font.name      = "EB Garamond"
-    r_orn.font.size      = Pt(11)
-    r_orn.font.color.rgb = GOLD
+    r_orn = p_orn.add_run("✦  ◆  ✦  ◆  ✦")
+    r_orn.font.name = "EB Garamond"; r_orn.font.size = Pt(10)
+    r_orn.font.color.rgb = GOLD_LIGHT
 
     # ══ 6. GRILLE 4 COLONNES — EXPOSANTS ═════════════════════════
+    spacer(4)
     para("— Présenté par —",
-         font_name="Calibri", size=7, bold=True, color=GOLD,
-         space_before=2, space_after=3)
+         font_name="Calibri", size=11, bold=True, color=GOLD,
+         space_before=4, space_after=6)
 
     noms_list = noms_exposants if isinstance(noms_exposants, list) else [noms_exposants]
-    # Remplir jusqu'à 8 slots
     while len(noms_list) < 8:
         noms_list.append("")
 
@@ -2921,7 +2913,7 @@ def creer_page_garde_expose(doc, titre_expose, noms_exposants, matiere, annee_sc
              "Présentation orale", "Secrétaire", "Illustrations", "Correction"]
 
     nb_cols = 4
-    nb_rows = 2   # 8 noms → 2 lignes × 4 colonnes
+    nb_rows = 2
     tbl_exp = doc.add_table(rows=nb_rows, cols=nb_cols)
     tbl_exp.alignment = WD_TABLE_ALIGNMENT.CENTER
     set_no_border(tbl_exp)
@@ -2935,36 +2927,32 @@ def creer_page_garde_expose(doc, titre_expose, noms_exposants, matiere, annee_sc
         cell = tbl_exp.cell(row, col)
         for p in cell.paragraphs: p._element.getparent().remove(p._element)
 
-        # Numéro
         p_num = cell.add_paragraph(f"{idx+1:02d}")
         p_num.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        p_num.paragraph_format.space_before = Pt(0)
+        p_num.paragraph_format.space_before = Pt(2)
         p_num.paragraph_format.space_after  = Pt(0)
         r_num = p_num.runs[0]
-        r_num.font.name = "Calibri"; r_num.font.size = Pt(7)
+        r_num.font.name = "Calibri"; r_num.font.size = Pt(8)
         r_num.font.bold = True; r_num.font.color.rgb = GOLD
 
-        # Nom
         nom = noms_list[idx] if idx < len(noms_list) else ""
         p_nom = cell.add_paragraph(nom if nom else "—")
         p_nom.alignment = WD_ALIGN_PARAGRAPH.LEFT
         p_nom.paragraph_format.space_before = Pt(0)
         p_nom.paragraph_format.space_after  = Pt(0)
         r_nom = p_nom.runs[0]
-        r_nom.font.name = "Calibri"; r_nom.font.size = Pt(9)
+        r_nom.font.name = "Calibri"; r_nom.font.size = Pt(11)
         r_nom.font.bold = True; r_nom.font.color.rgb = INK
 
-        # Rôle
         role = ROLES[idx] if idx < len(ROLES) else ""
         p_role = cell.add_paragraph(role)
         p_role.alignment = WD_ALIGN_PARAGRAPH.LEFT
         p_role.paragraph_format.space_before = Pt(0)
-        p_role.paragraph_format.space_after  = Pt(2)
+        p_role.paragraph_format.space_after  = Pt(4)
         r_role = p_role.runs[0]
-        r_role.font.name   = "EB Garamond"; r_role.font.size = Pt(7)
+        r_role.font.name = "EB Garamond"; r_role.font.size = Pt(8)
         r_role.font.italic = True; r_role.font.color.rgb = INK_FAINT
 
-        # Bordure gauche dorée sur la cellule
         set_cell_borders(cell, ["left"], "D4AD52", "6")
 
     spacer(4)
@@ -3002,18 +2990,14 @@ def creer_page_garde_expose(doc, titre_expose, noms_exposants, matiere, annee_sc
 
     from datetime import datetime
     date_aujourd_hui = datetime.now().strftime("%d/%m/%Y")
-
     footer_cell(0, "ANNÉE SCOLAIRE",       annee_scolaire if annee_scolaire else "—")
     footer_cell(2, "DATE DE PRÉSENTATION", date_aujourd_hui)
     footer_cell(4, "GROUPE",               "—")
     footer_cell(6, "NOTE",                 "— / 20")
-
     for col in [1, 3, 5]:
-        c = tbl_footer.cell(0, col)
-        set_cell_borders(c, ["left"], "C9A440", "3")
+        set_cell_borders(tbl_footer.cell(0, col), ["left"], "C9A440", "3")
 
     spacer(2)
-
     return doc
 
 def creer_docx(contenu, service, client_nom):
@@ -3170,32 +3154,34 @@ def creer_docx(contenu, service, client_nom):
         tcPr.append(shd)
 
     from docx.shared import RGBColor as RC
-    p_titre = doc.add_paragraph()
-    p_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run_t = p_titre.add_run(service.replace("📝","").replace("👔","").replace("📊","").replace("⚙️","").replace("🎨","").replace("📚","").replace("📄","").strip())
-    run_t.bold = True
-    run_t.font.size = Pt(16)
-    run_t.font.color.rgb = RC(0x1F, 0x4E, 0x79)
-    run_t.font.name = "Arial"
+    # Pour les exposés : pas de header service/client — la page de garde Nova suffit
+    if not IS_EXPOSE:
+        p_titre = doc.add_paragraph()
+        p_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run_t = p_titre.add_run(service.replace("📝","").replace("👔","").replace("📊","").replace("⚙️","").replace("🎨","").replace("📚","").replace("📄","").strip())
+        run_t.bold = True
+        run_t.font.size = Pt(16)
+        run_t.font.color.rgb = RC(0x1F, 0x4E, 0x79)
+        run_t.font.name = "Arial"
 
-    p_info = doc.add_paragraph()
-    p_info.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run_i = p_info.add_run(f"Client : {client_nom}     |     Généré le : {datetime.now().strftime('%d/%m/%Y à %H:%M')}")
-    run_i.font.size = Pt(10)
-    run_i.font.color.rgb = RC(0x7F, 0x7F, 0x7F)
-    run_i.font.name = "Arial"
-    run_i.italic = True
+        p_info = doc.add_paragraph()
+        p_info.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        run_i = p_info.add_run(f"Client : {client_nom}     |     Généré le : {datetime.now().strftime('%d/%m/%Y à %H:%M')}")
+        run_i.font.size = Pt(10)
+        run_i.font.color.rgb = RC(0x7F, 0x7F, 0x7F)
+        run_i.font.name = "Arial"
+        run_i.italic = True
 
-    p_sep = doc.add_paragraph()
-    pPr = p_sep._p.get_or_add_pPr()
-    pBdr = OxmlElement("w:pBdr")
-    bottom = OxmlElement("w:bottom")
-    bottom.set(qn("w:val"), "single")
-    bottom.set(qn("w:sz"), "6")
-    bottom.set(qn("w:space"), "1")
-    bottom.set(qn("w:color"), "1F4E79")
-    pBdr.append(bottom)
-    pPr.append(pBdr)
+        p_sep = doc.add_paragraph()
+        pPr = p_sep._p.get_or_add_pPr()
+        pBdr = OxmlElement("w:pBdr")
+        bottom = OxmlElement("w:bottom")
+        bottom.set(qn("w:val"), "single")
+        bottom.set(qn("w:sz"), "6")
+        bottom.set(qn("w:space"), "1")
+        bottom.set(qn("w:color"), "1F4E79")
+        pBdr.append(bottom)
+        pPr.append(pBdr)
 
     def add_formatted_para(doc, text, style_name="Normal", bold=False, size=11, color=None, align=None):
         p = doc.add_paragraph(style=style_name)
@@ -3528,6 +3514,7 @@ def creer_docx(contenu, service, client_nom):
     lignes = contenu.split("\n")
     i = 0
     sauts_de_page_count = 0  # Compteur de sauts de page pour détecter page garde + sommaire
+    _last_heading_txt = ""   # Anti-doublon headings consécutifs identiques
 
     while i < len(lignes):
         l = lignes[i].rstrip()
@@ -3708,11 +3695,17 @@ def creer_docx(contenu, service, client_nom):
             i += 1
             continue
         if l.startswith("### "):
-            p = doc.add_heading(l[4:].strip(), level=3)
+            _htxt = l[4:].strip()
+            if _htxt.upper() != _last_heading_txt:
+                p = doc.add_heading(_htxt, level=3)
+                _last_heading_txt = _htxt.upper()
             i += 1
             continue
         if l.startswith("## "):
-            p = doc.add_heading(l[3:].strip(), level=2)
+            _htxt = l[3:].strip()
+            if _htxt.upper() != _last_heading_txt:
+                p = doc.add_heading(_htxt, level=2)
+                _last_heading_txt = _htxt.upper()
             i += 1
             continue
         if l.startswith("# "):
@@ -3720,7 +3713,10 @@ def creer_docx(contenu, service, client_nom):
             if l.startswith("# ═") or l.startswith("# #") or l.startswith("# ─"):
                 i += 1
                 continue
-            p = doc.add_heading(l[2:].strip(), level=1)
+            _htxt = l[2:].strip()
+            if _htxt.upper() != _last_heading_txt:
+                p = doc.add_heading(_htxt, level=1)
+                _last_heading_txt = _htxt.upper()
             i += 1
             continue
 
@@ -6554,15 +6550,14 @@ RÈGLES GÉNÉRALES POUR TOUS LES NIVEAUX :
                 key="exp_notes")
 
             # ── PAGE DE GARDE ──────────────────────────────────────────
-            with st.expander("🎨 Page de garde personnalisée (optionnel)", expanded=False):
-                st.markdown("<small style='color:#aaa'>Ajoutez vos infos pour une page de garde style EICG avec bordure, parchemin et logos officiels CI</small>", unsafe_allow_html=True)
+            with st.expander("🎨 Page de garde personnalisée (optionnel)", expanded=True):
+                st.markdown("<small style='color:#aaa'>Ces informations apparaîtront directement sur la page de garde de votre exposé.</small>", unsafe_allow_html=True)
+
                 col_pg1, col_pg2 = st.columns(2)
                 with col_pg1:
-                    exp_filiere   = st.text_input("🏛️ Filière", placeholder="Ex: Génie Civil – Option Bâtiment", key="exp_filiere")
-                    exp_noms      = st.text_area("👥 Noms des exposants (un par ligne)", height=100,
-                        placeholder="Konan Yao\nAmélie Kouassi\nDiarra Moussa", key="exp_noms")
+                    exp_filiere  = st.text_input("🏛️ Filière", placeholder="Ex: Génie Civil – Option Bâtiment", key="exp_filiere")
+                    exp_annee_pg = st.text_input("📅 Année scolaire", value="2025-2026", key="exp_annee_pg")
                 with col_pg2:
-                    exp_annee_pg  = st.text_input("📅 Année scolaire", value="2025-2026", key="exp_annee_pg")
                     exp_logo_ecole = st.file_uploader("🏫 Logo de votre école (PNG/JPG)", type=["png","jpg","jpeg"], key="exp_logo_ecole")
                     if exp_logo_ecole:
                         import tempfile, os
@@ -6574,10 +6569,38 @@ RÈGLES GÉNÉRALES POUR TOUS LES NIVEAUX :
                     elif "logo_ecole_path" not in st.session_state:
                         st.session_state["logo_ecole_path"] = None
 
+                # ── MEMBRES DU GROUPE — 8 SLOTS COMPACTS AVEC RÔLES ─
+                st.markdown("**👥 Présenté par**")
+                _ROLES_PDG = [
+                    "Chef de groupe", "Rapporteur", "Recherche",
+                    "Mise en page", "Présentation orale", "Secrétaire",
+                    "Illustrations", "Correction"
+                ]
+                # Initialiser 8 slots vides
+                if "exp_membres" not in st.session_state or len(st.session_state["exp_membres"]) != 8:
+                    _old = st.session_state.get("exp_membres", [])
+                    st.session_state["exp_membres"] = (_old + [""] * 8)[:8]
+
+                _membres = st.session_state["exp_membres"]
+                # Affichage en grille 2 colonnes
+                _col_g1, _col_g2 = st.columns(2)
+                for _mi in range(8):
+                    _col = _col_g1 if _mi % 2 == 0 else _col_g2
+                    with _col:
+                        _membres[_mi] = st.text_input(
+                            f"{_mi+1:02d} — {_ROLES_PDG[_mi]}",
+                            value=_membres[_mi],
+                            placeholder="Nom Prénom",
+                            key=f"exp_membre_{_mi}",
+                            label_visibility="visible",
+                        )
+                st.session_state["exp_membres"] = _membres
+
             # Construire le prompt
             _exp_niveau_val  = exp_niveau  if not exp_niveau.startswith("──")  else ""
             _exp_matiere_val = exp_matiere if not exp_matiere.startswith("──") else ""
-            _exp_noms_val    = st.session_state.get("exp_noms", "")
+            _exp_membres_list = [m.strip() for m in st.session_state.get("exp_membres", []) if m.strip()]
+            _exp_noms_val    = " ; ".join(_exp_membres_list)
             _exp_filiere_val = st.session_state.get("exp_filiere", "") if "exp_filiere" in st.session_state else ""
             _exp_annee_val   = st.session_state.get("exp_annee_pg", "2025-2026") if "exp_annee_pg" in st.session_state else "2025-2026"
             prompt = f"""FICHE DE COMMANDE NOVA EXPOSÉ :
@@ -7263,6 +7286,10 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                                             elif "👥 noms exposants" in _ll or ("noms exposants" in _ll and ":" in _ll):
                                                 _noms_raw = _val(_l)
                                                 _noms = [n.strip() for n in _noms_raw.replace(" ; ", ";").replace(",", ";").split(";") if n.strip() and n.strip() != "Non précisés"]
+                                        # Priorité : lire directement depuis session_state exp_membres
+                                        _membres_session = [m.strip() for m in st.session_state.get("exp_membres", []) if m.strip()]
+                                        if _membres_session:
+                                            _noms = _membres_session
                                         # Fallback titre : première ligne H1 du contenu Gemini
                                         if not _titre and result_holder.get("contenu"):
                                             for _gl in result_holder["contenu"].split("\n"):
@@ -7299,10 +7326,52 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                                         _br_el.set(_qnpdg("w:type"), "page")
                                         _r_br._r.append(_br_el)
                                         # Ajouter le contenu de l'exposé depuis buf
+                                        # ── Supprimer tout ce qui précède le SOMMAIRE ──
+                                        # Le doc Gemini contient : header service/client
+                                        # + ligne séparatrice + page de garde Gemini
+                                        # + saut de page + SOMMAIRE. On saute tout ça.
                                         buf.seek(0)
                                         _doc_contenu = _DocPDG(buf)
-                                        for _elem in _doc_contenu.element.body:
-                                            from copy import deepcopy as _dc
+                                        from copy import deepcopy as _dc
+                                        _elems = list(_doc_contenu.element.body)
+                                        _start_idx = 0
+
+                                        def _get_txt(el):
+                                            return "".join(
+                                                t.text or "" for t in el.iter()
+                                                if t.tag.endswith("}t")
+                                            ).strip().upper()
+
+                                        # Priorité 1 : trouver "SOMMAIRE"
+                                        for _ei, _el in enumerate(_elems):
+                                            if "SOMMAIRE" in _get_txt(_el):
+                                                _start_idx = _ei
+                                                break
+                                        else:
+                                            # Priorité 2 : premier Heading 1 = INTRODUCTION
+                                            for _ei, _el in enumerate(_elems):
+                                                _tag = _el.tag.split("}")[-1] if "}" in _el.tag else _el.tag
+                                                _style = _el.get("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}styleId", "")
+                                                # Chercher pStyle dans pPr
+                                                _pPr = _el.find("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pPr")
+                                                _pStyle = _pPr.find("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pStyle") if _pPr is not None else None
+                                                _style_val = _pStyle.get("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val", "") if _pStyle is not None else ""
+                                                if "Heading" in _style_val or "heading" in _style_val.lower():
+                                                    _start_idx = _ei
+                                                    break
+                                            else:
+                                                # Fallback : 2e saut de page
+                                                _nb_sauts = 0
+                                                for _ei, _el in enumerate(_elems):
+                                                    import lxml.etree as _etree
+                                                    _xml = _etree.tostring(_el, encoding="unicode")
+                                                    if "w:br" in _xml and "page" in _xml:
+                                                        _nb_sauts += 1
+                                                        if _nb_sauts >= 2:
+                                                            _start_idx = _ei + 1
+                                                            break
+
+                                        for _elem in _elems[_start_idx:]:
                                             _doc_pdg.element.body.append(_dc(_elem))
                                         # Sauvegarder
                                         _buf_pdg = _BytesPDG()
