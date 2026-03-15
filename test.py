@@ -860,22 +860,15 @@ CHRONOLOGIQUE (sujets historiques) : I (Origines/Passé lointain) → II (Évolu
 ANALYTIQUE (sujets complexes multi-dimensionnels) : I (Dimension économique/scientifique) → II (Dimension sociale/humaine/culturelle) → III (Dimension politique/environnementale/internationale)
 → Idéal pour : "Les enjeux de l'eau en Afrique de l'Ouest", "La question du développement durable"
 
-▶ F. CONSTRUCTION D'UNE CONCLUSION EN 3 TEMPS (structure obligatoire) :
+▶ F. CONSTRUCTION D'UNE CONCLUSION EN UN SEUL PARAGRAPHE (structure obligatoire) :
 
-TEMPS 1 — BILAN HIÉRARCHISÉ (min 6 lignes) :
-Résume l'essentiel de chaque grande partie en 2 phrases fortes.
-NE JAMAIS reproduire mot pour mot — reformuler et synthétiser.
-"En premier lieu, nous avons mis en évidence que [synthèse Partie I en 1-2 phrases reformulées]. Dans un deuxième temps, notre analyse a démontré que [synthèse Partie II]. Enfin, nous avons pu établir que [synthèse Partie III]."
+La conclusion est rédigée en UN SEUL BLOC DE PROSE CONTINU — jamais découpée en "Temps 1 / Temps 2 / Temps 3", jamais de sauts de ligne entre les idées, jamais de sous-titres.
+Le paragraphe unique (15 à 20 lignes minimum) enchaîne naturellement :
+1. Bilan synthétique de chaque grande partie (reformulé, jamais mot pour mot)
+2. Réponse nuancée et directe à la problématique posée en introduction
+3. Ouverture prospective sur un enjeu futur pour CI/Afrique
 
-TEMPS 2 — RÉPONSE NUANCÉE ET ARGUMENTÉE À LA PROBLÉMATIQUE (min 5 lignes) :
-Reprend la problématique posée en introduction et y répond avec nuance.
-"Au terme de cette analyse, il apparaît clairement que [réponse directe à la problématique]. Cette réponse doit cependant être nuancée : si [aspect positif / première dimension], il n'en demeure pas moins que [limite / dimension problématique]."
-
-TEMPS 3 — OUVERTURE PROSPECTIVE ET ÉLARGISSEMENT (min 4 lignes) :
-Ouvre sur un enjeu futur, une question connexe plus large, ou un défi pour CI/Afrique.
-Doit être logiquement reliée au sujet traité — jamais artificielle.
-Propositions d'ouverture : transition numérique et éducation en Afrique | ZLECAF et intégration économique régionale | développement durable et ODD 2030 | santé tropicale et systèmes de santé africains | changement climatique et agriculture africaine | valorisation des langues nationales en éducation.
-"Cette réflexion sur [sujet] nous invite finalement à nous interroger sur [question d'ouverture plus large], enjeu fondamental pour l'avenir [du continent / de la Côte d'Ivoire / de la jeunesse africaine]."
+Tout doit couler comme un seul mouvement de pensée, sans rupture visible entre les trois dimensions.
 
 CITATIONS ET RÉFÉRENCES — FORMAT ACADÉMIQUE RIGOUREUX :
 - Citation directe : « La forêt tropicale est le poumon de la planète. » (FAO, 2022, p. 12)
@@ -977,7 +970,7 @@ SECTION 7 — LES 10 RÈGLES ABSOLUES DE LA GÉNÉRATION NOVA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 RÈGLE 1 — COMPLÉTUDE TOTALE : Zéro "[à compléter]", "[...]", "[insérer]", "[Prénom fictif]" → TOUT rédigé intégralement
-RÈGLE 2 — LONGUEUR SUBSTANTIELLE : Minimum 4 pages réelles (hors garde + sommaire) → viser 6 à 10 pages selon niveau
+RÈGLE 2 — LONGUEUR MAÎTRISÉE : Respecter STRICTEMENT le nombre de pages demandé par le client (6, 7, 8 ou 9 pages). Un exposé percutant et dense vaut mieux qu'un exposé long et dilué. Chaque phrase doit avoir sa raison d'être — zéro remplissage, zéro répétition, zéro reformulation inutile.
 RÈGLE 3 — QUALITÉ LINGUISTIQUE : Orthographe et grammaire irréprochables, ponctuation soignée, style académique soutenu
 RÈGLE 4 — CONTEXTUALISATION OBLIGATOIRE : Min 3 exemples ivoiriens/africains concrets ET chiffrés par grande partie
 RÈGLE 5 — FORMULES NOVA : Utilise la notation x^{{2}}, H_{{2}}O, CO_{{2}}, √(expr), symboles Unicode α β γ π ω ≤ ≥ × → ⇌. LaTeX inline $...$ aussi accepté (converti auto). Voir Section 2 pour tous les exemples.
@@ -992,6 +985,7 @@ RÈGLE 12 — ALINÉA EN DÉBUT DE PARAGRAPHE : Commence chaque nouveau paragrap
 RÈGLE 13 — ESPACEMENT ENTRE BLOCS : Laisse toujours UNE ligne vide entre deux paragraphes, entre un titre et son paragraphe, et entre un paragraphe et un séparateur. Deux lignes vides = trop. Zéro ligne vide = blocs collés (interdit).
 RÈGLE 14 — LONGUEUR MINIMALE PAR PARAGRAPHE : Un paragraphe du développement fait MINIMUM 8 lignes réelles (environ 100-120 mots). Jamais de paragraphe de 2-3 lignes dans le corps — fusionner avec le suivant ou développer davantage.
 RÈGLE 15 — TITRES SANS PONCTUATION FINALE : Les titres # ## ### ne portent jamais de point, virgule ou deux-points en fin de ligne. Exemple correct : "## I. Les fondements économiques du miracle ivoirien". Exemple interdit : "## I. Les fondements économiques :"
+RÈGLE 16 — EXPOSÉ PERCUTANT, PAS LONG : Priorité à la densité et à l'impact. Chaque paragraphe doit apporter quelque chose de nouveau — jamais reformuler ce qui vient d'être dit. Éviter : les phrases creuses d'introduction de paragraphe ("Il convient tout d'abord de noter que..."), les transitions trop longues, les répétitions de chiffres déjà cités. Si le client demande 6 pages → 6 pages denses, pas 6 pages diluées.
 
 === MISSION ===
 
@@ -1031,7 +1025,6 @@ Introduction ............................................................. p. 1
    3.1 [Titre sous-partie] ............................................... p. 6
    3.2 [Titre sous-partie] ............................................... p. 7
 Conclusion ............................................................... p. 8
-Bibliographie ............................................................ p. 9
 
 ---SAUT_DE_PAGE---
 
@@ -1138,41 +1131,7 @@ Bibliographie ............................................................ p. 9
 ## CONCLUSION
 
 
-[TEMPS 1 — BILAN HIÉRARCHISÉ — Min 7 lignes : résume chaque grande partie en 2 phrases fortes REFORMULÉES (jamais mot pour mot). "En premier lieu, nous avons mis en évidence que [synthèse Partie I]. Dans un second temps, notre analyse a démontré que [synthèse Partie II]. Enfin, nous avons établi que [synthèse Partie III]."]
-
-[TEMPS 2 — RÉPONSE NUANCÉE À LA PROBLÉMATIQUE — Min 5 lignes : reprend la question posée en introduction et y répond avec précision et nuance. "Au terme de cette analyse, il apparaît que [réponse directe]. Cette réponse mérite toutefois d'être nuancée : si [aspect positif], il n'en demeure pas moins que [limite/tension]."]
-
-[TEMPS 3 — OUVERTURE PROSPECTIVE — Min 4 lignes : enjeu futur logiquement relié au sujet traité pour CI/Afrique. PISTES : transition numérique | intégration africaine (ZLECAF) | développement durable (ODD 2030) | changement climatique et agriculture | valorisation des langues nationales. "Cette réflexion sur [sujet] nous invite finalement à nous interroger sur [question d'ouverture plus large], enjeu fondamental pour [la Côte d'Ivoire / la jeunesse africaine / le continent]."]
-
-
----SAUT_DE_PAGE---
-
-# ════════════════════════════════════════════════════════
-#                      BIBLIOGRAPHIE
-# ════════════════════════════════════════════════════════
-
-## BIBLIOGRAPHIE
-
-
-**Manuels scolaires et ouvrages pédagogiques :**
-- MINISTÈRE ÉDUCATION NATIONALE CI, *[Titre manuel officiel de la matière]*, CEDA/NEI, Abidjan, 2022
-- [AUTEUR NOM Prénom], *[Titre réel du manuel]*, [Éditeur réel], [Ville], [Année]
-
-**Ouvrages de référence :**
-- [AUTEUR NOM Prénom], *[Titre réel de l'ouvrage]*, [Maison d'édition réelle], [Année]
-
-**Littérature africaine et ivoirienne :**
-- DADIÉ Bernard, *Climbié*, Présence Africaine, Paris, 1956
-- KOUROUMA Ahmadou, *Les Soleils des Indépendances*, Seuil, Paris, 1970
-- [Autres auteurs pertinents selon le sujet traité]
-
-**Sources institutionnelles :**
-- FAO, *[Titre du rapport pertinent]*, Rome, [Année]
-- INS-CI (Institut National de la Statistique), *Annuaire statistique [Année]*, Abidjan
-- Ministère compétent, *[Titre du document]*, Abidjan, [Année]
-
-**Ressources numériques :**
-- [Organisation], *[Titre page]*, [En ligne], URL : www.[site-réel].org, consulté le [date]
+[UN SEUL PARAGRAPHE CONTINU de 15 à 20 lignes minimum — PAS de séparation en temps, PAS de sous-titres, PAS de sauts de ligne entre les idées. Le paragraphe doit enchaîner naturellement : bilan synthétique des grandes parties → réponse nuancée à la problématique → ouverture prospective. Tout coulé dans un seul bloc de prose académique soutenu. Exemple de début : "Au terme de cette analyse approfondie, il convient de dresser un bilan lucide des enseignements majeurs que nous avons dégagés. En premier lieu, nous avons mis en évidence que [synthèse Partie I]. Notre deuxième axe de réflexion a démontré que [synthèse Partie II]. Enfin, [synthèse Partie III si applicable]. Au regard de ces éléments, il apparaît clairement que [réponse directe à la problématique], même si cette réponse mérite d'être nuancée : si [aspect positif], il n'en demeure pas moins que [limite]. Cette réflexion nous invite finalement à nous interroger sur [ouverture prospective], enjeu fondamental pour [CI/Afrique/la jeunesse]."]
 
 
 Rédige maintenant l'exposé COMPLET en français avec la plus grande rigueur académique.
@@ -1182,7 +1141,7 @@ IMPÉRATIFS ABSOLUS :
 2. Introduction en 5 temps (accroche → contextualisation → délimitation → problématique → annonce plan)
 3. Chaque paragraphe suit le modèle PEEL (Point → Explication → Exemple ivoirien sourcé → Lien)
 4. Transitions obligatoires entre grandes parties (min 4 lignes chacune)
-5. Conclusion en 3 temps (bilan → réponse nuancée à la problématique → ouverture prospective)
+5. Conclusion en UN SEUL paragraphe continu (bilan → réponse nuancée → ouverture) — jamais découpée
 6. Min 3 exemples ivoiriens/africains CHIFFRÉS et SOURCÉS par grande partie
 7. Connecteurs logiques variés — jamais le même deux fois de suite dans un paragraphe"""
 
@@ -3923,8 +3882,15 @@ def creer_docx(contenu, service, client_nom):
             run = p.add_run(texte)
             run.bold = True
             run.font.name = "Arial"
-            run.font.size = Pt(12)
-            run.font.color.rgb = RC(0x1F, 0x4E, 0x79)
+            if sauts_de_page_count < 2 and IS_EXPOSE:
+                # Dans le sommaire exposé → grands titres en doré
+                run.font.size = Pt(11)
+                run.font.color.rgb = RC(0xB8, 0x93, 0x2A)
+                p.paragraph_format.space_before = Pt(4)
+                p.paragraph_format.space_after  = Pt(1)
+            else:
+                run.font.size = Pt(12)
+                run.font.color.rgb = RC(0x1F, 0x4E, 0x79)
             i += 1
             continue
 
