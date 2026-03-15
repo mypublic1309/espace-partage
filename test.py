@@ -3035,45 +3035,95 @@ def creer_docx(contenu, service, client_nom):
         section.right_margin  = Cm(2.5)
 
     # ══ MODE EXAMEN IVOIRIEN ══════════════════════════════════════════
-    # Si le service est "Sujets & Examens", on bascule en mode imprimeur
-    # scolaire : Times New Roman, noir, interligne serré, marges réelles CI
     IS_EXAMEN = "Examens" in service or "Sujets" in service
     IS_EXPOSE = "Expos" in service
 
     if IS_EXAMEN:
-        # Marges exactes des vrais sujets CI observés
         for section in doc.sections:
             section.top_margin    = Cm(1.8)
             section.bottom_margin = Cm(1.8)
             section.left_margin   = Cm(2.5)
             section.right_margin  = Cm(2.0)
 
+    # ── NUMÉROTATION X/Y EN BAS DE PAGE (exposés uniquement) ─────
+    if IS_EXPOSE:
+        def _add_page_numbers(section):
+            from docx.oxml import OxmlElement as _OE
+            from docx.oxml.ns import qn as _qn
+            from docx.shared import RGBColor as _RC, Pt as _Pt
+            footer = section.footer
+            footer.is_linked_to_previous = False
+            # Vider le footer
+            for p in footer.paragraphs:
+                p._element.getparent().remove(p._element)
+            p_f = footer.add_paragraph()
+            p_f.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_f.paragraph_format.space_before = _Pt(0)
+            p_f.paragraph_format.space_after  = _Pt(0)
+            def _fld(instr):
+                """Crée un champ Word (PAGE ou NUMPAGES)"""
+                r = p_f.add_run()
+                r.font.name = "Calibri"; r.font.size = _Pt(9)
+                r.font.color.rgb = _RC(0xB8, 0x93, 0x2A)  # doré
+                fldChar_begin = _OE("w:fldChar")
+                fldChar_begin.set(_qn("w:fldCharType"), "begin")
+                r._r.append(fldChar_begin)
+                r2 = p_f.add_run()
+                r2.font.name = "Calibri"; r2.font.size = _Pt(9)
+                r2.font.color.rgb = _RC(0xB8, 0x93, 0x2A)
+                instrText = _OE("w:instrText")
+                instrText.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
+                instrText.text = f" {instr} "
+                r2._r.append(instrText)
+                r3 = p_f.add_run()
+                r3.font.name = "Calibri"; r3.font.size = _Pt(9)
+                r3.font.color.rgb = _RC(0xB8, 0x93, 0x2A)
+                fldChar_end = _OE("w:fldChar")
+                fldChar_end.set(_qn("w:fldCharType"), "end")
+                r3._r.append(fldChar_end)
+            _fld("PAGE")
+            sep = p_f.add_run(" / ")
+            sep.font.name = "Calibri"; sep.font.size = _Pt(9)
+            sep.font.color.rgb = _RC(0xB8, 0x93, 0x2A)
+            _fld("NUMPAGES")
+
+        for _sect in doc.sections:
+            _add_page_numbers(_sect)
+
     style = doc.styles["Normal"]
     style.font.name = "Times New Roman" if IS_EXAMEN else "Arial"
     style.font.size = Pt(11)
     if IS_EXPOSE:
-        # Justification + alinéa première ligne sur le style Normal
-        style.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-        style.paragraph_format.first_line_indent = Cm(1.25)
+        # Tout via XML pour garantir l'application dans Word
+        from docx.oxml import OxmlElement as _OEnorm
+        from docx.oxml.ns import qn as _qnnorm
+        pPr_norm = style.element.get_or_add_pPr()
+        # Justification
+        jc = _OEnorm("w:jc")
+        jc.set(_qnnorm("w:val"), "both")
+        for old in pPr_norm.findall(_qnnorm("w:jc")): pPr_norm.remove(old)
+        pPr_norm.append(jc)
+        # Alinéa première ligne 1.25cm = 709 twips
+        ind = _OEnorm("w:ind")
+        ind.set(_qnnorm("w:firstLine"), "709")
+        for old in pPr_norm.findall(_qnnorm("w:ind")): pPr_norm.remove(old)
+        pPr_norm.append(ind)
+        # Interligne 1.5 (360 = 1.5 × 240)
+        sp_norm = _OEnorm("w:spacing")
+        sp_norm.set(_qnnorm("w:before"), "0")
+        sp_norm.set(_qnnorm("w:after"), "80")
+        sp_norm.set(_qnnorm("w:line"), "360")
+        sp_norm.set(_qnnorm("w:lineRule"), "auto")
+        for old in pPr_norm.findall(_qnnorm("w:spacing")): pPr_norm.remove(old)
+        pPr_norm.append(sp_norm)
     if IS_EXAMEN:
         from docx.oxml import OxmlElement as _OEnorm
         from docx.oxml.ns import qn as _qnnorm
         pPr_norm = style.element.get_or_add_pPr()
         sp_norm = _OEnorm("w:spacing")
         sp_norm.set(_qnnorm("w:before"), "0")
-        sp_norm.set(_qnnorm("w:after"), "40")   # ~2pt après chaque para
-        sp_norm.set(_qnnorm("w:line"), "253")    # 1.1 interligne (240=simple, 276=1.15)
-        sp_norm.set(_qnnorm("w:lineRule"), "auto")
-        pPr_norm.append(sp_norm)
-    elif IS_EXPOSE:
-        # Interligne 1.5 pour tous les paragraphes de l'exposé
-        from docx.oxml import OxmlElement as _OEnorm
-        from docx.oxml.ns import qn as _qnnorm
-        pPr_norm = style.element.get_or_add_pPr()
-        sp_norm = _OEnorm("w:spacing")
-        sp_norm.set(_qnnorm("w:before"), "0")
-        sp_norm.set(_qnnorm("w:after"), "80")    # ~4pt entre paragraphes
-        sp_norm.set(_qnnorm("w:line"), "360")    # 360 = 1.5 interligne (240=simple)
+        sp_norm.set(_qnnorm("w:after"), "40")
+        sp_norm.set(_qnnorm("w:line"), "253")
         sp_norm.set(_qnnorm("w:lineRule"), "auto")
         pPr_norm.append(sp_norm)
 
@@ -6515,12 +6565,10 @@ RÈGLES GÉNÉRALES POUR TOUS LES NIVEAUX :
                 ], index=0, key="exp_matiere")
             with col_b:
                 exp_pages = st.selectbox("📏 Nombre de pages souhaité *", [
-                    "Adapté automatiquement au niveau",
-                    "2 - 3 pages (court)",
-                    "4 - 5 pages (standard collège)",
-                    "6 - 8 pages (standard lycée)",
-                    "8 - 12 pages (université)",
-                    "12 - 20 pages (mémoire / rapport)",
+                    "6 pages",
+                    "7 pages",
+                    "8 pages",
+                    "9 pages",
                 ], index=0, key="exp_pages")
                 exp_langue = st.selectbox("🌍 Langue de rédaction *", [
                     "Français","Anglais","Français + résumé en anglais",
