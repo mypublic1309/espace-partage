@@ -140,6 +140,7 @@ def envoyer_email_auto_gratuit(client_nom, client_wa, service, nom_fichier, dema
     try:
         import resend
         resend.api_key = st.secrets["RESEND_API_KEY"]
+        _modele_info = st.session_state.get("_last_modele_gemini", "inconnu")
         corps = f"""
 🤖 ARSÈNE AI — RÉPONSE AUTOMATIQUE PLAN GRATUIT (2H)
 
@@ -147,6 +148,7 @@ def envoyer_email_auto_gratuit(client_nom, client_wa, service, nom_fichier, dema
 📱 WhatsApp    : {client_wa}
 🛠️ Service     : {service}
 📄 Fichier     : {nom_fichier}
+🧠 Modèle IA   : {_modele_info}
 ⏰ Généré le   : {datetime.now().strftime("%d/%m/%Y à %H:%M")}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -233,6 +235,89 @@ def save_refus(uid, service, message):
         }).execute()
     except Exception as e:
         st.error(f"Erreur sauvegarde refus : {e}")
+
+def purger_fichiers_anciens(jours=20, dry_run=False):
+    """
+    Supprime du Storage Supabase + de la table liens
+    tous les fichiers livrés depuis plus de `jours` jours.
+    Retourne un dict {"supprimes": [...], "erreurs": [...], "ignores": int}
+    """
+    try:
+        import requests as _req
+        from datetime import datetime, timedelta
+
+        BUCKET   = "nova-fichiers"
+        sb_url   = st.secrets["SUPABASE_URL"].rstrip("/")
+        sb_key   = st.secrets.get("SUPABASE_SERVICE_KEY", st.secrets["SUPABASE_KEY"])
+        hdrs     = {"apikey": sb_key, "Authorization": f"Bearer {sb_key}"}
+        limite   = datetime.now() - timedelta(days=jours)
+
+        # Charger tous les liens
+        rows = supabase.table("liens").select("*").execute().data or []
+
+        supprimes = []
+        erreurs   = []
+        ignores   = 0
+
+        for row in rows:
+            url   = row.get("url", "")
+            date  = row.get("date", "")
+            uid   = row.get("uid", "")
+            lien_id = row.get("id")
+
+            # Ignorer les entrées spéciales (refus, locaux)
+            if not url or url.startswith("__"):
+                ignores += 1
+                continue
+
+            # Parser la date (format dd/mm/yyyy)
+            try:
+                date_lien = datetime.strptime(date, "%d/%m/%Y")
+            except Exception:
+                ignores += 1
+                continue
+
+            # Pas encore expiré
+            if date_lien >= limite:
+                ignores += 1
+                continue
+
+            # Extraire le chemin Storage depuis l'URL publique
+            # URL : .../storage/v1/object/public/nova-fichiers/fichiers_clients/...
+            marqueur = f"/object/public/{BUCKET}/"
+            if marqueur not in url:
+                ignores += 1
+                continue
+
+            chemin = url.split(marqueur, 1)[1]
+
+            if dry_run:
+                supprimes.append({"chemin": chemin, "date": date, "uid": uid})
+                continue
+
+            # Supprimer du Storage
+            del_url = f"{sb_url}/storage/v1/object/{BUCKET}/{chemin}"
+            resp = _req.delete(del_url, headers=hdrs, timeout=15)
+
+            if resp.status_code in (200, 204, 404):
+                # 404 = déjà supprimé, on nettoie quand même la table
+                try:
+                    supabase.table("liens").delete().eq("id", lien_id).execute()
+                    supprimes.append({"chemin": chemin, "date": date, "uid": uid})
+                except Exception as e:
+                    erreurs.append(f"DB delete {lien_id}: {e}")
+            else:
+                try:
+                    detail = resp.json()
+                except Exception:
+                    detail = resp.text[:200]
+                erreurs.append(f"{chemin} → HTTP {resp.status_code}: {detail}")
+
+        return {"supprimes": supprimes, "erreurs": erreurs, "ignores": ignores}
+
+    except Exception as e:
+        return {"supprimes": [], "erreurs": [str(e)], "ignores": 0}
+
 
 def sanitize_nom_fichier(nom):
     """Nettoie un nom de fichier pour le rendre compatible avec Supabase Storage.
@@ -345,6 +430,7 @@ def envoyer_notification_gemini_ok(client_nom, client_wa, service, nom_fichier, 
     try:
         import resend
         resend.api_key = st.secrets["RESEND_API_KEY"]
+        _modele_info = st.session_state.get("_last_modele_gemini", "inconnu")
         section_demande = f"""
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📋 DEMANDE COMPLÈTE DU CLIENT :
@@ -358,6 +444,7 @@ def envoyer_notification_gemini_ok(client_nom, client_wa, service, nom_fichier, 
 📱 WhatsApp    : {client_wa}
 🛠️ Service     : {service}
 📄 Fichier     : {nom_fichier}
+🧠 Modèle IA   : {_modele_info}
 ⏰ Généré le   : {datetime.now().strftime("%d/%m/%Y à %H:%M")}
 {section_demande}
 Le document a été livré directement au client via l'interface Nova.
@@ -631,10 +718,12 @@ COMMENT LE MOTEUR NOVA CONVERTIT TON TEXTE EN WORD :
    - Chaque item = une phrase complète, jamais un mot seul
    - USAGE LIMITÉ À : sommaire, bibliographie, listes de faits — JAMAIS dans le développement
 
-6. PARAGRAPHES NORMAUX → Arial 11pt, interligne standard Word :
-   - Tout texte non formaté = paragraphe Normal
+6. PARAGRAPHES NORMAUX → Arial 11pt, interligne 1.5, texte JUSTIFIÉ (des deux côtés) :
+   - Tout texte non formaté = paragraphe Normal justifié automatiquement par Nova
+   - ALINÉA obligatoire : commence chaque paragraphe par 4 espaces (    ) → retrait Word 1.25cm
    - Ligne vide entre deux blocs = espacement naturel dans le document Word final
-   - Chaque paragraphe de développement : 8 à 10 lignes minimum
+   - Chaque paragraphe de développement : 8 à 10 lignes minimum (≈ 100-120 mots)
+   - Un paragraphe trop court (< 4 lignes) sera fusionné ou développé — jamais laissé tel quel
 
 7. À ÉVITER ABSOLUMENT — NE FONCTIONNE PAS DANS LE MOTEUR NOVA :
    ✗ LaTeX : $formule$, \frac{{}}, \omega, \text{{}}, \left(, \right), \\, \begin{{}}
@@ -898,6 +987,11 @@ RÈGLE 7 — ADAPTATION NIVEAU : Vocabulaire + profondeur + longueur strictement
 RÈGLE 8 — PROSE DANS LE DÉVELOPPEMENT : Corps du document = paragraphes continus — jamais de listes à puces
 RÈGLE 9 — DONNÉES PRÉCISES ET SOURCÉES : Chiffres réels, dates précises, institutions réelles — jamais de vague
 RÈGLE 10 — VRAIS AUTEURS ET ŒUVRES : Citer de vraies œuvres d'auteurs réels — jamais "[Auteur fictif, Titre fictif]"
+RÈGLE 11 — JUSTIFICATION OBLIGATOIRE : Chaque paragraphe du développement doit être rédigé en texte JUSTIFIÉ (aligné des deux côtés). Le moteur Nova applique la justification automatiquement sur tous les paragraphes normaux. Pour t'assurer que le rendu est parfait, chaque paragraphe doit être long (8 à 10 lignes minimum) — un paragraphe trop court ne peut pas être justifié visuellement.
+RÈGLE 12 — ALINÉA EN DÉBUT DE PARAGRAPHE : Commence chaque nouveau paragraphe du développement par un retrait de première ligne symbolisé par 4 espaces (    ) ou une tabulation. Le moteur Nova les convertit en vrai retrait Word de 1.25cm. Exemple : "    La **déforestation** constitue l'une des crises..."
+RÈGLE 13 — ESPACEMENT ENTRE BLOCS : Laisse toujours UNE ligne vide entre deux paragraphes, entre un titre et son paragraphe, et entre un paragraphe et un séparateur. Deux lignes vides = trop. Zéro ligne vide = blocs collés (interdit).
+RÈGLE 14 — LONGUEUR MINIMALE PAR PARAGRAPHE : Un paragraphe du développement fait MINIMUM 8 lignes réelles (environ 100-120 mots). Jamais de paragraphe de 2-3 lignes dans le corps — fusionner avec le suivant ou développer davantage.
+RÈGLE 15 — TITRES SANS PONCTUATION FINALE : Les titres # ## ### ne portent jamais de point, virgule ou deux-points en fin de ligne. Exemple correct : "## I. Les fondements économiques du miracle ivoirien". Exemple interdit : "## I. Les fondements économiques :"
 
 === MISSION ===
 
@@ -2484,6 +2578,11 @@ Rédige en français avec une structure claire : titres, sous-titres, paragraphe
                             return _conv_latex(expr)
                         return expr
                     texte = _repost.sub(r'[$]([^$\n]+)[$]', _d_inline, texte)
+                    # ── TRACKING MODÈLE UTILISÉ ──────────────────────────────
+                    try:
+                        st.session_state["_last_modele_gemini"] = modele
+                    except Exception:
+                        pass
                     return texte
             except urllib.error.HTTPError as e:
                 try:
@@ -2552,359 +2651,368 @@ Messages du client :
 
 
 
-def creer_page_garde_expose(doc, titre_expose, noms_exposants, matiere, annee_scolaire, filiere, niveau, logo_ecole_path=None):
+def creer_page_garde_expose(doc, titre_expose, noms_exposants, matiere, annee_scolaire, filiere, niveau, etablissement="", logo_ecole_path=None):
     """
-    Génère la page de garde style GROUPE EICG avec :
-    - Bordure de page dorée
-    - horizontalScroll orange pour le titre
-    - ribbon2 orange pour EXPOSÉ
-    - verticalScroll orange pour les noms
-    - Logos officiels CI
-    Basé sur l'analyse exacte du docx original (positions, couleurs, géométries).
+    Page de garde académique Nova — style HTML de référence.
+    Bordures dorées doubles, typographie Cinzel/Garamond, drapeau CI,
+    grille 4 colonnes exposants, séparateurs diamants, pied de page structuré.
     """
-    from docx.shared import Pt, Cm, RGBColor, Inches, Emu
+    from docx.shared import Pt, Cm, RGBColor, Emu
     from docx.enum.text import WD_ALIGN_PARAGRAPH
     from docx.oxml.ns import qn
     from docx.oxml import OxmlElement
-    import os
+    from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
+    import copy
 
-    # Couleurs thème (extraites du docx original)
-    C_ORANGE  = "ED7D31"   # accent2 — parchemins, rubans
-    C_YELLOW  = "FFC000"   # accent4 — cadre Filière/Niveau
-    C_GREEN   = "70AD47"   # accent6 — cadre NOM DES EXPOSANTS
-    C_BLUE    = "1A3A5C"   # titre texte
-    C_DARK    = "44546A"   # texte foncé
-    C_WHITE   = "FFFFFF"
+    # ── COULEURS ────────────────────────────────────────────────
+    GOLD       = RGBColor(0xB8, 0x93, 0x2A)   # #B8932A
+    GOLD_LIGHT = RGBColor(0xD4, 0xAD, 0x52)   # #D4AD52
+    INK        = RGBColor(0x16, 0x12, 0x0D)   # #16120D
+    INK_SOFT   = RGBColor(0x3A, 0x30, 0x20)   # #3A3020
+    INK_FAINT  = RGBColor(0x7A, 0x6E, 0x5A)   # #7A6E5A
+    ORANGE_CI  = RGBColor(0xF7, 0x7F, 0x00)   # drapeau orange
+    GREEN_CI   = RGBColor(0x00, 0x9A, 0x44)   # drapeau vert
 
-    # ── BORDURE DE PAGE ──────────────────────────────────────────
-    # Bordure dorée/orange sur toute la page (natif Word)
+    # ── HELPERS ──────────────────────────────────────────────────
+    def set_cell_bg(cell, hex_color):
+        tc   = cell._tc
+        tcPr = tc.find(qn("w:tcPr"))
+        if tcPr is None:
+            tcPr = OxmlElement("w:tcPr"); tc.insert(0, tcPr)
+        shd = OxmlElement("w:shd")
+        shd.set(qn("w:val"),   "clear")
+        shd.set(qn("w:color"), "auto")
+        shd.set(qn("w:fill"),  hex_color)
+        for old in tcPr.findall(qn("w:shd")): tcPr.remove(old)
+        tcPr.append(shd)
+
+    def set_cell_borders(cell, sides, color="C9A440", sz="4"):
+        tc   = cell._tc
+        tcPr = tc.find(qn("w:tcPr"))
+        if tcPr is None:
+            tcPr = OxmlElement("w:tcPr"); tc.insert(0, tcPr)
+        tcBrd = tcPr.find(qn("w:tcBorders"))
+        if tcBrd is None:
+            tcBrd = OxmlElement("w:tcBorders"); tcPr.append(tcBrd)
+        for side in sides:
+            el = OxmlElement(f"w:{side}")
+            el.set(qn("w:val"), "single")
+            el.set(qn("w:sz"), sz)
+            el.set(qn("w:color"), color)
+            for old in tcBrd.findall(qn(f"w:{side}")): tcBrd.remove(old)
+            tcBrd.append(el)
+
+    def set_no_border(tbl):
+        tbl_pr = tbl._tbl.find(qn("w:tblPr"))
+        if tbl_pr is None:
+            tbl_pr = OxmlElement("w:tblPr"); tbl._tbl.insert(0, tbl_pr)
+        tbl_brd = OxmlElement("w:tblBorders")
+        for side in ["top","left","bottom","right","insideH","insideV"]:
+            el = OxmlElement(f"w:{side}")
+            el.set(qn("w:val"), "none")
+            tbl_brd.append(el)
+        for old in tbl_pr.findall(qn("w:tblBorders")): tbl_pr.remove(old)
+        tbl_pr.append(tbl_brd)
+
+    def para(text, font_name="EB Garamond", size=10, bold=False, italic=False,
+             color=None, align=WD_ALIGN_PARAGRAPH.CENTER,
+             space_before=0, space_after=0):
+        p = doc.add_paragraph()
+        p.alignment = align
+        p.paragraph_format.space_before = Pt(space_before)
+        p.paragraph_format.space_after  = Pt(space_after)
+        if text:
+            run = p.add_run(text)
+            run.font.name     = font_name
+            run.font.size     = Pt(size)
+            run.font.bold     = bold
+            run.font.italic   = italic
+            run.font.color.rgb = color if color else INK
+        return p
+
+    def spacer(pts=3):
+        p = doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(0)
+        p.paragraph_format.space_after  = Pt(0)
+        p.paragraph_format.line_spacing = Pt(pts)
+
+    def divider_diamonds():
+        """Ligne de séparation avec diamants — ◆ ◇ ◆"""
+        p = doc.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.paragraph_format.space_before = Pt(3)
+        p.paragraph_format.space_after  = Pt(3)
+        run = p.add_run("─" * 18 + "  ◇  ◆  ◇  " + "─" * 18)
+        run.font.name      = "EB Garamond"
+        run.font.size      = Pt(9)
+        run.font.color.rgb = GOLD
+
+    def page_border(doc):
+        """Double bordure dorée sur la page."""
+        sect  = doc.sections[0]
+        sectPr = sect._sectPr
+        for old in sectPr.findall(qn("w:pgBorders")):
+            sectPr.remove(old)
+        pgBorders = OxmlElement("w:pgBorders")
+        pgBorders.set(qn("w:offsetFrom"), "page")
+        pgBorders.set(qn("w:display"), "firstPage")
+        for side in ["top","left","bottom","right"]:
+            b = OxmlElement(f"w:{side}")
+            b.set(qn("w:val"),   "double")
+            b.set(qn("w:sz"),    "24")
+            b.set(qn("w:space"), "24")
+            b.set(qn("w:color"), "B8932A")
+            pgBorders.append(b)
+        sectPr.append(pgBorders)
+
+    # ── BORDURE PAGE ─────────────────────────────────────────────
+    page_border(doc)
+
+    # ── MARGES ───────────────────────────────────────────────────
     sect = doc.sections[0]
-    sectPr = sect._sectPr
-    pgBorders = OxmlElement("w:pgBorders")
-    pgBorders.set(qn("w:offsetFrom"), "page")
-    pgBorders.set(qn("w:display"), "allPages")
-    for side in ["top", "left", "bottom", "right"]:
-        border = OxmlElement(f"w:{side}")
-        border.set(qn("w:val"), "wave")        # style décoratif
-        border.set(qn("w:sz"), "24")           # épaisseur
-        border.set(qn("w:space"), "24")        # espace avec le bord
-        border.set(qn("w:color"), "ED7D31")    # orange comme l'original
-        pgBorders.append(border)
-    # Retirer ancienne bordure si elle existe
-    for old in sectPr.findall(qn("w:pgBorders")):
-        sectPr.remove(old)
-    sectPr.append(pgBorders)
+    sect.top_margin    = Cm(1.8)
+    sect.bottom_margin = Cm(1.5)
+    sect.left_margin   = Cm(2.0)
+    sect.right_margin  = Cm(2.0)
 
-    # ── HELPER : créer une forme flottante (drawingML) ─────────────
-    def add_shape(doc, prst_geom, x_cm, y_cm, w_cm, h_cm,
-                  fill_color=None, border_color=None, border_pt=0,
-                  text_lines=None, font_size=12, bold=False,
-                  text_color="000000", text_align="center",
-                  font_name="Times New Roman", italic=False, no_fill=False,
-                  z_order=1000000):
-        """Ajoute une forme flottante positionnée en centimètres depuis le coin supérieur gauche de la page."""
-        from docx.oxml import OxmlElement as OE
-        from docx.oxml.ns import qn, nsmap
-        import lxml.etree as etree
+    # ══ 1. DRAPEAU CI ════════════════════════════════════════════
+    tbl_flag = doc.add_table(rows=1, cols=3)
+    tbl_flag.alignment = WD_TABLE_ALIGNMENT.CENTER
+    set_no_border(tbl_flag)
+    tbl_flag.columns[0].width = Cm(2.0)
+    tbl_flag.columns[1].width = Cm(2.0)
+    tbl_flag.columns[2].width = Cm(2.0)
+    set_cell_bg(tbl_flag.cell(0,0), "F77F00")
+    set_cell_bg(tbl_flag.cell(0,1), "FFFFFF")
+    set_cell_bg(tbl_flag.cell(0,2), "009A44")
+    for c in range(3):
+        cell = tbl_flag.cell(0,c)
+        cell.paragraphs[0].paragraph_format.space_before = Pt(0)
+        cell.paragraphs[0].paragraph_format.space_after  = Pt(0)
+        cell.height = Cm(0.18)
+    spacer(4)
 
-        EMU = 914400  # 1 inch = 914400 EMU ; 1 cm = 360000 EMU
-        def cm2emu(v): return int(v * 360000)
+    # ══ 2. BLOC INSTITUTION ══════════════════════════════════════
+    spacer(2)
+    para("RÉPUBLIQUE DE CÔTE D'IVOIRE",
+         font_name="Calibri", size=7, bold=True, color=GOLD, space_after=1)
+    # Nom de l'école saisi par le client
+    _nom_ecole = etablissement if etablissement and etablissement not in ("—", "Non précisé", "") else "Établissement"
+    para(_nom_ecole,
+         font_name="Calibri", size=13, bold=True, color=INK, space_after=1)
+    para("Un Peuple — Une Foi — Un Objectif",
+         font_name="EB Garamond", size=9, italic=True, color=INK_SOFT, space_after=1)
 
-        # Créer un paragraphe porteur
-        p_anchor = doc.add_paragraph()
-        p_anchor.paragraph_format.space_before = Pt(0)
-        p_anchor.paragraph_format.space_after  = Pt(0)
+    # Filière (si renseignée) sinon matière
+    if filiere and filiere not in ("—", "Non précisée", ""):
+        para(f"Filière  {filiere}",
+             font_name="Calibri", size=7, bold=True, color=GOLD, space_after=1)
+    elif matiere and matiere not in ("—", "Non précisée", ""):
+        para(f"Matière  {matiere}",
+             font_name="Calibri", size=7, bold=True, color=GOLD, space_after=1)
 
-        # XML de la forme
-        NS = {
-            "wp":  "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing",
-            "a":   "http://schemas.openxmlformats.org/drawingml/2006/main",
-            "wps": "http://schemas.microsoft.com/office/word/2010/wordprocessingShape",
-            "r":   "http://schemas.openxmlformats.org/officeDocument/2006/relationships",
-        }
+    # Niveau / Classe
+    if niveau and niveau not in ("—", "Non précisé", ""):
+        para(f"Classe  {niveau}",
+             font_name="Calibri", size=7, bold=False, color=INK_FAINT, space_after=1)
 
-        fill_xml = ""
-        if no_fill:
-            fill_xml = "<a:noFill/>"
-        elif fill_color:
-            fill_xml = f'''<a:solidFill><a:srgbClr val="{fill_color}"/></a:solidFill>'''
-        else:
-            fill_xml = "<a:noFill/>"
+    # Année scolaire
+    para(f"Année scolaire  {annee_scolaire}",
+         font_name="EB Garamond", size=8, color=INK_FAINT, space_after=2)
 
-        if border_pt > 0 and border_color:
-            ln_xml = f'''<a:ln w="{int(border_pt * 12700)}"><a:solidFill><a:srgbClr val="{border_color}"/></a:solidFill></a:ln>'''
-        else:
-            ln_xml = '<a:ln><a:noFill/></a:ln>'
+    # ══ SÉPARATEUR 1 ═════════════════════════════════════════════
+    divider_diamonds()
 
-        # Construire les paragraphes de texte à l'intérieur
-        text_body = ""
-        if text_lines:
-            for line_text in text_lines:
-                align_map = {"center": "ctr", "left": "l", "right": "r"}
-                a_align = align_map.get(text_align, "ctr")
-                bold_tag = "<w:b/>" if bold else ""
-                italic_tag = "<w:i/>" if italic else ""
-                text_body += f'''
-                <w:p>
-                  <w:pPr><w:jc w:val="{text_align}"/></w:pPr>
-                  <w:r>
-                    <w:rPr>
-                      <w:rFonts w:ascii="{font_name}" w:hAnsi="{font_name}" w:cs="{font_name}"/>
-                      {bold_tag}{italic_tag}
-                      <w:sz w:val="{int(font_size*2)}"/>
-                      <w:szCs w:val="{int(font_size*2)}"/>
-                      <w:color w:val="{text_color}"/>
-                    </w:rPr>
-                    <w:t xml:space="preserve">{line_text}</w:t>
-                  </w:r>
-                </w:p>'''
-        else:
-            text_body = "<w:p/>"
+    # ══ 3. BANDEAU MATIÈRE / NIVEAU ══════════════════════════════
+    tbl_mat = doc.add_table(rows=1, cols=7)
+    tbl_mat.alignment = WD_TABLE_ALIGNMENT.CENTER
+    set_no_border(tbl_mat)
+    widths = [Cm(3.5), Cm(0.2), Cm(3.0), Cm(0.2), Cm(3.8), Cm(0.2), Cm(2.8)]
+    for i, w in enumerate(widths):
+        tbl_mat.columns[i].width = w
 
-        shape_xml = f'''<w:drawing xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-  <wp:anchor distT="0" distB="0" distL="114300" distR="114300"
-             simplePos="0" relativeHeight="{z_order}" behindDoc="0"
-             locked="0" layoutInCell="1" allowOverlap="1"
-             xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">
-    <wp:simplePos x="0" y="0"/>
-    <wp:positionH relativeFrom="page"><wp:posOffset>{cm2emu(x_cm)}</wp:posOffset></wp:positionH>
-    <wp:positionV relativeFrom="page"><wp:posOffset>{cm2emu(y_cm)}</wp:posOffset></wp:positionV>
-    <wp:extent cx="{cm2emu(w_cm)}" cy="{cm2emu(h_cm)}"/>
-    <wp:effectExtent l="0" t="0" r="0" b="0"/>
-    <wp:wrapNone/>
-    <wp:docPr id="1" name="shape"/>
-    <wp:cNvGraphicFramePr/>
-    <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
-      <a:graphicData uri="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">
-        <wps:wsp xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape">
-          <wps:cNvSpPr txBox="1"/>
-          <wps:spPr>
-            <a:xfrm><a:off x="0" y="0"/><a:ext cx="{cm2emu(w_cm)}" cy="{cm2emu(h_cm)}"/></a:xfrm>
-            <a:prstGeom prst="{prst_geom}"><a:avLst/></a:prstGeom>
-            {fill_xml}
-            {ln_xml}
-          </wps:spPr>
-          <wps:txbx>
-            <w:txbxContent xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-              {text_body}
-            </w:txbxContent>
-          </wps:txbx>
-          <wps:bodyPr vert="horz" wrap="square" anchor="ctr" anchorCtr="1">
-            <a:prstTxWarp prst="textNoShape"><a:avLst/></a:prstTxWarp>
-            <a:noAutofit/>
-          </wps:bodyPr>
-        </wps:wsp>
-      </a:graphicData>
-    </a:graphic>
-  </wp:anchor>
-</w:drawing>'''
+    def mat_cell(col, label, value):
+        c = tbl_mat.cell(0, col)
+        c.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+        for p in c.paragraphs: p._element.getparent().remove(p._element)
+        p_lbl = c.add_paragraph(label)
+        p_lbl.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_lbl.paragraph_format.space_before = Pt(0)
+        p_lbl.paragraph_format.space_after  = Pt(1)
+        r_lbl = p_lbl.runs[0]
+        r_lbl.font.name = "Calibri"; r_lbl.font.size = Pt(6)
+        r_lbl.font.bold = True; r_lbl.font.color.rgb = GOLD
+        p_val = c.add_paragraph(value)
+        p_val.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_val.paragraph_format.space_before = Pt(0)
+        p_val.paragraph_format.space_after  = Pt(0)
+        r_val = p_val.runs[0]
+        r_val.font.name = "Calibri"; r_val.font.size = Pt(10)
+        r_val.font.bold = True; r_val.font.color.rgb = INK
 
-        import lxml.etree as etree
-        drawing_el = etree.fromstring(shape_xml)
-        # Injecter dans le run du paragraphe
-        r_el = OE("w:r")
-        rpr = OE("w:rPr")
-        nopr = OE("w:noProof")
-        rpr.append(nopr)
-        r_el.append(rpr)
-        r_el.append(drawing_el)
-        p_anchor._p.append(r_el)
-        return p_anchor
+    mat_cell(0, "MATIÈRE",     matiere       if matiere  not in ("—","","Non précisée") else "—")
+    mat_cell(2, "CLASSE",      niveau        if niveau   not in ("—","","Non précisé")  else "—")
+    mat_cell(4, "ÉTABLISSEMENT", _nom_ecole)
+    mat_cell(6, "ANNÉE",       annee_scolaire if annee_scolaire else "—")
+    # Séparateurs verticaux
+    for col in [1, 3, 5]:
+        c = tbl_mat.cell(0, col)
+        set_cell_borders(c, ["left"], "C9A440", "3")
 
-    # ── HELPER : insérer une image flottante ──────────────────────
-    def add_image_float(doc, img_path, x_cm, y_cm, w_cm, h_cm, z_order=2000000):
-        """Insère une image à position absolue sur la page."""
-        if not os.path.exists(img_path):
-            return
-        from docx.oxml import OxmlElement as OE
-        import lxml.etree as etree
+    spacer(4)
 
-        def cm2emu(v): return int(v * 360000)
+    # ══ SÉPARATEUR 2 ═════════════════════════════════════════════
+    divider_diamonds()
+    spacer(2)
 
-        # Ajouter l'image via python-docx pour obtenir le rId
-        p_img = doc.add_paragraph()
-        p_img.paragraph_format.space_before = Pt(0)
-        p_img.paragraph_format.space_after  = Pt(0)
+    # ══ 4. BADGE EXPOSÉ ══════════════════════════════════════════
+    p_badge = doc.add_paragraph()
+    p_badge.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_badge.paragraph_format.space_before = Pt(2)
+    p_badge.paragraph_format.space_after  = Pt(4)
+    r_b = p_badge.add_run("✦     E X P O S É     ✦")
+    r_b.font.name      = "Calibri"
+    r_b.font.size      = Pt(8)
+    r_b.font.bold      = True
+    r_b.font.color.rgb = GOLD
 
-        # Utiliser la méthode standard pour obtenir rId
-        from docx.parts.image import ImagePart
-        from docx.opc.constants import RELATIONSHIP_TYPE as RT
-        img_part = doc.part.new_pic_inline(img_path, width=Cm(w_cm))
-        # Récupérer rId
-        rId = doc.part.relate_to(
-            doc.part._package.part_related_by(img_path) if hasattr(doc.part._package, 'part_related_by') else None,
-            "http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"
-        ) if False else None
+    # ══ 5. THÈME (titre principal) ════════════════════════════════
+    titre_text = titre_expose.upper() if titre_expose else "TITRE DE L'EXPOSÉ"
+    # Taille adaptative selon longueur
+    if   len(titre_text) <= 35:  titre_pt = 24
+    elif len(titre_text) <= 60:  titre_pt = 20
+    elif len(titre_text) <= 90:  titre_pt = 16
+    else:                         titre_pt = 13
 
-        # Méthode directe : add inline puis convertir en anchor
-        inline_run = p_img.add_run()
-        inline_run.add_picture(img_path, width=Cm(w_cm), height=Cm(h_cm))
+    para("Thème",
+         font_name="Calibri", size=6, bold=True, color=GOLD, space_after=1)
 
-        # Récupérer le drawing inline créé
-        drawing = p_img._p.find(
-            ".//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}drawing"
-        ) or p_img._p.xpath(".//w:drawing", namespaces={"w":"http://schemas.openxmlformats.org/wordprocessingml/2006/main"})
+    p_titre = doc.add_paragraph()
+    p_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_titre.paragraph_format.space_before = Pt(2)
+    p_titre.paragraph_format.space_after  = Pt(6)
+    r_t = p_titre.add_run(titre_text)
+    r_t.font.name      = "Calibri"
+    r_t.font.size      = Pt(titre_pt)
+    r_t.font.bold      = True
+    r_t.font.color.rgb = INK
 
-        # Accéder au inline et modifier en anchor
-        inline_el = p_img._p.xpath(
-            ".//wp:inline",
-            namespaces={"wp":"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"}
-        )
-        if inline_el:
-            inline = inline_el[0]
-            inline.tag = inline.tag.replace("inline", "anchor")
-            inline.set("distT", "0"); inline.set("distB", "0")
-            inline.set("distL", "114300"); inline.set("distR", "114300")
-            inline.set("simplePos", "0")
-            inline.set("relativeHeight", str(z_order))
-            inline.set("behindDoc", "0"); inline.set("locked", "0")
-            inline.set("layoutInCell", "1"); inline.set("allowOverlap", "1")
-            # Ajouter simplePos, positionH, positionV, wrapNone
-            sp = OE("wp:simplePos"); sp.set("x","0"); sp.set("y","0")
-            pH = OE("wp:positionH"); pH.set("relativeFrom","page")
-            pHo = OE("wp:posOffset"); pHo.text = str(cm2emu(x_cm))
-            pH.append(pHo)
-            pV = OE("wp:positionV"); pV.set("relativeFrom","page")
-            pVo = OE("wp:posOffset"); pVo.text = str(cm2emu(y_cm))
-            pV.append(pVo)
-            wrapNone = OE("wp:wrapNone")
-            # Insérer au bon endroit (avant extent)
-            ext_el = inline.find("{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}extent")
-            if ext_el is not None:
-                idx = list(inline).index(ext_el)
-                inline.insert(0, sp)
-                inline.insert(1, pH)
-                inline.insert(2, pV)
-            else:
-                inline.insert(0, sp); inline.insert(1, pH); inline.insert(2, pV)
-            # Remplacer wrapSquare par wrapNone
-            for old_wrap in inline.findall("{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}wrapSquare"):
-                inline.remove(old_wrap)
-            inline.append(wrapNone)
-        return p_img
+    # ══ ORNEMENT ONDULÉ ══════════════════════════════════════════
+    p_orn = doc.add_paragraph()
+    p_orn.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_orn.paragraph_format.space_before = Pt(2)
+    p_orn.paragraph_format.space_after  = Pt(4)
+    r_orn = p_orn.add_run("〜〜〜  ✦  〜〜〜")
+    r_orn.font.name      = "EB Garamond"
+    r_orn.font.size      = Pt(11)
+    r_orn.font.color.rgb = GOLD
 
-    # ── LOGOS EN HAUT À GAUCHE ───────────────────────────────────
-    # Logo Ministère Enseignement Supérieur (si université/BTS)
-    logo_min_path = "/home/claude/enseignement_sup.png"
-    logo_ci_path  = "/home/claude/armoiries_ci.png"
+    # ══ 6. GRILLE 4 COLONNES — EXPOSANTS ═════════════════════════
+    para("— Présenté par —",
+         font_name="Calibri", size=7, bold=True, color=GOLD,
+         space_before=2, space_after=3)
 
-    # Sauvegarder les logos depuis les uploads
-    import shutil
-    if os.path.exists("/mnt/user-data/uploads/enseignement_superieur_exposer.png"):
-        shutil.copy("/mnt/user-data/uploads/enseignement_superieur_exposer.png", logo_min_path)
-    if os.path.exists("/mnt/user-data/uploads/tof_de_garde_.png"):
-        shutil.copy("/mnt/user-data/uploads/tof_de_garde_.png", logo_ci_path)
-
-    # ── ZONE LOGOS HAUT GAUCHE ───────────────────────────────────
-    add_image_float(doc, logo_min_path, x_cm=0.5, y_cm=0.8, w_cm=4.0, h_cm=1.5, z_order=3000000)
-
-    # ── LOGO ÉCOLE (si fourni) ───────────────────────────────────
-    if logo_ecole_path and os.path.exists(logo_ecole_path):
-        add_image_float(doc, logo_ecole_path, x_cm=0.5, y_cm=2.4, w_cm=4.5, h_cm=1.5, z_order=3000001)
-
-    # ── LOGO CI (armoiries) HAUT DROITE ─────────────────────────
-    add_image_float(doc, logo_ci_path, x_cm=13.5, y_cm=0.5, w_cm=4.5, h_cm=3.5, z_order=3000002)
-
-    # ── TEXTE REPUBLIQUE HAUT GAUCHE ────────────────────────────
-    add_shape(doc, "rect", x_cm=0.3, y_cm=0.4, w_cm=6.6, h_cm=1.1,
-              no_fill=True,
-              text_lines=["REPUBLIQUE DE COTE D'IVOIRE"],
-              font_size=10, bold=True, text_color="000000", text_align="left",
-              font_name="Times New Roman")
-
-    # UNION-DISCIPLINE-TRAVAIL
-    add_shape(doc, "rect", x_cm=1.0, y_cm=0.2, w_cm=5.0, h_cm=0.7,
-              no_fill=True,
-              text_lines=["UNION-DISCIPLINE-TRAVAIL"],
-              font_size=9, bold=True, text_color="000000", text_align="left",
-              font_name="Times New Roman")
-
-    # Ministère Éducation Nationale
-    add_shape(doc, "rect", x_cm=0.0, y_cm=1.9, w_cm=6.9, h_cm=0.7,
-              no_fill=True,
-              text_lines=["Ministère de l'Éducation Nationale"],
-              font_size=9, bold=True, text_color="000000", text_align="left",
-              font_name="Times New Roman")
-
-    # ── GRAND PARCHEMIN HORIZONTAL (titre de l'exposé) ──────────
-    # horizontalScroll orange — pos=(1.0, 9.0) size=16.8×7.0cm
-    add_shape(doc, "horizontalScroll", x_cm=1.0, y_cm=9.0, w_cm=16.8, h_cm=7.0,
-              fill_color=C_ORANGE, z_order=1000000)
-
-    # Texte titre par-dessus le parchemin
-    titre_lines = []
-    if titre_expose:
-        # Couper en lignes de ~35 chars
-        words = titre_expose.upper().split()
-        line = ""
-        for w in words:
-            if len(line) + len(w) < 32:
-                line += (" " if line else "") + w
-            else:
-                if line: titre_lines.append(line)
-                line = w
-        if line: titre_lines.append(line)
-    add_shape(doc, "rect", x_cm=2.4, y_cm=10.2, w_cm=14.8, h_cm=4.6,
-              no_fill=True,
-              text_lines=titre_lines,
-              font_size=22, bold=True, text_color=C_BLUE, text_align="center",
-              font_name="Times New Roman")
-
-    # ── RUBAN "EXPOSÉ" ───────────────────────────────────────────
-    # ribbon2 orange — pos=(4.3, 6.9) size=10.8×2.7cm
-    add_shape(doc, "ribbon2", x_cm=4.3, y_cm=6.9, w_cm=10.8, h_cm=2.7,
-              fill_color=C_ORANGE, z_order=1000001)
-    # Texte EXPOSÉ
-    add_shape(doc, "rect", x_cm=4.3, y_cm=6.9, w_cm=10.8, h_cm=2.7,
-              no_fill=True,
-              text_lines=["EXPOSÉ"],
-              font_size=28, bold=True, text_color=C_ORANGE, text_align="center",
-              font_name="Times New Roman", z_order=1000002)
-
-    # ── PARCHEMIN VERTICAL (noms des exposants) ──────────────────
-    # verticalScroll orange — pos=(10.6, 16.9) size=7.5×8.3cm
-    add_shape(doc, "verticalScroll", x_cm=10.6, y_cm=16.9, w_cm=7.5, h_cm=8.3,
-              fill_color=C_ORANGE, z_order=1000010)
-    # En-tête NOM DES EXPOSANTS
-    add_shape(doc, "rect", x_cm=11.4, y_cm=15.8, w_cm=6.4, h_cm=1.1,
-              fill_color=C_GREEN,
-              text_lines=["NOM DES EXPOSANTS"],
-              font_size=9, bold=True, text_color=C_WHITE, text_align="center",
-              font_name="Times New Roman", z_order=1000011)
-    # Noms
-    noms_lines = []
     noms_list = noms_exposants if isinstance(noms_exposants, list) else [noms_exposants]
-    for j in range(1, 8):
-        nom = noms_list[j-1] if j-1 < len(noms_list) else ""
-        noms_lines.append(f"{j}- {nom}")
-    add_shape(doc, "rect", x_cm=11.2, y_cm=17.2, w_cm=6.5, h_cm=7.5,
-              no_fill=True,
-              text_lines=noms_lines,
-              font_size=10, bold=False, text_color="000000", text_align="left",
-              font_name="Times New Roman", z_order=1000012)
+    # Remplir jusqu'à 8 slots
+    while len(noms_list) < 8:
+        noms_list.append("")
 
-    # ── CADRE MATIÈRE / ANNÉE (bas gauche) ───────────────────────
-    # rect avec fond transparent — pos=(3.8, 19.4) size=4.0×1.9cm
-    add_shape(doc, "rect", x_cm=3.8, y_cm=19.4, w_cm=4.0, h_cm=1.9,
-              fill_color=None, border_color="000000", border_pt=1.5,
-              text_lines=[f"Matière : {matiere}", f"Année scolaire : {annee_scolaire}"],
-              font_size=10, bold=False, text_color="000000", text_align="center",
-              font_name="Times New Roman", z_order=1000020)
+    ROLES = ["Chef de groupe", "Rapporteur", "Recherche", "Mise en page",
+             "Présentation orale", "Secrétaire", "Illustrations", "Correction"]
 
-    # ── CADRE FILIÈRE / NIVEAU (bas gauche) ──────────────────────
-    # rect jaune accent4 — pos=(1.3, 22.0) size=9.0×2.0cm
-    add_shape(doc, "rect", x_cm=1.3, y_cm=22.0, w_cm=9.0, h_cm=2.0,
-              fill_color=C_YELLOW,
-              text_lines=[f"Filière : {filiere}", f"Niveau : {niveau}"],
-              font_size=11, bold=False, text_color="000000", text_align="center",
-              font_name="Times New Roman", z_order=1000021)
+    nb_cols = 4
+    nb_rows = 2   # 8 noms → 2 lignes × 4 colonnes
+    tbl_exp = doc.add_table(rows=nb_rows, cols=nb_cols)
+    tbl_exp.alignment = WD_TABLE_ALIGNMENT.CENTER
+    set_no_border(tbl_exp)
+    col_w = Cm(3.8)
+    for c in range(nb_cols):
+        tbl_exp.columns[c].width = col_w
 
-    # Paragraphe espaceur pour remplir la page
-    for _ in range(35):
-        p_esp = doc.add_paragraph()
-        p_esp.paragraph_format.space_before = Pt(0)
-        p_esp.paragraph_format.space_after  = Pt(0)
-        p_esp.paragraph_format.line_spacing = Pt(8)
+    for idx in range(8):
+        row = idx // nb_cols
+        col = idx % nb_cols
+        cell = tbl_exp.cell(row, col)
+        for p in cell.paragraphs: p._element.getparent().remove(p._element)
+
+        # Numéro
+        p_num = cell.add_paragraph(f"{idx+1:02d}")
+        p_num.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p_num.paragraph_format.space_before = Pt(0)
+        p_num.paragraph_format.space_after  = Pt(0)
+        r_num = p_num.runs[0]
+        r_num.font.name = "Calibri"; r_num.font.size = Pt(7)
+        r_num.font.bold = True; r_num.font.color.rgb = GOLD
+
+        # Nom
+        nom = noms_list[idx] if idx < len(noms_list) else ""
+        p_nom = cell.add_paragraph(nom if nom else "—")
+        p_nom.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p_nom.paragraph_format.space_before = Pt(0)
+        p_nom.paragraph_format.space_after  = Pt(0)
+        r_nom = p_nom.runs[0]
+        r_nom.font.name = "Calibri"; r_nom.font.size = Pt(9)
+        r_nom.font.bold = True; r_nom.font.color.rgb = INK
+
+        # Rôle
+        role = ROLES[idx] if idx < len(ROLES) else ""
+        p_role = cell.add_paragraph(role)
+        p_role.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p_role.paragraph_format.space_before = Pt(0)
+        p_role.paragraph_format.space_after  = Pt(2)
+        r_role = p_role.runs[0]
+        r_role.font.name   = "EB Garamond"; r_role.font.size = Pt(7)
+        r_role.font.italic = True; r_role.font.color.rgb = INK_FAINT
+
+        # Bordure gauche dorée sur la cellule
+        set_cell_borders(cell, ["left"], "D4AD52", "6")
+
+    spacer(4)
+
+    # ══ SÉPARATEUR FINAL ══════════════════════════════════════════
+    divider_diamonds()
+    spacer(2)
+
+    # ══ 7. PIED DE PAGE ══════════════════════════════════════════
+    tbl_footer = doc.add_table(rows=1, cols=7)
+    tbl_footer.alignment = WD_TABLE_ALIGNMENT.CENTER
+    set_no_border(tbl_footer)
+    fw = [Cm(3.5), Cm(0.15), Cm(3.8), Cm(0.15), Cm(2.5), Cm(0.15), Cm(2.2)]
+    for i, w in enumerate(fw):
+        tbl_footer.columns[i].width = w
+
+    def footer_cell(col, label, value):
+        c = tbl_footer.cell(0, col)
+        c.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+        for p in c.paragraphs: p._element.getparent().remove(p._element)
+        p_lbl = c.add_paragraph(label)
+        p_lbl.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_lbl.paragraph_format.space_before = Pt(0)
+        p_lbl.paragraph_format.space_after  = Pt(1)
+        r_l = p_lbl.runs[0]
+        r_l.font.name = "Calibri"; r_l.font.size = Pt(6)
+        r_l.font.bold = True; r_l.font.color.rgb = GOLD
+        p_val = c.add_paragraph(value)
+        p_val.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_val.paragraph_format.space_before = Pt(0)
+        p_val.paragraph_format.space_after  = Pt(0)
+        r_v = p_val.runs[0]
+        r_v.font.name = "EB Garamond"; r_v.font.size = Pt(9)
+        r_v.font.color.rgb = INK_SOFT
+
+    from datetime import datetime
+    date_aujourd_hui = datetime.now().strftime("%d/%m/%Y")
+
+    footer_cell(0, "ANNÉE SCOLAIRE",       annee_scolaire if annee_scolaire else "—")
+    footer_cell(2, "DATE DE PRÉSENTATION", date_aujourd_hui)
+    footer_cell(4, "GROUPE",               "—")
+    footer_cell(6, "NOTE",                 "— / 20")
+
+    for col in [1, 3, 5]:
+        c = tbl_footer.cell(0, col)
+        set_cell_borders(c, ["left"], "C9A440", "3")
+
+    spacer(2)
 
     return doc
 
@@ -2946,6 +3054,7 @@ def creer_docx(contenu, service, client_nom):
     # Si le service est "Sujets & Examens", on bascule en mode imprimeur
     # scolaire : Times New Roman, noir, interligne serré, marges réelles CI
     IS_EXAMEN = "Examens" in service or "Sujets" in service
+    IS_EXPOSE = "Expos" in service
 
     if IS_EXAMEN:
         # Marges exactes des vrais sujets CI observés
@@ -2958,6 +3067,10 @@ def creer_docx(contenu, service, client_nom):
     style = doc.styles["Normal"]
     style.font.name = "Times New Roman" if IS_EXAMEN else "Arial"
     style.font.size = Pt(11)
+    if IS_EXPOSE:
+        # Justification + alinéa première ligne sur le style Normal
+        style.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+        style.paragraph_format.first_line_indent = Cm(1.25)
     if IS_EXAMEN:
         from docx.oxml import OxmlElement as _OEnorm
         from docx.oxml.ns import qn as _qnnorm
@@ -2966,6 +3079,17 @@ def creer_docx(contenu, service, client_nom):
         sp_norm.set(_qnnorm("w:before"), "0")
         sp_norm.set(_qnnorm("w:after"), "40")   # ~2pt après chaque para
         sp_norm.set(_qnnorm("w:line"), "253")    # 1.1 interligne (240=simple, 276=1.15)
+        sp_norm.set(_qnnorm("w:lineRule"), "auto")
+        pPr_norm.append(sp_norm)
+    elif IS_EXPOSE:
+        # Interligne 1.5 pour tous les paragraphes de l'exposé
+        from docx.oxml import OxmlElement as _OEnorm
+        from docx.oxml.ns import qn as _qnnorm
+        pPr_norm = style.element.get_or_add_pPr()
+        sp_norm = _OEnorm("w:spacing")
+        sp_norm.set(_qnnorm("w:before"), "0")
+        sp_norm.set(_qnnorm("w:after"), "80")    # ~4pt entre paragraphes
+        sp_norm.set(_qnnorm("w:line"), "360")    # 360 = 1.5 interligne (240=simple)
         sp_norm.set(_qnnorm("w:lineRule"), "auto")
         pPr_norm.append(sp_norm)
 
@@ -4081,12 +4205,23 @@ if st.session_state["current_user"] is None:
     else:
         components.html("""
             <script>
-            var uid = localStorage.getItem('nova_user_id');
-            if (uid) {
-                var url = new URL(window.location.href);
-                url.searchParams.set('user_id', uid);
-                window.location.href = url.toString();
-            }
+            (function() {
+                var uid = localStorage.getItem('nova_user_id') || localStorage.getItem('nova_user');
+                if (uid) {
+                    localStorage.setItem('nova_user_id', uid);
+                    localStorage.removeItem('nova_user');
+                    var ts = localStorage.getItem('nova_user_ts');
+                    var TRENTE_JOURS = 30 * 24 * 60 * 60 * 1000;
+                    if (!ts || (Date.now() - parseInt(ts)) < TRENTE_JOURS) {
+                        var url = new URL(window.parent.location.href);
+                        url.searchParams.set('user_id', uid);
+                        window.parent.location.replace(url.toString());
+                    } else {
+                        localStorage.removeItem('nova_user_id');
+                        localStorage.removeItem('nova_user_ts');
+                    }
+                }
+            })();
             </script>
         """, height=1)
 
@@ -4094,7 +4229,14 @@ if st.session_state["current_user"]:
     uid_connecte = st.session_state["current_user"]
     components.html(f"""
         <script>
-        localStorage.setItem('nova_user_id', '{uid_connecte}');
+        (function() {{
+            var stored = localStorage.getItem('nova_user_id');
+            if (stored !== '{uid_connecte}') {{
+                localStorage.setItem('nova_user_id', '{uid_connecte}');
+                localStorage.setItem('nova_user_ts', Date.now().toString());
+                localStorage.removeItem('nova_user');
+            }}
+        }})();
         </script>
     """, height=1)
 
@@ -5327,7 +5469,14 @@ def main_dashboard():
             if st.button("Quitter la session"):
                 st.session_state["current_user"] = None
                 st.query_params.clear()
-                # localStorage supprimé
+                # Effacer localStorage
+                components.html("""
+                    <script>
+                    localStorage.removeItem('nova_user_id');
+                    localStorage.removeItem('nova_user_ts');
+                    localStorage.removeItem('nova_user');
+                    </script>
+                """, height=0)
                 st.rerun()
         else:
             if st.button("Connexion"):
@@ -5703,7 +5852,7 @@ def main_dashboard():
             st.markdown("#### 🛠️ Service Nova")
         with col_svc_btn:
             st.markdown("")
-            _lbl = "✕ Fermer" if st.session_state["show_services_list"] else "✨ Tous les services"
+            _lbl = "✕ Fermer" if st.session_state["show_services_list"] else "✨ Voir tous les services"
             if st.button(_lbl, key="btn_open_services", use_container_width=True):
                 st.session_state["show_services_list"] = not st.session_state["show_services_list"]
                 st.rerun()
@@ -7079,28 +7228,49 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                                         from io import BytesIO as _BytesPDG
                                         import re as _re_pdg
                                         # Extraire les métadonnées depuis la description
+                                        # ── EXTRACTION DIRECTE DEPUIS LE PROMPT NOVA ──────
+                                        # Le prompt est structuré avec des labels fixes
                                         _titre = ""
                                         _mat   = ""
                                         _annee = "2025-2026"
                                         _fil   = ""
                                         _niv   = ""
+                                        _etab  = ""
                                         _noms  = []
                                         for _line in prompt.split("\n"):
-                                            _l = _line.strip().lower()
-                                            if "matière" in _l or "matiere" in _l:
-                                                _mat = _line.split(":")[-1].strip() if ":" in _line else _mat
-                                            elif "année" in _l or "annee" in _l:
-                                                _annee = _line.split(":")[-1].strip() if ":" in _line else _annee
-                                            elif "filière" in _l or "filiere" in _l:
-                                                _fil = _line.split(":")[-1].strip() if ":" in _line else _fil
-                                            elif "niveau" in _l or "classe" in _l:
-                                                _niv = _line.split(":")[-1].strip() if ":" in _line else _niv
-                                            elif "nom" in _l and "exposant" in _l:
-                                                _noms_raw = _line.split(":")[-1].strip() if ":" in _line else ""
-                                                _noms = [n.strip() for n in _noms_raw.replace(",",";").split(";") if n.strip()]
-                                            elif "sujet" in _l or "thème" in _l or "theme" in _l or "titre" in _l:
-                                                _titre = _line.split(":")[-1].strip() if ":" in _line else _titre
-                                        # Si titre pas trouvé, prendre depuis la description directe
+                                            _l = _line.strip()
+                                            _ll = _l.lower()
+                                            def _val(line):
+                                                return line.split(":", 1)[-1].strip() if ":" in line else ""
+                                            if "🎯 sujet" in _ll or "sujet" in _ll and ":" in _ll:
+                                                _v = _val(_l)
+                                                if _v and _v != "Non précisé": _titre = _v
+                                            elif "📚 matière" in _ll or ("matière" in _ll and ":" in _ll):
+                                                _v = _val(_l)
+                                                if _v and _v != "Non précisée": _mat = _v
+                                            elif "📅 année" in _ll or ("année scolaire" in _ll and ":" in _ll):
+                                                _v = _val(_l)
+                                                if _v: _annee = _v
+                                            elif "🏛️ filière" in _ll or ("filière" in _ll and ":" in _ll):
+                                                _v = _val(_l)
+                                                if _v and _v != "Non précisée": _fil = _v
+                                            elif "🎓 niveau" in _ll or ("niveau" in _ll and ":" in _ll):
+                                                _v = _val(_l)
+                                                if _v and _v != "Non précisé": _niv = _v
+                                            elif "🏢 établissement" in _ll or ("établissement" in _ll and ":" in _ll):
+                                                _v = _val(_l)
+                                                if _v and _v != "Non précisé": _etab = _v
+                                            elif "👥 noms exposants" in _ll or ("noms exposants" in _ll and ":" in _ll):
+                                                _noms_raw = _val(_l)
+                                                _noms = [n.strip() for n in _noms_raw.replace(" ; ", ";").replace(",", ";").split(";") if n.strip() and n.strip() != "Non précisés"]
+                                        # Fallback titre : première ligne H1 du contenu Gemini
+                                        if not _titre and result_holder.get("contenu"):
+                                            for _gl in result_holder["contenu"].split("\n"):
+                                                _gl = _gl.strip()
+                                                if _gl.startswith("# "):
+                                                    _t = _gl.lstrip("# ").strip()
+                                                    if _t and "exposé" not in _t.lower():
+                                                        _titre = _t; break
                                         if not _titre:
                                             _titre = description[:80] if len(description) < 80 else description[:80] + "..."
                                         # Logo école uploadé ?
@@ -7117,6 +7287,7 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                                             annee_scolaire=_annee,
                                             filiere=_fil or "—",
                                             niveau=_niv or "—",
+                                            etablissement=_etab or "",
                                             logo_ecole_path=_logo_ecole
                                         )
                                         # Ajouter saut de page puis le contenu principal
@@ -7177,6 +7348,7 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                             "desc": prompt, "whatsapp": normalize_wa(wa_display),
                             "status": "Traitement Nova en cours...", "incomplet": False,
                             "champs_manquants": [], "timestamp": str(datetime.now()),
+                            "modele_utilise": st.session_state.get("_last_modele_gemini", "—"),
                         }
                         st.session_state["db"]["demandes"].append(new_req)
                         save_demande(new_req)
@@ -7250,7 +7422,8 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                 "status": statut,
                 "incomplet": bool(champs_manquants),
                 "champs_manquants": champs_manquants,
-                "timestamp": str(datetime.now())
+                "timestamp": str(datetime.now()),
+                "modele_utilise": st.session_state.get("_last_modele_gemini", "—"),
             }
             st.session_state["db"]["demandes"].append(new_req)
             save_demande(new_req)
@@ -7608,7 +7781,7 @@ Action requise si le problème n'est pas résolu.
         if st.text_input("Master Key", type="password") == ADMIN_CODE:
 
             current_db = st.session_state["db"]
-            admin_tab1, admin_tab2 = st.tabs(["📋 MISSIONS", "👑 GESTION PREMIUM"])
+            admin_tab1, admin_tab2, admin_tab3 = st.tabs(["📋 MISSIONS", "👑 GESTION PREMIUM", "🗑️ STORAGE"])
 
             with admin_tab1:
                 st.markdown("### 🛡️ Panneau de contrôle Nova")
@@ -7704,6 +7877,10 @@ Action requise si le problème n'est pas résolu.
                         st.markdown(f"👤 **Client :** {client_nom}")
                         st.markdown(f"📱 **WhatsApp :** {client_wa}")
                         st.markdown(f"🛠️ **Service demandé :** {service}")
+                        _modele_log = req.get("modele_utilise", "—")
+                        if _modele_log and _modele_log != "—":
+                            _color = "#FFD700" if "pro" in _modele_log else ("#00aaff" if "flash" in _modele_log and "lite" not in _modele_log else "#aaaaaa")
+                            st.markdown(f"🧠 **Modèle IA :** <span style='color:{_color};font-weight:700;font-family:monospace;'>{_modele_log}</span>", unsafe_allow_html=True)
                         st.markdown(f"📝 **Détails de la demande :** {description}")
                         if "Modifier" in service and "Fichier" in service:
                             _url_dl = None
@@ -7950,26 +8127,45 @@ Action requise si le problème n'est pas résolu.
                                 st.success(f"✅ Premium activé pour {uid_m} !")
                                 st.rerun()
 
+            with admin_tab3:
+                st.markdown("### 🗑️ Nettoyage Storage — Fichiers +20 jours")
+                st.info("Supprime du Storage Supabase et de la table `liens` tous les fichiers livrés depuis plus de 20 jours.")
+
+                col_dry, col_purge = st.columns(2)
+
+                with col_dry:
+                    if st.button("🔍 Simuler (sans supprimer)", key="btn_dry_run", use_container_width=True):
+                        with st.spinner("Analyse en cours..."):
+                            res = purger_fichiers_anciens(jours=20, dry_run=True)
+                        if res["supprimes"]:
+                            st.warning(f"⚠️ {len(res['supprimes'])} fichier(s) seraient supprimés :")
+                            for f in res["supprimes"]:
+                                st.markdown(f"- `{f['uid']}` · {f['date']} · `{f['chemin'].split('/')[-1]}`")
+                        else:
+                            st.success("✅ Aucun fichier à supprimer pour l'instant.")
+                        st.caption(f"{res['ignores']} entrée(s) ignorée(s) (refus, liens spéciaux, non expirés)")
+
+                with col_purge:
+                    if st.button("🗑️ Lancer le nettoyage", key="btn_purge", use_container_width=True, type="primary"):
+                        with st.spinner("Nettoyage en cours..."):
+                            res = purger_fichiers_anciens(jours=20, dry_run=False)
+                        if res["supprimes"]:
+                            st.success(f"✅ {len(res['supprimes'])} fichier(s) supprimé(s) avec succès.")
+                            for f in res["supprimes"]:
+                                st.markdown(f"- `{f['uid']}` · {f['date']} · `{f['chemin'].split('/')[-1]}`")
+                        else:
+                            st.info("Aucun fichier à supprimer.")
+                        if res["erreurs"]:
+                            st.error(f"{len(res['erreurs'])} erreur(s) :")
+                            for e in res["erreurs"]:
+                                st.caption(f"❌ {e}")
+                        st.caption(f"{res['ignores']} entrée(s) ignorée(s)")
+                        st.session_state["db"] = load_db()
+
 
 inject_custom_css()
 
-components.html("""
-    <script>
-    const user = localStorage.getItem('nova_user');
-    const urlParams = new URLSearchParams(window.parent.location.search);
-    const currentUser = urlParams.get('user_id');
-    
-    if (user && !currentUser && !window.parent.location.href.includes('logout')) {
-        window.parent.location.href = window.parent.location.origin + window.parent.location.pathname + '?user_id=' + user;
-    }
-    if (!currentUser && user && window.parent.location.href.includes('logout')) {
-        localStorage.removeItem('nova_user');
-    }
-    if (currentUser && user !== currentUser) {
-        localStorage.setItem('nova_user', currentUser);
-    }
-    </script>
-""", height=1)
+# localStorage géré en haut du fichier (nova_user_id + nova_user_ts)
 
 # Masquer l'iframe vide créée par components.html
 st.markdown("""
