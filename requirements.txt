@@ -16,3 +16,8 @@ pandas
 
 PyMuPDF
 
+pytesseract
+
+Pillow
+
+pdf2image
