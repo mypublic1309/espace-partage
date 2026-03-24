@@ -19,6 +19,7 @@ _SPLASH_CONFIG = {
     "Word": {"icon":"📄","bg":"#050d08","glow":"rgba(0,200,80,0.22)","color":"#4dff88","titre":"TON DOCUMENT WORD<br><span style='color:#4dff88;'>CRÉÉ PAR L'IA</span>","sub":"Rapport · Lettre · Contrat · Document complet","badge":"⚡ LIVRÉ EN 60 SECONDES","prix":"1 GÉNÉRATION · 600 FC"},
     "Modifier": {"icon":"✏️","bg":"#050a0d","glow":"rgba(0,210,255,0.22)","color":"#00d2ff","titre":"MODIFICATION<br><span style='color:#00d2ff;'>DE TON FICHIER</span>","sub":"Word · Excel · PDF · PowerPoint · sur mesure","badge":"📎 IMPORTE TON FICHIER","prix":"TRAITEMENT RAPIDE"},
     "Conversion": {"icon":"🔄","bg":"#050d08","glow":"rgba(46,204,113,0.22)","color":"#2ecc71","titre":"CONVERSION<br><span style='color:#2ecc71;'>INSTANTANÉE</span>","sub":"PDF · Word · Excel · Images · 100% automatique","badge":"⚡ RÉSULTAT EN QUELQUES SEC","prix":"CONVERSION GRATUITE"},
+    "OCR": {"icon":"🔍","bg":"#08050d","glow":"rgba(180,100,255,0.25)","color":"#b464ff","titre":"NUMÉRISATION OCR<br><span style='color:#b464ff;'>TEXTE EXTRACTIBLE</span>","sub":"PDF · Image · Word · Excel scannés → .docx éditable","badge":"📄 FICHIER WORD ÉDITABLE EN SORTIE","prix":"TRAITEMENT AUTOMATIQUE"},
     "Design": {"icon":"🎨","bg":"#0d050a","glow":"rgba(255,80,180,0.22)","color":"#ff50b4","titre":"TON DESIGN<br><span style='color:#ff50b4;'>CRÉÉ PAR L'IA</span>","sub":"Affiches · Reçus · Visuels · Prêts à imprimer","badge":"⚡ LIVRÉ EN 60 SECONDES","prix":"1 GÉNÉRATION · 600 FC"},
 }
 
@@ -5857,6 +5858,7 @@ def main_dashboard():
             "📚 Affiches & Reçus",
             "👔 CV & Lettre de Motivation",
             "📄 Conversion & Fichier PDF",
+            "🔍 OCR — Numérisation de Document",
         ]
 
         col_svc_title, col_svc_btn = st.columns([3, 1])
@@ -7061,6 +7063,177 @@ NOTE : fichier original joint via lien ci-dessous.
 
             prompt = "CONVERSION_AUTO"  # Pas de prompt Gemini ni WhatsApp
 
+        elif "OCR" in service or "Num\u00e9risation" in service:
+            # ================================================================================
+            # SERVICE OCR - Numerisation de document scanne -> .docx editable
+            # 100% Python, pas de Gemini, pas de WhatsApp
+            # ================================================================================
+            _show_splash("OCR")
+            st.markdown(\'\'\'
+            <div style="background:rgba(180,100,255,0.08);border:1px solid rgba(180,100,255,0.35);
+                 border-radius:12px;padding:14px 18px;margin-bottom:14px;">
+                <span style="font-weight:700;color:#b464ff;">\U0001f50d OCR \u2014 Extraction de texte automatique</span>
+                <span style="color:rgba(255,255,255,.5);font-size:.82rem;display:block;margin-top:4px;">
+                    Importez un PDF scann\u00e9, une image ou un document Word/Excel dont le contenu est une image \u2014
+                    Nova extrait le texte et vous livre un fichier <strong style="color:#b464ff;">.docx \u00e9ditable</strong>.
+                </span>
+            </div>
+            \'\'\', unsafe_allow_html=True)
+
+            ocr_fichier = st.file_uploader(
+                "\U0001f4c2 Importer votre document scann\u00e9",
+                type=["pdf", "png", "jpg", "jpeg", "bmp", "tiff", "tif", "webp", "docx", "xlsx"],
+                key="ocr_fichier_upload"
+            )
+
+            if ocr_fichier:
+                ext_ocr = ocr_fichier.name.rsplit(".", 1)[-1].lower()
+                st.info(f"\U0001f4c4 Fichier d\u00e9tect\u00e9 : **{ocr_fichier.name}** ({ext_ocr.upper()})")
+
+                if st.button("\U0001f50d LANCER L'OCR ET G\u00c9N\u00c9RER LE .DOCX", type="primary", use_container_width=True):
+                    try:
+                        import pytesseract
+                        from PIL import Image
+                        import io as _io
+
+                        texte_extrait = ""
+                        images_ocr = []
+
+                        if ext_ocr == "pdf":
+                            try:
+                                from pdf2image import convert_from_bytes
+                                with st.spinner("\U0001f4c4 Conversion PDF \u2192 images..."):
+                                    images_ocr = convert_from_bytes(ocr_fichier.read(), dpi=300)
+                            except ImportError:
+                                st.error("\u274c pdf2image n'est pas install\u00e9. Lancez : pip install pdf2image")
+                                st.stop()
+
+                        elif ext_ocr in ["png", "jpg", "jpeg", "bmp", "tiff", "tif", "webp"]:
+                            img = Image.open(_io.BytesIO(ocr_fichier.read()))
+                            images_ocr = [img]
+
+                        elif ext_ocr == "docx":
+                            try:
+                                import zipfile
+                                docx_bytes = ocr_fichier.read()
+                                with zipfile.ZipFile(_io.BytesIO(docx_bytes)) as zf:
+                                    img_files = [f for f in zf.namelist() if f.startswith("word/media/")]
+                                    if not img_files:
+                                        st.error("\u274c Aucune image trouv\u00e9e dans ce fichier Word. Le document contient peut-\u00eatre du vrai texte \u2014 utilisez le service Conversion \u00e0 la place.")
+                                        st.stop()
+                                    for img_f in img_files:
+                                        img_data = zf.read(img_f)
+                                        try:
+                                            images_ocr.append(Image.open(_io.BytesIO(img_data)))
+                                        except Exception:
+                                            pass
+                            except Exception as e_docx:
+                                st.error(f"\u274c Erreur lecture Word : {e_docx}")
+                                st.stop()
+
+                        elif ext_ocr == "xlsx":
+                            try:
+                                import zipfile
+                                xlsx_bytes = ocr_fichier.read()
+                                with zipfile.ZipFile(_io.BytesIO(xlsx_bytes)) as zf:
+                                    img_files = [f for f in zf.namelist() if f.startswith("xl/media/")]
+                                    if not img_files:
+                                        st.error("\u274c Aucune image trouv\u00e9e dans ce fichier Excel.")
+                                        st.stop()
+                                    for img_f in img_files:
+                                        img_data = zf.read(img_f)
+                                        try:
+                                            images_ocr.append(Image.open(_io.BytesIO(img_data)))
+                                        except Exception:
+                                            pass
+                            except Exception as e_xlsx:
+                                st.error(f"\u274c Erreur lecture Excel : {e_xlsx}")
+                                st.stop()
+
+                        if not images_ocr:
+                            st.error("\u274c Impossible d'extraire des images de ce fichier.")
+                            st.stop()
+
+                        bar_ocr = st.progress(0)
+                        status_ocr = st.empty()
+                        for _idx_img, _img in enumerate(images_ocr):
+                            status_ocr.markdown(
+                                f"<p style='color:#b464ff;font-weight:700;'>\U0001f50d Analyse page {_idx_img+1}/{len(images_ocr)}...</p>",
+                                unsafe_allow_html=True
+                            )
+                            _txt = pytesseract.image_to_string(_img, lang="fra", config="--psm 6")
+                            texte_extrait += _txt + "\n\n"
+                            bar_ocr.progress(int((_idx_img + 1) / len(images_ocr) * 100))
+
+                        bar_ocr.empty()
+                        status_ocr.empty()
+
+                        if not texte_extrait.strip():
+                            st.warning("\u26a0\ufe0f Aucun texte d\u00e9tect\u00e9. V\u00e9rifiez la qualit\u00e9 du scan (r\u00e9solution recommand\u00e9e : 300 DPI minimum).")
+                            st.stop()
+
+                        from docx import Document as _DocxDoc
+                        from docx.shared import Pt, Cm
+                        from docx.enum.text import WD_ALIGN_PARAGRAPH
+                        from docx.shared import RGBColor as _RGBColor
+
+                        doc_ocr = _DocxDoc()
+
+                        for section in doc_ocr.sections:
+                            section.top_margin    = Cm(2.5)
+                            section.bottom_margin = Cm(2.5)
+                            section.left_margin   = Cm(2.5)
+                            section.right_margin  = Cm(2.5)
+
+                        _style_normal = doc_ocr.styles["Normal"]
+                        _style_normal.font.name = "Calibri"
+                        _style_normal.font.size = Pt(11)
+
+                        _titre_para = doc_ocr.add_heading("Document extrait par OCR \u2014 Nova Platform", level=1)
+                        _titre_para.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+                        _sub = doc_ocr.add_paragraph(f"Source : {ocr_fichier.name}")
+                        _sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                        _sub.runs[0].font.size = Pt(9)
+                        _sub.runs[0].font.color.rgb = _RGBColor(0x88, 0x88, 0x88)
+
+                        doc_ocr.add_paragraph("")
+
+                        lignes_ocr = texte_extrait.split("\n")
+                        for _ligne in lignes_ocr:
+                            _ligne_strip = _ligne.strip()
+                            if _ligne_strip:
+                                _p = doc_ocr.add_paragraph(_ligne_strip)
+                                _p.paragraph_format.space_after = Pt(4)
+                            else:
+                                doc_ocr.add_paragraph("")
+
+                        _buf_ocr = _io.BytesIO()
+                        doc_ocr.save(_buf_ocr)
+                        _buf_ocr.seek(0)
+
+                        nom_sortie_ocr = ocr_fichier.name.rsplit(".", 1)[0] + "_OCR_Nova.docx"
+                        st.success(f"\u2705 OCR termin\u00e9 \u2014 {len(images_ocr)} page(s) trait\u00e9e(s) \u00b7 {len(texte_extrait.split())} mots extraits")
+                        st.download_button(
+                            label="\U0001f4e5 T\u00c9L\u00c9CHARGER LE .DOCX \u00c9DITABLE",
+                            data=_buf_ocr,
+                            file_name=nom_sortie_ocr,
+                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                            use_container_width=True,
+                        )
+
+                        with st.expander("\U0001f441\ufe0f Aper\u00e7u du texte extrait (300 premiers caract\u00e8res)"):
+                            st.text(texte_extrait[:300] + ("..." if len(texte_extrait) > 300 else ""))
+
+                    except ImportError as _ie:
+                        st.error(f"\u274c Module manquant : {_ie}. Installez : pip install pytesseract Pillow pdf2image")
+                    except Exception as _e_ocr:
+                        st.error(f"\u274c Erreur OCR : {_e_ocr}")
+            else:
+                st.info("\u2b06\ufe0f Importez votre fichier scann\u00e9 pour d\u00e9marrer l'extraction OCR")
+
+            prompt = "OCR_AUTO"  # Pas de prompt Gemini ni WhatsApp
+
         else:
             # ── Splash screen adapté au service ───────────────────────────────
             if "CV" in service or "Lettre" in service:
@@ -7179,7 +7352,7 @@ NOTE : fichier original joint via lien ci-dessous.
             </div>""", unsafe_allow_html=True)
 
         label_btn = "⚡ GÉNÉRER MAINTENANT AVEC L'IA NOVA" if (premium_actif and service in SERVICES_GEMINI) else "🚀 LANCER LA GÉNÉRATION"
-        if "Conversion" not in service and st.button(label_btn):
+        if "Conversion" not in service and "OCR_AUTO" not in (prompt or "") and "OCR" not in service and "Numérisation" not in service and st.button(label_btn):
             if not user:
                 st.session_state["view"] = "auth"
                 st.rerun()
