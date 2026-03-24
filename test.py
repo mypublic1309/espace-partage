@@ -7108,20 +7108,19 @@ NOTE : fichier original joint via lien ci-dessous.
 
                         if ext_ocr == "pdf":
                             try:
-                                from pdf2image import convert_from_bytes
+                                import fitz  # pymupdf - pas besoin de poppler
                                 with st.spinner("📄 Conversion PDF → images..."):
-                                    # Détection automatique chemin poppler
-                                    _pdftoppm_path = _shutil2.which("pdftoppm")
-                                    _poppler_path = None
-                                    if _pdftoppm_path:
-                                        _poppler_path = __import__("os").path.dirname(_pdftoppm_path)
-                                    images_ocr = convert_from_bytes(
-                                        ocr_fichier.read(),
-                                        dpi=300,
-                                        poppler_path=_poppler_path
-                                    )
+                                    _pdf_bytes = ocr_fichier.read()
+                                    _pdf_doc = fitz.open(stream=_pdf_bytes, filetype="pdf")
+                                    for _page in _pdf_doc:
+                                        _mat = fitz.Matrix(300 / 72, 300 / 72)  # 300 DPI
+                                        _pix = _page.get_pixmap(matrix=_mat)
+                                        _img_bytes = _pix.tobytes("png")
+                                        from PIL import Image as _PILImage
+                                        images_ocr.append(_PILImage.open(_io.BytesIO(_img_bytes)))
+                                    _pdf_doc.close()
                             except ImportError:
-                                st.error("❌ pdf2image non installé. Lancez : pip install pdf2image")
+                                st.error("❌ pymupdf non installé. Ajoutez 'pymupdf' dans requirements.txt")
                                 st.stop()
 
                         elif ext_ocr in ["png", "jpg", "jpeg", "bmp", "tiff", "tif", "webp"]:
