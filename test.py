@@ -7090,11 +7090,18 @@ NOTE : fichier original joint via lien ci-dessous.
                 ext_ocr = ocr_fichier.name.rsplit(".", 1)[-1].lower()
                 st.info(f"📄 Fichier détecté : **{ocr_fichier.name}** ({ext_ocr.upper()})")
 
+                # ── Diagnostic poppler ──────────────────────────────────────
+                import shutil as _shutil
+                _pdftoppm = _shutil.which("pdftoppm")
+                _pdfinfo  = _shutil.which("pdfinfo")
+                st.info(f"🔧 Diagnostic poppler — pdftoppm: `{_pdftoppm}` | pdfinfo: `{_pdfinfo}`")
+
                 if st.button("🔍 LANCER L'OCR ET GÉNÉRER LE .DOCX", type="primary", use_container_width=True):
                     try:
                         import pytesseract
                         from PIL import Image
                         import io as _io
+                        import shutil as _shutil2
 
                         texte_extrait = ""
                         images_ocr = []
@@ -7102,14 +7109,12 @@ NOTE : fichier original joint via lien ci-dessous.
                         if ext_ocr == "pdf":
                             try:
                                 from pdf2image import convert_from_bytes
-                                import shutil
                                 with st.spinner("📄 Conversion PDF → images..."):
-                                    # Chercher poppler dans les chemins courants sur Linux/Streamlit Cloud
+                                    # Détection automatique chemin poppler
+                                    _pdftoppm_path = _shutil2.which("pdftoppm")
                                     _poppler_path = None
-                                    for _p in ["/usr/bin", "/usr/local/bin", "/usr/lib/x86_64-linux-gnu/", shutil.which("pdftoppm") or ""]:
-                                        if _p and __import__('os').path.exists(_p):
-                                            _poppler_path = _p
-                                            break
+                                    if _pdftoppm_path:
+                                        _poppler_path = __import__("os").path.dirname(_pdftoppm_path)
                                     images_ocr = convert_from_bytes(
                                         ocr_fichier.read(),
                                         dpi=300,
