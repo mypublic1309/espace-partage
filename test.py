@@ -7102,8 +7102,19 @@ NOTE : fichier original joint via lien ci-dessous.
                         if ext_ocr == "pdf":
                             try:
                                 from pdf2image import convert_from_bytes
+                                import shutil
                                 with st.spinner("📄 Conversion PDF → images..."):
-                                    images_ocr = convert_from_bytes(ocr_fichier.read(), dpi=300)
+                                    # Chercher poppler dans les chemins courants sur Linux/Streamlit Cloud
+                                    _poppler_path = None
+                                    for _p in ["/usr/bin", "/usr/local/bin", "/usr/lib/x86_64-linux-gnu/", shutil.which("pdftoppm") or ""]:
+                                        if _p and __import__('os').path.exists(_p):
+                                            _poppler_path = _p
+                                            break
+                                    images_ocr = convert_from_bytes(
+                                        ocr_fichier.read(),
+                                        dpi=300,
+                                        poppler_path=_poppler_path
+                                    )
                             except ImportError:
                                 st.error("❌ pdf2image non installé. Lancez : pip install pdf2image")
                                 st.stop()
