@@ -20,4 +20,4 @@ pytesseract
 
 Pillow
 
-pdf2image
+pymupdf
