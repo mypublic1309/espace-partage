@@ -5503,91 +5503,509 @@ def main_dashboard():
     # MODALE CHOIX DU MODE — apparaît une seule fois à la connexion
     # ══════════════════════════════════════════════════════════════
     if st.session_state.get("show_mode_modal", False):
-        # Masquer complètement le reste de la page avec du CSS simple
         st.markdown("""
         <style>
-        section[data-testid="stSidebar"] { display: none !important; }
+        /* ═══════════════════════════════════════════════════
+           NOVA PLATFORM — MODE SELECTION · FULL SCREEN MAGIC
+           ═══════════════════════════════════════════════════ */
+
+        section[data-testid="stSidebar"]          { display: none !important; }
+        header[data-testid="stHeader"]            { display: none !important; }
+        [data-testid="stToolbar"]                 { display: none !important; }
+        footer                                     { display: none !important; }
+        [data-testid="stAppViewContainer"]        { padding: 0 !important; }
+        [data-testid="stMainBlockContainer"]      { padding: 0 !important; max-width: 100% !important; }
+        .main .block-container                    { padding: 0 !important; max-width: 100% !important; }
+        [data-testid="stMain"]                    { padding: 0 !important; }
+
+        /* ── Fond animé plein écran ── */
+        @keyframes bgPulse {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes starFloat {
+            0%   { transform: translateY(0px) rotate(0deg); opacity: 0; }
+            10%  { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+        @keyframes shimmerTitle {
+            0%   { background-position: -400% center; }
+            100% { background-position: 400% center; }
+        }
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 20px currentColor); }
+            50%       { transform: translateY(-12px) scale(1.08); filter: drop-shadow(0 0 40px currentColor); }
+        }
+        @keyframes cardGlowGold {
+            0%,100% { box-shadow: 0 0 30px rgba(255,215,0,0.15), 0 25px 50px rgba(0,0,0,0.5), inset 0 0 0px transparent; }
+            50%      { box-shadow: 0 0 70px rgba(255,215,0,0.35), 0 35px 70px rgba(0,0,0,0.6), inset 0 0 30px rgba(255,215,0,0.05); }
+        }
+        @keyframes cardGlowCyan {
+            0%,100% { box-shadow: 0 0 30px rgba(0,210,255,0.15), 0 25px 50px rgba(0,0,0,0.5), inset 0 0 0px transparent; }
+            50%      { box-shadow: 0 0 70px rgba(0,210,255,0.35), 0 35px 70px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,210,255,0.05); }
+        }
+        @keyframes rotateBorderGold {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes rotateBorderCyan {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes fadeSlideUp {
+            0%   { opacity: 0; transform: translateY(40px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0px) scale(1); }
+        }
+        @keyframes fadeSlideDown {
+            0%   { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50%       { transform: scale(1.6); opacity: 0.5; }
+        }
+        @keyframes orDividerShimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes badgePop {
+            0%   { transform: scale(0.7); opacity: 0; }
+            60%  { transform: scale(1.08); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes particleStar {
+            0%   { transform: translate(var(--tx), var(--ty)) scale(0) rotate(0deg); opacity: 0; }
+            20%  { opacity: 1; }
+            80%  { opacity: 0.7; }
+            100% { transform: translate(calc(var(--tx) * 3), calc(var(--ty) * 3)) scale(1.5) rotate(360deg); opacity: 0; }
+        }
+        @keyframes scanlineMove {
+            0%   { top: -5%; }
+            100% { top: 105%; }
+        }
+        @keyframes tagBounce {
+            0%,100% { transform: translateY(0); }
+            50%      { transform: translateY(-4px); }
+        }
+        @keyframes footerFade {
+            0%   { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes ringPulse {
+            0%,100% { transform: scale(1); opacity: 0.5; }
+            50%      { transform: scale(1.15); opacity: 0.15; }
+        }
+
+        /* ── Wrapper page entière ── */
+        .nova-mode-page {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(-45deg, #0a0800, #0d0a1a, #000d1a, #0a0008, #001a0d);
+            background-size: 400% 400%;
+            animation: bgPulse 12s ease infinite;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 9999; overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* ── Particules flottantes ── */
+        .nova-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+        .nova-particle {
+            position: absolute; border-radius: 50%;
+            animation: starFloat linear infinite;
+        }
+        .nova-particle:nth-child(1)  { width:3px;height:3px;left:10%;background:#FFD700;animation-duration:8s;animation-delay:0s; }
+        .nova-particle:nth-child(2)  { width:2px;height:2px;left:20%;background:#00d2ff;animation-duration:11s;animation-delay:1s; }
+        .nova-particle:nth-child(3)  { width:4px;height:4px;left:35%;background:#FFD700;animation-duration:7s;animation-delay:2s; }
+        .nova-particle:nth-child(4)  { width:2px;height:2px;left:50%;background:#ffffff;animation-duration:13s;animation-delay:0.5s; }
+        .nova-particle:nth-child(5)  { width:3px;height:3px;left:65%;background:#00d2ff;animation-duration:9s;animation-delay:3s; }
+        .nova-particle:nth-child(6)  { width:2px;height:2px;left:80%;background:#FFD700;animation-duration:10s;animation-delay:1.5s; }
+        .nova-particle:nth-child(7)  { width:4px;height:4px;left:90%;background:#ffffff;animation-duration:6s;animation-delay:4s; }
+        .nova-particle:nth-child(8)  { width:2px;height:2px;left:42%;background:#c87aff;animation-duration:12s;animation-delay:2.5s; }
+        .nova-particle:nth-child(9)  { width:3px;height:3px;left:72%;background:#FFD700;animation-duration:8.5s;animation-delay:0.8s; }
+        .nova-particle:nth-child(10) { width:2px;height:2px;left:5%;background:#00d2ff;animation-duration:14s;animation-delay:3.5s; }
+        .nova-particle:nth-child(11) { width:3px;height:3px;left:55%;background:#2ecc71;animation-duration:9.5s;animation-delay:5s; }
+        .nova-particle:nth-child(12) { width:2px;height:2px;left:28%;background:#ffffff;animation-duration:11.5s;animation-delay:6s; }
+
+        /* ── Halos d'ambiance ── */
+        .nova-halo {
+            position: absolute; border-radius: 50%;
+            filter: blur(80px); pointer-events: none;
+        }
+        .nova-halo-gold {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(255,215,0,0.12) 0%, transparent 70%);
+            top: -150px; left: -100px;
+            animation: ringPulse 6s ease-in-out infinite;
+        }
+        .nova-halo-cyan {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(0,210,255,0.12) 0%, transparent 70%);
+            bottom: -150px; right: -100px;
+            animation: ringPulse 6s ease-in-out infinite 3s;
+        }
+        .nova-halo-purple {
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(180,100,255,0.08) 0%, transparent 70%);
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+        }
+
+        /* ── Contenu central ── */
+        .nova-mode-content {
+            position: relative; z-index: 10;
+            width: 100%; max-width: 520px;
+            padding: 0 20px;
+            animation: fadeSlideDown 0.7s ease both;
+        }
+
+        /* ── En-tête ── */
+        .nova-mode-header {
+            text-align: center;
+            margin-bottom: 32px;
+            animation: fadeSlideDown 0.6s ease both;
+        }
+        .nova-mode-logo-ring {
+            position: relative;
+            width: 80px; height: 80px;
+            margin: 0 auto 20px auto;
+        }
+        .nova-mode-logo-ring-bg {
+            position: absolute; inset: 0; border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #fff8e1, #FFD700 50%, #b8860b);
+            box-shadow: 0 0 0 4px rgba(255,215,0,0.2), 0 0 50px rgba(255,215,0,0.5);
+        }
+        .nova-mode-logo-ring-rotate {
+            position: absolute; inset: -6px; border-radius: 50%;
+            border: 2px dashed rgba(255,215,0,0.5);
+            animation: rotateBorderGold 8s linear infinite;
+        }
+        .nova-mode-logo-ring-emoji {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem;
+        }
+        .nova-mode-title {
+            font-size: 2rem; font-weight: 900;
+            background: linear-gradient(90deg, #b8860b, #FFD700, #fff5c0, #FFD700, #b8860b);
+            background-size: 300% auto;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerTitle 4s linear infinite;
+            margin-bottom: 6px; letter-spacing: 1px;
+        }
+        .nova-mode-subtitle {
+            color: rgba(255,255,255,0.35);
+            font-size: 0.72rem; letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+        .nova-mode-divider-top {
+            display: flex; align-items: center; gap: 12px;
+            margin: 16px auto; max-width: 300px;
+        }
+        .nova-mode-divider-top-line {
+            flex: 1; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.4), transparent);
+        }
+        .nova-mode-divider-top-dot {
+            width: 5px; height: 5px; border-radius: 50%;
+            background: #FFD700;
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+
+        /* ── Cartes ── */
+        .nova-mode-card {
+            position: relative;
+            border-radius: 22px;
+            padding: 28px 24px 22px 24px;
+            margin-bottom: 14px;
+            text-align: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .nova-mode-card:hover { transform: translateY(-3px) scale(1.01); }
+
+        /* Carte Plateforme */
+        .nova-card-platform {
+            background: linear-gradient(145deg,
+                rgba(255,215,0,0.10) 0%,
+                rgba(255,140,0,0.06) 50%,
+                rgba(255,215,0,0.04) 100%);
+            border: 1.5px solid rgba(255,215,0,0.45);
+            animation: cardGlowGold 4s ease-in-out infinite, fadeSlideUp 0.7s ease 0.1s both;
+        }
+        /* Carte Nova IA */
+        .nova-card-ia {
+            background: linear-gradient(145deg,
+                rgba(0,200,255,0.10) 0%,
+                rgba(0,120,200,0.06) 50%,
+                rgba(0,200,255,0.04) 100%);
+            border: 1.5px solid rgba(0,200,255,0.45);
+            animation: cardGlowCyan 4s ease-in-out infinite 2s, fadeSlideUp 0.7s ease 0.25s both;
+        }
+
+        /* Ligne scanline sur la carte */
+        .nova-card-scanline {
+            position: absolute; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            animation: scanlineMove 4s linear infinite;
+            pointer-events: none;
+        }
+
+        /* Bandeau supérieur de la carte */
+        .nova-card-topbar {
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            border-radius: 22px 22px 0 0;
+        }
+        .nova-card-topbar-gold {
+            background: linear-gradient(90deg, #7a5500, #FFD700, #fff5c0, #FFD700, #7a5500);
+            background-size: 200% auto;
+            animation: shimmerTitle 3s linear infinite;
+        }
+        .nova-card-topbar-cyan {
+            background: linear-gradient(90deg, #004060, #00d2ff, #7df9ff, #00d2ff, #004060);
+            background-size: 200% auto;
+            animation: shimmerTitle 3s linear infinite;
+        }
+
+        /* Icône flottante */
+        .nova-card-icon-wrap {
+            position: relative; display: inline-block;
+            margin-bottom: 14px;
+        }
+        .nova-card-icon {
+            font-size: 3rem; display: block;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+        .nova-card-icon-platform { color: #FFD700; }
+        .nova-card-icon-ia { color: #00d2ff; }
+        .nova-card-icon-ring {
+            position: absolute; inset: -8px;
+            border-radius: 50%;
+            border: 1.5px solid;
+            animation: rotateBorderGold 6s linear infinite;
+            opacity: 0.4;
+        }
+        .nova-card-icon-ring-gold { border-color: rgba(255,215,0,0.6); }
+        .nova-card-icon-ring-cyan { border-color: rgba(0,210,255,0.6); animation-direction: reverse; }
+
+        /* Badge mode */
+        .nova-card-badge {
+            display: inline-block;
+            border-radius: 50px; padding: 4px 14px;
+            font-size: 0.68rem; font-weight: 800;
+            letter-spacing: 2px; text-transform: uppercase;
+            margin-bottom: 12px;
+            animation: badgePop 0.5s ease both;
+        }
+        .nova-badge-gold {
+            background: rgba(255,215,0,0.15);
+            border: 1px solid rgba(255,215,0,0.5);
+            color: #FFD700;
+            animation-delay: 0.3s;
+        }
+        .nova-badge-cyan {
+            background: rgba(0,210,255,0.15);
+            border: 1px solid rgba(0,210,255,0.5);
+            color: #00d2ff;
+            animation-delay: 0.45s;
+        }
+
+        /* Titre de la carte */
+        .nova-card-title {
+            font-size: 1.2rem; font-weight: 900;
+            margin-bottom: 8px; letter-spacing: 0.5px;
+        }
+        .nova-card-title-gold { color: #FFD700; }
+        .nova-card-title-cyan { color: #00d2ff; }
+
+        /* Description */
+        .nova-card-desc {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.82rem; line-height: 1.75;
+            margin-bottom: 14px;
+        }
+
+        /* Tags features */
+        .nova-card-tags {
+            display: flex; flex-wrap: wrap; gap: 6px;
+            justify-content: center; margin-top: 4px;
+        }
+        .nova-card-tag {
+            font-size: 0.68rem; padding: 3px 10px;
+            border-radius: 20px; font-weight: 600;
+            animation: tagBounce 3s ease-in-out infinite;
+        }
+        .nova-card-tag:nth-child(2) { animation-delay: 0.3s; }
+        .nova-card-tag:nth-child(3) { animation-delay: 0.6s; }
+        .nova-tag-gold {
+            background: rgba(255,215,0,0.10);
+            border: 1px solid rgba(255,215,0,0.25);
+            color: rgba(255,215,0,0.8);
+        }
+        .nova-tag-cyan {
+            background: rgba(0,210,255,0.10);
+            border: 1px solid rgba(0,210,255,0.25);
+            color: rgba(0,210,255,0.8);
+        }
+
+        /* Séparateur OU */
+        .nova-or-divider {
+            display: flex; align-items: center; gap: 14px;
+            margin: 6px 0 6px 0;
+        }
+        .nova-or-line {
+            flex: 1; height: 1px;
+            background: linear-gradient(90deg, transparent,
+                rgba(255,255,255,0.08), rgba(255,255,255,0.12), rgba(255,255,255,0.08), transparent);
+            background-size: 200% auto;
+            animation: orDividerShimmer 3s linear infinite;
+        }
+        .nova-or-text {
+            color: rgba(255,255,255,0.18);
+            font-size: 0.78rem; font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        /* Boutons Streamlit — override global dans le contexte de la modale */
+        .nova-mode-content .stButton > button {
+            border-radius: 50px !important;
+            font-weight: 800 !important;
+            font-size: 0.88rem !important;
+            letter-spacing: 1.5px !important;
+            text-transform: uppercase !important;
+            height: 48px !important;
+            border: none !important;
+            transition: all 0.25s ease !important;
+            margin-top: 6px !important;
+        }
+        [data-testid="stButton"][key="mode_platform_btn"] > button,
+        button[kind="primary"] {
+            background: linear-gradient(90deg, #7a5500, #b8860b, #FFD700, #b8860b, #7a5500) !important;
+            background-size: 200% auto !important;
+            color: #0a0800 !important;
+            animation: shimmerTitle 3s linear infinite !important;
+            box-shadow: 0 6px 25px rgba(255,215,0,0.4) !important;
+        }
+
+        /* Footer */
+        .nova-mode-footer {
+            text-align: center;
+            color: rgba(255,255,255,0.15);
+            font-size: 0.70rem;
+            padding-top: 10px;
+            letter-spacing: 1px;
+            animation: footerFade 1s ease 1s both;
+        }
+        .nova-mode-footer-dot {
+            display: inline-block; width: 4px; height: 4px;
+            border-radius: 50%; background: rgba(255,215,0,0.3);
+            margin: 0 6px; vertical-align: middle;
+            animation: pulseDot 2s ease-in-out infinite;
+        }
         </style>
+
+        <div class="nova-mode-page">
+            <!-- Halos d'ambiance -->
+            <div class="nova-halo nova-halo-gold"></div>
+            <div class="nova-halo nova-halo-cyan"></div>
+            <div class="nova-halo nova-halo-purple"></div>
+
+            <!-- Particules flottantes -->
+            <div class="nova-particles">
+                <div class="nova-particle"></div><div class="nova-particle"></div>
+                <div class="nova-particle"></div><div class="nova-particle"></div>
+                <div class="nova-particle"></div><div class="nova-particle"></div>
+                <div class="nova-particle"></div><div class="nova-particle"></div>
+                <div class="nova-particle"></div><div class="nova-particle"></div>
+                <div class="nova-particle"></div><div class="nova-particle"></div>
+            </div>
+
+            <!-- Contenu central -->
+            <div class="nova-mode-content">
+
+                <!-- En-tête -->
+                <div class="nova-mode-header">
+                    <div class="nova-mode-logo-ring">
+                        <div class="nova-mode-logo-ring-bg"></div>
+                        <div class="nova-mode-logo-ring-rotate"></div>
+                        <div class="nova-mode-logo-ring-emoji">⚡</div>
+                    </div>
+                    <div class="nova-mode-title">NOVA PLATFORM</div>
+                    <div class="nova-mode-subtitle">Choisissez votre expérience</div>
+                    <div class="nova-mode-divider-top">
+                        <div class="nova-mode-divider-top-line"></div>
+                        <div class="nova-mode-divider-top-dot"></div>
+                        <div class="nova-mode-divider-top-line"></div>
+                    </div>
+                </div>
+
+                <!-- Carte Version Plateforme -->
+                <div class="nova-mode-card nova-card-platform">
+                    <div class="nova-card-scanline"></div>
+                    <div class="nova-card-topbar nova-card-topbar-gold"></div>
+                    <div class="nova-card-icon-wrap">
+                        <span class="nova-card-icon nova-card-icon-platform">🖥️</span>
+                        <div class="nova-card-icon-ring nova-card-icon-ring-gold"></div>
+                    </div>
+                    <div class="nova-card-badge nova-badge-gold">✦ MODE CLASSIQUE ✦</div>
+                    <div class="nova-card-title nova-card-title-gold">Version Plateforme</div>
+                    <div class="nova-card-desc">
+                        Parcours tous les services Nova,<br>
+                        décris ton besoin et génère en 1 clic.
+                    </div>
+                    <div class="nova-card-tags">
+                        <span class="nova-card-tag nova-tag-gold">⚡ Génération auto</span>
+                        <span class="nova-card-tag nova-tag-gold">📂 Mes livrables</span>
+                        <span class="nova-card-tag nova-tag-gold">👑 Dashboard complet</span>
+                    </div>
+                </div>
+        </div>
         """, unsafe_allow_html=True)
 
-        # Centrage via colonnes Streamlit
         _, col_center, _ = st.columns([1, 3, 1])
         with col_center:
-            st.markdown("<br><br>", unsafe_allow_html=True)
-
-            # En-tête
-            st.markdown("""
-            <div style="text-align:center; padding: 20px 0 10px 0;">
-                <div style="font-size:2.8rem; margin-bottom:8px;">👋</div>
-                <div style="font-size:1.6rem; font-weight:900; color:#ffffff; margin-bottom:6px;">
-                    Bienvenue sur Nova Platform
-                </div>
-                <div style="color:rgba(255,255,255,0.4); font-size:0.9rem; letter-spacing:2px; margin-bottom:30px;">
-                    CHOISISSEZ VOTRE MODE
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-
-            # Carte Plateforme
-            st.markdown("""
-            <div style="
-                background: linear-gradient(145deg, rgba(255,215,0,0.1), rgba(255,140,0,0.06));
-                border: 2px solid rgba(255,215,0,0.5);
-                border-radius: 20px;
-                padding: 28px 24px;
-                margin-bottom: 16px;
-                text-align: center;
-            ">
-                <div style="font-size:2.8rem; margin-bottom:10px;">🖥️</div>
-                <div style="display:inline-block; background:rgba(255,215,0,0.15);
-                    border:1px solid rgba(255,215,0,0.35); border-radius:20px;
-                    padding:3px 14px; font-size:0.75rem; font-weight:700;
-                    color:#FFD700; letter-spacing:1px; margin-bottom:12px;">
-                    MODE CLASSIQUE
-                </div>
-                <div style="font-size:1.15rem; font-weight:800; color:#FFD700; margin-bottom:10px;">
-                    Version Plateforme
-                </div>
-                <div style="color:rgba(255,255,255,0.5); font-size:0.85rem; line-height:1.7;">
-                    Parcours les services Nova, decris ton besoin<br>
-                    et soumets ta demande ou genere en 1 clic.
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            if st.button("🖥️  Utiliser la Version Plateforme", key="mode_platform_btn", use_container_width=True):
+            if st.button("🖥️  UTILISER LA VERSION PLATEFORME", key="mode_platform_btn", use_container_width=True):
                 st.session_state["show_mode_modal"] = False
                 st.rerun()
 
-            st.markdown("<div style='text-align:center; color:rgba(255,255,255,0.2); padding:8px 0; font-size:0.85rem;'>— ou —</div>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="max-width:520px; margin:0 auto; padding: 0 20px;">
+            <div class="nova-or-divider">
+                <div class="nova-or-line"></div>
+                <div class="nova-or-text">— OU —</div>
+                <div class="nova-or-line"></div>
+            </div>
 
-            # Carte Chat Nova IA
-            st.markdown("""
-            <div style="
-                background: linear-gradient(145deg, rgba(0,200,255,0.1), rgba(0,120,200,0.06));
-                border: 2px solid rgba(0,200,255,0.5);
-                border-radius: 20px;
-                padding: 28px 24px;
-                margin-bottom: 16px;
-                text-align: center;
-            ">
-                <div style="font-size:2.8rem; margin-bottom:10px;">🤖</div>
-                <div style="display:inline-block; background:rgba(0,200,255,0.15);
-                    border:1px solid rgba(0,200,255,0.35); border-radius:20px;
-                    padding:3px 14px; font-size:0.75rem; font-weight:700;
-                    color:#00d2ff; letter-spacing:1px; margin-bottom:12px;">
-                    MODE IA
+            <!-- Carte Nova IA -->
+            <div class="nova-mode-card nova-card-ia">
+                <div class="nova-card-scanline"></div>
+                <div class="nova-card-topbar nova-card-topbar-cyan"></div>
+                <div class="nova-card-icon-wrap">
+                    <span class="nova-card-icon nova-card-icon-ia">🤖</span>
+                    <div class="nova-card-icon-ring nova-card-icon-ring-cyan"></div>
                 </div>
-                <div style="font-size:1.15rem; font-weight:800; color:#00d2ff; margin-bottom:10px;">
-                    Chat avec Nova IA
-                </div>
-                <div style="color:rgba(255,255,255,0.5); font-size:0.85rem; line-height:1.7;">
+                <div class="nova-card-badge nova-badge-cyan">✦ MODE IA ✦</div>
+                <div class="nova-card-title nova-card-title-cyan">Chat avec Nova IA</div>
+                <div class="nova-card-desc">
                     Dis ce que tu veux en langage naturel.<br>
-                    Nova IA pose les bonnes questions et genere<br>
-                    ou soumet ta demande automatiquement.
+                    Nova IA comprend, questionne et génère<br>
+                    ton document automatiquement.
+                </div>
+                <div class="nova-card-tags">
+                    <span class="nova-card-tag nova-tag-cyan">🧠 IA conversationnelle</span>
+                    <span class="nova-card-tag nova-tag-cyan">✨ Génération intelligente</span>
+                    <span class="nova-card-tag nova-tag-cyan">⚡ Instantané</span>
                 </div>
             </div>
-            """, unsafe_allow_html=True)
-            if st.button("🤖  Discuter avec Nova IA", key="mode_chat_btn", use_container_width=True):
+        </div>
+        """, unsafe_allow_html=True)
+
+        _, col_center2, _ = st.columns([1, 3, 1])
+        with col_center2:
+            if st.button("🤖  DISCUTER AVEC NOVA IA", key="mode_chat_btn", use_container_width=True):
                 st.session_state["show_mode_modal"] = False
                 st.session_state.pop("nova_ia_chat", None)
                 st.session_state.pop("nova_ia_phase", None)
@@ -5596,12 +6014,16 @@ def main_dashboard():
                 st.session_state["view"] = "nova_ia"
                 st.rerun()
 
-            st.markdown("""
-            <div style="text-align:center; color:rgba(255,255,255,0.2);
-                font-size:0.75rem; padding-top:16px;">
-                Tu pourras changer de mode a tout moment depuis le menu
+        st.markdown("""
+            <div class="nova-mode-footer">
+                <span>Nova Platform</span>
+                <span class="nova-mode-footer-dot"></span>
+                <span>Tu pourras changer de mode à tout moment</span>
+                <span class="nova-mode-footer-dot"></span>
+                <span>Abidjan, Côte d'Ivoire 🇨🇮</span>
             </div>
-            """, unsafe_allow_html=True)
+        </div>
+        """, unsafe_allow_html=True)
 
         return   # stoppe le dashboard le temps que le client choisit
 
