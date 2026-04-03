@@ -4216,32 +4216,27 @@ if st.session_state["current_user"] is None:
     if stored_user and stored_user in st.session_state["db"]["users"]:
         st.session_state["current_user"] = stored_user
     else:
-        # Utilise un <form target="_top"> qui contourne la restriction navigateur sur les iframes
         components.html("""
-            <form id="nova-restore-form" method="GET" target="_top" style="display:none;">
-                <input type="hidden" name="user_id" id="nova-uid-input" value="" />
-            </form>
             <script>
             (function() {
                 var uid = localStorage.getItem('nova_user_id') || localStorage.getItem('nova_user');
-                var ts  = localStorage.getItem('nova_user_ts');
-                var TRENTE_JOURS = 30 * 24 * 60 * 60 * 1000;
-                if (uid && (!ts || (Date.now() - parseInt(ts)) < TRENTE_JOURS)) {
+                if (uid) {
                     localStorage.setItem('nova_user_id', uid);
                     localStorage.removeItem('nova_user');
-                    var base = window.top.location.origin + window.top.location.pathname;
-                    var form = document.getElementById('nova-restore-form');
-                    form.action = base;
-                    document.getElementById('nova-uid-input').value = uid;
-                    form.submit();
-                } else if (uid) {
-                    localStorage.removeItem('nova_user_id');
-                    localStorage.removeItem('nova_user_ts');
-                    localStorage.removeItem('nova_user');
+                    var ts = localStorage.getItem('nova_user_ts');
+                    var TRENTE_JOURS = 30 * 24 * 60 * 60 * 1000;
+                    if (!ts || (Date.now() - parseInt(ts)) < TRENTE_JOURS) {
+                        var url = new URL(window.parent.location.href);
+                        url.searchParams.set('user_id', uid);
+                        window.parent.location.replace(url.toString());
+                    } else {
+                        localStorage.removeItem('nova_user_id');
+                        localStorage.removeItem('nova_user_ts');
+                    }
                 }
             })();
             </script>
-        """, height=0)
+        """, height=1)
 
 if st.session_state["current_user"]:
     uid_connecte = st.session_state["current_user"]
@@ -4939,6 +4934,29 @@ def inject_custom_css():
 
 
 def show_auth_page():
+    # ── Traitement connexion via formulaire HTML natif (autocomplete navigateur) ──
+    _nova_wa_form = st.query_params.get("nova_wa_login", "")
+    _nova_login_err = st.query_params.get("nova_login_err", "")
+    if _nova_wa_form:
+        _wa_digits = "".join(c for c in _nova_wa_form if c.isdigit())
+        _wa_norm   = normalize_wa(_wa_digits)
+        _fresh_db  = load_db()
+        st.session_state["db"] = _fresh_db
+        _uid_found = None
+        for _u_id, _u_data in _fresh_db["users"].items():
+            if _u_data["whatsapp"] == _wa_norm:
+                _uid_found = _u_id
+                break
+        if _uid_found:
+            st.session_state["current_user"] = _uid_found
+            st.session_state["view"] = "home"
+            st.query_params["user_id"] = _uid_found
+            st.rerun()
+        else:
+            # Numéro inconnu → on repasse sur la page auth avec un flag d'erreur
+            st.query_params["nova_login_err"] = "1"
+            st.rerun()
+
     st.markdown("""
     <style>
     @keyframes shimmer {
@@ -5186,39 +5204,81 @@ def show_auth_page():
             </div>
         </div>
         """, unsafe_allow_html=True)
-        # --- LOGIN : numéro WhatsApp uniquement ---
-        wa_auth_raw = st.text_input("📱 Votre numéro WhatsApp", placeholder="Ex: 22501...", key="wa_login_input")
-        wa_auth = "".join(c for c in wa_auth_raw if c.isdigit())
-        if wa_auth_raw != wa_auth and wa_auth_raw:
-            st.warning("⚠️ Le numéro WhatsApp ne doit contenir que des chiffres.")
-        # Champ password caché pour que le téléphone propose d'enregistrer
-        components.html("""
-            <form id="nova-login-form" autocomplete="on" style="display:none;">
-                <input type="tel" name="username" autocomplete="username" />
-                <input type="password" name="password" autocomplete="current-password" value="nova_auth" />
-                <button type="submit">ok</button>
-            </form>
-            <script>
-            document.getElementById("nova-login-form").addEventListener("submit", function(e){ e.preventDefault(); });
-            </script>
-        """, height=1)
-        if st.button("⚡ S'IDENTIFIER", use_container_width=True, key="btn_login"):
-            fresh_db = load_db()
-            st.session_state["db"] = fresh_db
-            db = fresh_db
-            wa_norm = normalize_wa(wa_auth)
-            uid_trouve = None
-            for u_id, u_data in db["users"].items():
-                if u_data["whatsapp"] == wa_norm:
-                    uid_trouve = u_id
-                    break
-            if uid_trouve:
-                st.session_state["current_user"] = uid_trouve
-                st.session_state["view"] = "home"
-                st.query_params["user_id"] = uid_trouve
-                st.rerun()
-            else:
-                st.error("❌ Numéro WhatsApp inconnu. Vérifiez ou créez un compte.")
+        # --- LOGIN : formulaire HTML natif — le navigateur propose d'enregistrer ---
+        _prefill_wa = st.query_params.get("nova_wa_login", "")
+        _show_err   = st.query_params.get("nova_login_err", "")
+        components.html(f"""
+        <style>
+          * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+          body {{ background: transparent; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }}
+          .nv-label {{
+            color: #c87aff; font-size: 0.8rem; font-weight: 700;
+            letter-spacing: 0.5px; margin-bottom: 6px; display: block;
+          }}
+          .nv-input {{
+            width: 100%; padding: 10px 14px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(200,122,255,0.35);
+            border-radius: 8px; color: #fff; font-size: 0.95rem;
+            outline: none; transition: border-color .2s;
+          }}
+          .nv-input:focus {{ border-color: #c87aff; box-shadow: 0 0 0 3px rgba(200,122,255,0.15); }}
+          .nv-input::placeholder {{ color: rgba(255,255,255,0.28); }}
+          .nv-btn {{
+            width: 100%; padding: 11px; margin-top: 12px;
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            border: none; border-radius: 8px; color: #fff;
+            font-size: 0.93rem; font-weight: 800; cursor: pointer;
+            letter-spacing: 1px; transition: opacity .2s;
+          }}
+          .nv-btn:hover {{ opacity: 0.88; }}
+          .nv-err {{
+            color: #ff7070; font-size: 0.8rem; margin-top: 8px;
+            padding: 7px 12px; background: rgba(255,60,60,0.1);
+            border-radius: 6px; border: 1px solid rgba(255,60,60,0.25);
+          }}
+        </style>
+        <form id="nv-login" method="GET" target="_top" autocomplete="on">
+          <div style="margin-bottom:10px;">
+            <label class="nv-label">📱 Votre numéro WhatsApp</label>
+            <input
+              type="tel"
+              name="nova_wa_login"
+              class="nv-input"
+              placeholder="Ex: 22501..."
+              autocomplete="username"
+              value="{_prefill_wa}"
+              id="nv-wa"
+              required
+            />
+          </div>
+          <!-- Champ password visible par le navigateur → déclenche la proposition d'enregistrer -->
+          <input
+            type="password"
+            name="_nv_p"
+            autocomplete="current-password"
+            value="nova_platform_auth"
+            tabindex="-1"
+            aria-hidden="true"
+            style="position:absolute;width:1px;height:1px;opacity:0.01;pointer-events:none;border:none;"
+          />
+          {"<div class='nv-err'>❌ Numéro WhatsApp inconnu. Vérifiez ou créez un compte.</div>" if _show_err else ""}
+          <button type="submit" class="nv-btn">⚡ S'IDENTIFIER</button>
+        </form>
+        <script>
+          (function() {{
+            var form = document.getElementById('nv-login');
+            var base = window.top.location.origin + window.top.location.pathname;
+            form.action = base;
+            // Supprimer le flag d'erreur de l'URL après affichage
+            if (window.top.location.search.includes('nova_login_err')) {{
+              var url = new URL(window.top.location.href);
+              url.searchParams.delete('nova_login_err');
+              window.top.history.replaceState({{}}, '', url.toString());
+            }}
+          }})();
+        </script>
+        """, height=165)
 
     with col2:
         st.markdown("""
