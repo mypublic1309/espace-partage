@@ -4213,52 +4213,35 @@ if "premium_livrable" not in st.session_state:
 
 if st.session_state["current_user"] is None:
     stored_user = st.query_params.get("user_id")
-    _already_checked = st.query_params.get("_session_checked")
-
     if stored_user and stored_user in st.session_state["db"]["users"]:
-        # ✅ user_id dans l'URL → restauration de session
         st.session_state["current_user"] = stored_user
-
-    elif not _already_checked:
-        # ⏳ Pas encore vérifié localStorage → on bloque le rendu et on laisse le JS décider
+    else:
+        # Utilise un <form target="_top"> qui contourne la restriction navigateur sur les iframes
         components.html("""
+            <form id="nova-restore-form" method="GET" target="_top" style="display:none;">
+                <input type="hidden" name="user_id" id="nova-uid-input" value="" />
+            </form>
             <script>
-            setTimeout(function() {
+            (function() {
                 var uid = localStorage.getItem('nova_user_id') || localStorage.getItem('nova_user');
                 var ts  = localStorage.getItem('nova_user_ts');
                 var TRENTE_JOURS = 30 * 24 * 60 * 60 * 1000;
-                var url = new URL(window.parent.location.href);
-
                 if (uid && (!ts || (Date.now() - parseInt(ts)) < TRENTE_JOURS)) {
-                    // Compte trouvé et encore valide → on restaure la session
                     localStorage.setItem('nova_user_id', uid);
                     localStorage.removeItem('nova_user');
-                    url.searchParams.set('user_id', uid);
-                } else {
-                    // Rien de valide → on marque "déjà vérifié" pour éviter boucle infinie
+                    var base = window.top.location.origin + window.top.location.pathname;
+                    var form = document.getElementById('nova-restore-form');
+                    form.action = base;
+                    document.getElementById('nova-uid-input').value = uid;
+                    form.submit();
+                } else if (uid) {
                     localStorage.removeItem('nova_user_id');
                     localStorage.removeItem('nova_user_ts');
                     localStorage.removeItem('nova_user');
-                    url.searchParams.set('_session_checked', '1');
                 }
-                window.parent.location.replace(url.toString());
-            }, 150);
+            })();
             </script>
         """, height=0)
-
-        # 🔒 Bloquer tout rendu ici — rien ne s'affiche avant la réponse JS
-        st.markdown("""
-        <div style="display:flex;align-items:center;justify-content:center;
-            height:80vh;flex-direction:column;gap:20px;">
-            <div style="font-size:3.5rem;filter:drop-shadow(0 0 24px #c87aff);">⚡</div>
-            <div style="color:#c87aff;font-family:monospace;font-size:1.1rem;
-                font-weight:900;letter-spacing:4px;">NOVA AI</div>
-            <div style="color:rgba(255,255,255,0.35);font-size:.82rem;
-                font-family:monospace;letter-spacing:2px;">
-                Vérification de votre session...</div>
-        </div>
-        """, unsafe_allow_html=True)
-        st.stop()
 
 if st.session_state["current_user"]:
     uid_connecte = st.session_state["current_user"]
