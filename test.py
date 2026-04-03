@@ -8191,7 +8191,7 @@ Action requise si le problème n'est pas résolu.
         if st.text_input("Master Key", type="password") == ADMIN_CODE:
 
             current_db = st.session_state["db"]
-            admin_tab1, admin_tab2, admin_tab3 = st.tabs(["📋 MISSIONS", "👑 GESTION PREMIUM", "🗑️ STORAGE"])
+            admin_tab1, admin_tab2, admin_tab3, admin_tab4 = st.tabs(["📋 MISSIONS", "👑 GESTION PREMIUM", "🗑️ STORAGE", "🔧 MIGRATION UIDs"])
 
             with admin_tab1:
                 st.markdown("### 🛡️ Panneau de contrôle Nova")
@@ -8605,6 +8605,72 @@ Action requise si le problème n'est pas résolu.
                                 st.caption(f"❌ {e}")
                         st.caption(f"{res['ignores']} entrée(s) ignorée(s)")
                         st.session_state["db"] = load_db()
+
+
+            with admin_tab4:
+                st.markdown("### 🔧 Migration — Corriger les anciens UIDs")
+                st.info(
+                    "Certains anciens comptes ont un uid aléatoire (ex: `8a387850d656f49f`) au lieu "
+                    "de leur numéro WhatsApp. Cet outil les corrige en Supabase automatiquement."
+                )
+
+                tous = current_db["users"]
+                # Détecter les comptes dont l'uid != whatsapp normalisé
+                a_migrer = {
+                    uid: d for uid, d in tous.items()
+                    if uid != d.get("whatsapp", "")
+                }
+
+                if not a_migrer:
+                    st.success("✅ Tous les comptes ont déjà leur numéro WhatsApp comme identifiant.")
+                else:
+                    st.warning(f"⚠️ **{len(a_migrer)} compte(s)** avec un ancien uid détecté(s) :")
+                    for uid_old, d in a_migrer.items():
+                        wa = d.get("whatsapp", "—")
+                        st.markdown(
+                            f"- `{uid_old}` → sera renommé en `{wa}`"
+                            + (f" ⭐ {d.get('premium_plan')}" if d.get('premium') else "")
+                        )
+
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    if st.button("🔄 Lancer la migration", key="btn_migrate_uids", type="primary", use_container_width=True):
+                        ok, ko = 0, []
+                        for uid_old, d in a_migrer.items():
+                            wa = d.get("whatsapp", "")
+                            if not wa:
+                                ko.append(f"{uid_old} — pas de numéro WhatsApp")
+                                continue
+                            try:
+                                # 1. Créer le nouveau compte avec le bon uid
+                                supabase.table("users").upsert({
+                                    "uid": wa,
+                                    "whatsapp": wa,
+                                    "email": d.get("email", "Non renseigné"),
+                                    "joined": d.get("joined", str(datetime.now())),
+                                    "premium": d.get("premium", False),
+                                    "premium_plan": d.get("premium_plan", None),
+                                    "premium_expiry": d.get("premium_expiry", None),
+                                    "gen_used": d.get("gen_used", 0),
+                                    "gen_date": d.get("gen_date", None),
+                                }).execute()
+                                # 2. Migrer les demandes liées
+                                supabase.table("demandes").update({"uid": wa}).eq("uid", uid_old).execute()
+                                # 3. Migrer les liens livrables
+                                supabase.table("liens").update({"uid": wa}).eq("uid", uid_old).execute()
+                                # 4. Supprimer l'ancien uid
+                                supabase.table("users").delete().eq("uid", uid_old).execute()
+                                ok += 1
+                            except Exception as e_mig:
+                                ko.append(f"{uid_old} → {wa} : {e_mig}")
+
+                        st.session_state["db"] = load_db()
+                        if ok:
+                            st.success(f"✅ {ok} compte(s) migré(s) avec succès. Recharge la page.")
+                        if ko:
+                            st.error(f"❌ {len(ko)} erreur(s) :")
+                            for err in ko:
+                                st.caption(err)
+                        st.rerun()
 
 
 inject_custom_css()
