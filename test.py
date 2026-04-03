@@ -5504,198 +5504,33 @@ def main_dashboard():
     # ══════════════════════════════════════════════════════════════
     if st.session_state.get("show_mode_modal", False):
 
-        # ── CSS : cache UI Streamlit + style boutons ──────────────
         st.markdown("""
         <style>
-        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap");
-
+        /* ═══ CACHE TOUT STREAMLIT ═══ */
         section[data-testid="stSidebar"],
         header[data-testid="stHeader"],
         [data-testid="stToolbar"],
         footer,
-        [data-testid="stDecoration"] { display:none !important; }
-
+        [data-testid="stDecoration"]          { display:none !important; }
         [data-testid="stAppViewContainer"],
         [data-testid="stMainBlockContainer"],
         [data-testid="stMain"],
-        .main .block-container {
-            padding:0 !important;
-            max-width:100% !important;
-            background:transparent !important;
-        }
+        .main .block-container                { padding:0 !important; max-width:100% !important; }
 
-        /* ─── FOND PLEIN ÉCRAN ─── */
-        .nm-bg {
-            position:fixed; inset:0; z-index:9000;
-            background:linear-gradient(-45deg,#080600,#0d0b1c,#00091a,#0a0007,#001608);
-            background-size:400% 400%;
-            animation:bgBreath 14s ease infinite;
-            font-family:"Poppins",sans-serif;
-            display:flex; flex-direction:column;
-            align-items:center; justify-content:center;
-            overflow:hidden;
-        }
+        /* ═══ KEYFRAMES ═══ */
         @keyframes bgBreath {
-            0%,100% { background-position:0% 50%; }
-            50%      { background-position:100% 50%; }
+            0%,100% { background-position: 0% 50%; }
+            50%      { background-position: 100% 50%; }
         }
-
-        /* ─── HALOS ─── */
-        .nm-halo {
-            position:absolute; border-radius:50%;
-            filter:blur(90px); pointer-events:none;
+        @keyframes shimmer {
+            0%   { background-position: -400% center; }
+            100% { background-position:  400% center; }
         }
-        .nm-halo-g { width:600px;height:600px;top:-200px;left:-180px;
-            background:radial-gradient(circle,rgba(255,215,0,.10) 0%,transparent 70%);
-            animation:pulseHalo 7s ease-in-out infinite; }
-        .nm-halo-c { width:600px;height:600px;bottom:-200px;right:-180px;
-            background:radial-gradient(circle,rgba(0,210,255,.10) 0%,transparent 70%);
-            animation:pulseHalo 7s ease-in-out infinite 1s; }
-        .nm-halo-m { width:400px;height:400px;top:40%;left:40%;
-            background:radial-gradient(circle,rgba(160,80,255,.07) 0%,transparent 70%);
-            animation:pulseHalo 9s ease-in-out infinite 2s; }
-        @keyframes pulseHalo {
-            0%,100% { opacity:.5; transform:scale(1); }
-            50%      { opacity:1;  transform:scale(1.15); }
-        }
-
-        /* ─── PARTICULES ─── */
-        .nm-ptc {
-            position:absolute; border-radius:50%;
-            width:3px; height:3px;
-            pointer-events:none;
-            animation:floatUp 8s ease-in-out infinite;
-        }
-        .nm-ptc:nth-child(1)  { left:10%; background:#FFD700; animation-delay:0s;   animation-duration:7s; }
-        .nm-ptc:nth-child(2)  { left:25%; background:#00d2ff; animation-delay:1s;   animation-duration:9s; }
-        .nm-ptc:nth-child(3)  { left:40%; background:#c87aff; animation-delay:2s;   animation-duration:6s; }
-        .nm-ptc:nth-child(4)  { left:55%; background:#FFD700; animation-delay:3s;   animation-duration:8s; }
-        .nm-ptc:nth-child(5)  { left:70%; background:#00d2ff; animation-delay:0.5s; animation-duration:10s; }
-        .nm-ptc:nth-child(6)  { left:85%; background:#c87aff; animation-delay:1.5s; animation-duration:7s; }
-        .nm-ptc:nth-child(7)  { left:18%; background:#FFD700; animation-delay:4s;   animation-duration:8s; }
-        .nm-ptc:nth-child(8)  { left:62%; background:#00d2ff; animation-delay:2.5s; animation-duration:9s; }
-        .nm-ptc:nth-child(9)  { left:90%; background:#c87aff; animation-delay:3.5s; animation-duration:6s; }
         @keyframes floatUp {
-            0%   { opacity:0; transform:translateY(100vh) rotate(0deg); }
+            0%   { opacity:0; transform:translateY(120px) rotate(0deg); }
             10%  { opacity:1; }
-            90%  { opacity:.6; }
-            100% { opacity:0; transform:translateY(-10vh) rotate(720deg); }
-        }
-
-        /* ─── HEADER ─── */
-        .nm-header {
-            position:relative; z-index:10;
-            text-align:center; margin-bottom:32px;
-            animation:dropIn .8s cubic-bezier(.22,1,.36,1) both;
-        }
-        @keyframes dropIn {
-            0%   { opacity:0; transform:translateY(-50px); }
-            100% { opacity:1; transform:translateY(0); }
-        }
-        .nm-logo-wrap {
-            position:relative; width:72px; height:72px;
-            margin:0 auto 14px; display:flex; align-items:center; justify-content:center;
-        }
-        .nm-logo-bg {
-            position:absolute; inset:0; border-radius:50%;
-            background:radial-gradient(circle,rgba(255,215,0,.2),transparent 70%);
-            animation:pulseHalo 3s ease-in-out infinite;
-        }
-        .nm-logo-ring1 {
-            position:absolute; inset:-6px; border-radius:50%;
-            border:1.5px dashed rgba(255,215,0,.5);
-            animation:spinCW 8s linear infinite;
-        }
-        .nm-logo-ring2 {
-            position:absolute; inset:-14px; border-radius:50%;
-            border:1px dashed rgba(0,210,255,.35);
-            animation:spinCCW 12s linear infinite;
-        }
-        @keyframes spinCW  { to { transform:rotate(360deg);  } }
-        @keyframes spinCCW { to { transform:rotate(-360deg); } }
-        .nm-logo-icon { font-size:2.2rem; position:relative; z-index:2;
-            filter:drop-shadow(0 0 14px #FFD700); }
-        .nm-title {
-            font-size:clamp(1.6rem,4vw,2.4rem); font-weight:900; letter-spacing:6px;
-            color:#fff; text-shadow:0 0 40px rgba(255,215,0,.5);
-            background:linear-gradient(90deg,#FFD700,#fff,#00d2ff);
-            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-            background-clip:text;
-        }
-        .nm-sub {
-            font-size:.75rem; letter-spacing:3px; color:rgba(255,255,255,.35);
-            margin-top:6px; text-transform:uppercase;
-        }
-        .nm-divline {
-            display:flex; align-items:center; gap:10px;
-            max-width:260px; margin:12px auto 0;
-        }
-        .nm-divline-l { flex:1; height:1px;
-            background:linear-gradient(90deg,transparent,rgba(255,215,0,.4),transparent); }
-        .nm-divline-d { width:5px; height:5px; border-radius:50%;
-            background:#FFD700; animation:tagWave 2s ease-in-out infinite; }
-        @keyframes tagWave {
-            0%,100% { transform:translateY(0); }
-            50%      { transform:translateY(-5px); }
-        }
-
-        /* ─── GRID ─── */
-        .nm-grid {
-            position:relative; z-index:10;
-            display:flex; gap:0; align-items:stretch;
-            width:100%; max-width:860px; padding:0 20px;
-        }
-
-        /* ─── SÉPARATEUR VS ─── */
-        .nm-vs {
-            display:flex; flex-direction:column;
-            align-items:center; justify-content:center;
-            gap:10px; flex-shrink:0; padding:0 18px;
-        }
-        .nm-vs-line {
-            width:1px; flex:1;
-            background:linear-gradient(180deg,transparent,rgba(255,255,255,.12),rgba(255,255,255,.18),rgba(255,255,255,.12),transparent);
-            animation:orPulse 3s ease-in-out infinite;
-        }
-        .nm-vs-text {
-            font-size:.75rem; font-weight:900; letter-spacing:3px;
-            animation:vsGlow 3s ease-in-out infinite;
-        }
-        @keyframes orPulse {
-            0%,100% { opacity:.3; }
-            50%      { opacity:.8; }
-        }
-        @keyframes vsGlow {
-            0%,100% { text-shadow:0 0 8px rgba(255,255,255,.15); color:rgba(255,255,255,.2); }
-            50%      { text-shadow:0 0 22px rgba(255,255,255,.5); color:rgba(255,255,255,.45); }
-        }
-
-        /* ─── CARTES ─── */
-        .nm-card {
-            flex:1; position:relative; border-radius:24px;
-            padding:30px 22px 26px; text-align:center;
-            overflow:hidden; display:flex; flex-direction:column;
-            cursor:pointer;
-            transition:transform .35s cubic-bezier(.22,1,.36,1),box-shadow .35s;
-        }
-        .nm-card:hover { transform:translateY(-8px) scale(1.018); }
-        .nm-card-gold {
-            background:linear-gradient(155deg,rgba(255,215,0,.11),rgba(255,140,0,.06),rgba(255,215,0,.04));
-            border:1.5px solid rgba(255,215,0,.45);
-            animation:cardBreathGold 4.5s ease-in-out infinite, slideLeft .75s cubic-bezier(.22,1,.36,1) .1s both;
-        }
-        .nm-card-cyan {
-            background:linear-gradient(155deg,rgba(0,200,255,.11),rgba(0,120,200,.06),rgba(0,200,255,.04));
-            border:1.5px solid rgba(0,200,255,.45);
-            animation:cardBreathCyan 4.5s ease-in-out infinite 1s, slideRight .75s cubic-bezier(.22,1,.36,1) .1s both;
-        }
-        @keyframes cardBreathGold {
-            0%,100% { box-shadow:0 0 35px rgba(255,215,0,.12),0 30px 70px rgba(0,0,0,.55); }
-            50%      { box-shadow:0 0 80px rgba(255,215,0,.32),0 40px 90px rgba(0,0,0,.65); }
-        }
-        @keyframes cardBreathCyan {
-            0%,100% { box-shadow:0 0 35px rgba(0,210,255,.12),0 30px 70px rgba(0,0,0,.55); }
-            50%      { box-shadow:0 0 80px rgba(0,210,255,.32),0 40px 90px rgba(0,0,0,.65); }
+            90%  { opacity:0.6; }
+            100% { opacity:0; transform:translateY(-20px) rotate(720deg); }
         }
         @keyframes slideLeft {
             0%   { opacity:0; transform:translateX(-60px) scale(.95); }
@@ -5705,189 +5540,383 @@ def main_dashboard():
             0%   { opacity:0; transform:translateX( 60px) scale(.95); }
             100% { opacity:1; transform:translateX(0)     scale(1);   }
         }
-
-        /* ─── SCANLINE ─── */
-        .nm-scan {
-            position:absolute; left:0; right:0; height:3px; top:-4%;
-            background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
-            animation:scanline 4s linear infinite;
-            pointer-events:none;
+        @keyframes dropIn {
+            0%   { opacity:0; transform:translateY(-40px) scale(.9); }
+            70%  { transform:translateY(6px) scale(1.02); }
+            100% { opacity:1; transform:translateY(0) scale(1); }
         }
-        .nm-card-cyan .nm-scan { animation-delay:2s; }
-        @keyframes scanline { 0% { top:-4%; } 100% { top:104%; } }
-
-        /* ─── COINS ─── */
-        .nm-corner {
-            position:absolute; width:14px; height:14px;
-            border-color:rgba(255,215,0,.4); border-style:solid;
-            pointer-events:none; transition:border-color .3s;
+        @keyframes pulseRing {
+            0%,100% { transform:scale(1);    opacity:.5; }
+            50%      { transform:scale(1.18); opacity:.15; }
         }
-        .nm-card-cyan .nm-corner { border-color:rgba(0,210,255,.4); }
-        .nm-card:hover .nm-corner { border-color:rgba(255,255,255,.6); }
-        .nm-corner-tl { top:10px;left:10px;   border-width:2px 0 0 2px; border-radius:4px 0 0 0; }
-        .nm-corner-tr { top:10px;right:10px;  border-width:2px 2px 0 0; border-radius:0 4px 0 0; }
-        .nm-corner-bl { bottom:10px;left:10px; border-width:0 0 2px 2px; border-radius:0 0 0 4px; }
-        .nm-corner-br { bottom:10px;right:10px;border-width:0 2px 2px 0; border-radius:0 0 4px 0; }
-
-        /* ─── SPARKLES ─── */
-        .nm-spark {
-            position:absolute; font-size:.6rem; pointer-events:none;
-            animation:sparkle 3s ease-in-out infinite;
-            color:rgba(255,215,0,.7);
+        @keyframes rotateCW  { to { transform:rotate( 360deg); } }
+        @keyframes rotateCCW { to { transform:rotate(-360deg); } }
+        @keyframes iconFloat {
+            0%,100% { transform:translateY(0)   scale(1);    filter:drop-shadow(0 0 18px var(--ic)); }
+            50%      { transform:translateY(-10px) scale(1.06); filter:drop-shadow(0 0 38px var(--ic)); }
         }
-        .nm-card-cyan .nm-spark { color:rgba(0,210,255,.7); }
-        .nm-spark:nth-child(1) { top:18%; left:12%; animation-delay:0s; }
-        .nm-spark:nth-child(2) { top:55%; right:10%; animation-delay:1.2s; }
-        .nm-spark:nth-child(3) { bottom:22%; left:20%; animation-delay:2.4s; }
-        @keyframes sparkle {
-            0%,100% { transform:scale(0) rotate(0deg);   opacity:0; }
-            50%      { transform:scale(1) rotate(180deg); opacity:1; }
+        @keyframes cardBreathGold {
+            0%,100% { box-shadow: 0 0 35px rgba(255,215,0,.12), 0 30px 70px rgba(0,0,0,.55); }
+            50%      { box-shadow: 0 0 80px rgba(255,215,0,.32), 0 40px 90px rgba(0,0,0,.65); }
         }
-
-        /* ─── ICÔNE ─── */
-        .nm-icon-wrap {
-            position:relative; width:72px; height:72px;
-            margin:0 auto 16px; display:flex; align-items:center; justify-content:center;
+        @keyframes cardBreathCyan {
+            0%,100% { box-shadow: 0 0 35px rgba(0,210,255,.12), 0 30px 70px rgba(0,0,0,.55); }
+            50%      { box-shadow: 0 0 80px rgba(0,210,255,.32), 0 40px 90px rgba(0,0,0,.65); }
         }
-        .nm-icon { font-size:2.2rem; position:relative; z-index:2;
-            filter:drop-shadow(0 0 14px currentColor); }
-        .nm-icon-gold { color:#FFD700; filter:drop-shadow(0 0 14px rgba(255,215,0,.8)); }
-        .nm-icon-cyan { color:#00d2ff; filter:drop-shadow(0 0 14px rgba(0,210,255,.8)); }
-        .nm-icon-ring1 {
-            position:absolute; inset:-8px; border-radius:50%;
-            border:1.5px dashed rgba(255,215,0,.6);
-            animation:spinCW 6s linear infinite;
+        @keyframes scanline {
+            0%   { top:-4%; }
+            100% { top:104%; }
         }
-        .nm-icon-ring2 {
-            position:absolute; inset:-18px; border-radius:50%;
-            border:1px dashed rgba(255,215,0,.3);
-            animation:spinCCW 10s linear infinite;
-        }
-        .nm-card-cyan .nm-icon-ring1 { border-color:rgba(0,210,255,.6); }
-        .nm-card-cyan .nm-icon-ring2 { border-color:rgba(0,210,255,.3); }
-
-        /* ─── BADGE ─── */
-        .nm-badge {
-            display:inline-block; border-radius:100px;
-            padding:5px 16px; font-size:.68rem; font-weight:700;
-            letter-spacing:2px; margin-bottom:12px;
-            animation:badgePop .6s cubic-bezier(.34,1.56,.64,1) .5s both;
-        }
-        .nm-badge-g { background:rgba(255,215,0,.12); border:1px solid rgba(255,215,0,.5); color:#FFD700; }
-        .nm-badge-c { background:rgba(0,210,255,.12); border:1px solid rgba(0,210,255,.5); color:#00d2ff; }
         @keyframes badgePop {
             0%   { transform:scale(.6); opacity:0; }
             70%  { transform:scale(1.1); }
             100% { transform:scale(1);  opacity:1; }
         }
-
-        /* ─── TITRE CARTE ─── */
-        .nm-card-title {
-            font-size:1.25rem; font-weight:900; color:#fff;
-            letter-spacing:1px; margin-bottom:10px;
-            text-shadow:0 0 20px rgba(255,215,0,.4);
-        }
-        .nm-card-cyan .nm-card-title { text-shadow:0 0 20px rgba(0,210,255,.4); }
-
-        /* ─── DESC ─── */
-        .nm-card-desc {
-            font-size:.82rem; color:rgba(255,255,255,.55);
-            line-height:1.7; margin-bottom:16px; flex:1;
-        }
-
-        /* ─── TAGS ─── */
-        .nm-tags { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:20px; }
-        .nm-tag {
-            padding:4px 12px; border-radius:100px; font-size:.68rem;
-            font-weight:600; letter-spacing:.5px;
-            animation:tagWave 2.5s ease-in-out infinite;
-        }
-        .nm-tag-g { background:rgba(255,215,0,.10); border:1px solid rgba(255,215,0,.35); color:rgba(255,215,0,.85); }
-        .nm-tag-c { background:rgba(0,210,255,.10); border:1px solid rgba(0,210,255,.35); color:rgba(0,210,255,.85); }
-        .nm-tag:nth-child(2) { animation-delay:.4s; }
-        .nm-tag:nth-child(3) { animation-delay:.8s; }
-
-        /* ─── BOUTONS STREAMLIT STYLISÉS ─── */
-        [data-testid="stButton"][data-key="nm_btn_platform"] button,
-        [data-testid="stButton"][data-key="nm_btn_ia"] button {
-            width:100%; padding:14px 20px;
-            border-radius:50px; border:none;
-            font-size:.85rem; font-weight:800; letter-spacing:2px;
-            cursor:pointer; position:relative; overflow:hidden;
-            transition:transform .25s, box-shadow .25s;
-        }
-        [data-testid="stButton"][data-key="nm_btn_platform"] button {
-            background:linear-gradient(90deg,#FFD700,#FFA500,#FFD700);
-            background-size:200% auto;
-            color:#000;
-            box-shadow:0 6px 28px rgba(255,180,0,.45);
-            animation:btnShimmer 3s linear infinite;
-        }
-        [data-testid="stButton"][data-key="nm_btn_ia"] button {
-            background:linear-gradient(90deg,#00d2ff,#3a7bd5,#00d2ff);
-            background-size:200% auto;
-            color:#fff;
-            box-shadow:0 6px 28px rgba(0,180,255,.45);
-            animation:btnShimmer 3s linear infinite;
+        @keyframes tagWave {
+            0%,100% { transform:translateY(0); }
+            50%      { transform:translateY(-5px); }
         }
         @keyframes btnShimmer {
-            0%   { background-position:-200% center; }
-            100% { background-position: 200% center; }
+            0%   { background-position:-300% center; }
+            100% { background-position: 300% center; }
         }
-        [data-testid="stButton"][data-key="nm_btn_platform"] button:hover,
-        [data-testid="stButton"][data-key="nm_btn_ia"] button:hover {
-            transform:scale(1.04) translateY(-3px);
+        @keyframes btnFloat {
+            0%,100% { transform:translateY(0);  box-shadow:0 6px 28px var(--bs); }
+            50%      { transform:translateY(-4px); box-shadow:0 14px 40px var(--bs); }
         }
-        [data-testid="stHorizontalBlock"] { display:none !important; }
+        @keyframes orPulse {
+            0%,100% { opacity:.2; transform:scaleX(1); }
+            50%      { opacity:.5; transform:scaleX(1.04); }
+        }
+        @keyframes vsGlow {
+            0%,100% { text-shadow:0 0 8px rgba(255,255,255,.15); color:rgba(255,255,255,.18); }
+            50%      { text-shadow:0 0 20px rgba(255,255,255,.4); color:rgba(255,255,255,.35); }
+        }
+        @keyframes sparkle {
+            0%,100% { transform:scale(0) rotate(0deg);   opacity:0; }
+            50%      { transform:scale(1) rotate(180deg); opacity:1; }
+        }
 
-        /* ─── FOOTER ─── */
+        /* ═══ FOND PLEIN ÉCRAN ═══ */
+        .nm-page {
+            position:fixed; inset:0; z-index:9999;
+            background: linear-gradient(-45deg,#080600,#0d0b1c,#00091a,#0a0007,#001608);
+            background-size:400% 400%;
+            animation: bgBreath 14s ease infinite;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            overflow:hidden; font-family:'Poppins',sans-serif;
+        }
+
+        /* ═══ HALOS ═══ */
+        .nm-halo {
+            position:absolute; border-radius:50%;
+            filter:blur(90px); pointer-events:none;
+        }
+        .nm-halo-g { width:600px;height:600px; top:-200px;left:-180px;
+            background:radial-gradient(circle,rgba(255,215,0,.10) 0%,transparent 70%);
+            animation:pulseRing 7s ease-in-out infinite; }
+        .nm-halo-c { width:600px;height:600px; bottom:-200px;right:-180px;
+            background:radial-gradient(circle,rgba(0,210,255,.10) 0%,transparent 70%);
+            animation:pulseRing 7s ease-in-out infinite 3.5s; }
+        .nm-halo-m { width:300px;height:300px; top:50%;left:50%;
+            transform:translate(-50%,-50%);
+            background:radial-gradient(circle,rgba(160,80,255,.06) 0%,transparent 70%); }
+
+        /* ═══ PARTICULES ═══ */
+        .nm-ptc { position:absolute; border-radius:50%; pointer-events:none;
+                  animation:floatUp linear infinite; bottom:0; }
+        .nm-ptc:nth-child(1){width:3px;height:3px;left:8%;  background:#FFD700;animation-duration:7s; animation-delay:0s;}
+        .nm-ptc:nth-child(2){width:2px;height:2px;left:18%; background:#00d2ff;animation-duration:11s;animation-delay:1.2s;}
+        .nm-ptc:nth-child(3){width:4px;height:4px;left:29%; background:#FFD700;animation-duration:8s; animation-delay:2.4s;}
+        .nm-ptc:nth-child(4){width:2px;height:2px;left:40%; background:#fff;   animation-duration:13s;animation-delay:.6s;}
+        .nm-ptc:nth-child(5){width:3px;height:3px;left:52%; background:#00d2ff;animation-duration:9s; animation-delay:3.1s;}
+        .nm-ptc:nth-child(6){width:2px;height:2px;left:63%; background:#FFD700;animation-duration:10s;animation-delay:1.8s;}
+        .nm-ptc:nth-child(7){width:4px;height:4px;left:74%; background:#fff;   animation-duration:6s; animation-delay:4.2s;}
+        .nm-ptc:nth-child(8){width:2px;height:2px;left:85%; background:#c87aff;animation-duration:12s;animation-delay:2.8s;}
+        .nm-ptc:nth-child(9){width:3px;height:3px;left:93%; background:#FFD700;animation-duration:8.5s;animation-delay:.9s;}
+
+        /* ═══ HEADER ═══ */
+        .nm-header {
+            position:relative; z-index:10;
+            text-align:center; margin-bottom:36px;
+            animation:dropIn .7s cubic-bezier(.22,1,.36,1) both;
+        }
+        .nm-logo-wrap {
+            position:relative; width:76px; height:76px;
+            margin:0 auto 18px;
+        }
+        .nm-logo-bg {
+            position:absolute; inset:0; border-radius:50%;
+            background:radial-gradient(circle at 35% 35%,#fff8e1,#FFD700 50%,#b8860b);
+            box-shadow:0 0 0 4px rgba(255,215,0,.2), 0 0 50px rgba(255,215,0,.5);
+        }
+        .nm-logo-ring1 {
+            position:absolute; inset:-7px; border-radius:50%;
+            border:2px dashed rgba(255,215,0,.55);
+            animation:rotateCW 9s linear infinite;
+        }
+        .nm-logo-ring2 {
+            position:absolute; inset:-14px; border-radius:50%;
+            border:1px dashed rgba(255,215,0,.2);
+            animation:rotateCCW 14s linear infinite;
+        }
+        .nm-logo-icon {
+            position:absolute; inset:0;
+            display:flex; align-items:center; justify-content:center;
+            font-size:2.1rem;
+        }
+        .nm-title {
+            font-size:2.1rem; font-weight:900; letter-spacing:2px;
+            background:linear-gradient(90deg,#7a5500,#FFD700,#fff5c0,#FFD700,#7a5500);
+            background-size:300% auto;
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            background-clip:text;
+            animation:shimmer 4s linear infinite;
+        }
+        .nm-sub {
+            color:rgba(255,255,255,.28); font-size:.72rem;
+            letter-spacing:5px; margin-top:6px;
+        }
+        .nm-divline {
+            display:flex; align-items:center; gap:10px;
+            max-width:260px; margin:14px auto 0;
+        }
+        .nm-divline-l { flex:1; height:1px;
+            background:linear-gradient(90deg,transparent,rgba(255,215,0,.35),transparent); }
+        .nm-divline-d { width:5px;height:5px;border-radius:50%;background:#FFD700;
+            animation:tagWave 2s ease-in-out infinite; }
+
+        /* ═══ GRID SIDE-BY-SIDE ═══ */
+        .nm-grid {
+            position:relative; z-index:10;
+            display:flex; gap:22px; align-items:stretch;
+            width:100%; max-width:860px; padding:0 20px;
+        }
+
+        /* ═══ SÉPARATEUR VS ═══ */
+        .nm-vs {
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            gap:10px; flex-shrink:0; padding:0 4px;
+        }
+        .nm-vs-line {
+            width:1px; flex:1;
+            background:linear-gradient(180deg,transparent,rgba(255,255,255,.1),rgba(255,255,255,.15),rgba(255,255,255,.1),transparent);
+            animation:orPulse 3s ease-in-out infinite;
+        }
+        .nm-vs-text {
+            font-size:.75rem; font-weight:800; letter-spacing:2px;
+            animation:vsGlow 3s ease-in-out infinite;
+        }
+
+        /* ═══ CARTE ═══ */
+        .nm-card {
+            flex:1; position:relative; border-radius:24px;
+            padding:32px 22px 26px; text-align:center;
+            overflow:hidden; display:flex; flex-direction:column;
+            cursor:pointer;
+            transition:transform .35s cubic-bezier(.22,1,.36,1);
+        }
+        .nm-card:hover { transform:translateY(-6px) scale(1.015); }
+
+        .nm-card-gold {
+            background:linear-gradient(155deg,rgba(255,215,0,.11),rgba(255,140,0,.06),rgba(255,215,0,.04));
+            border:1.5px solid rgba(255,215,0,.45);
+            animation:cardBreathGold 4.5s ease-in-out infinite, slideLeft .75s cubic-bezier(.22,1,.36,1) .1s both;
+        }
+        .nm-card-cyan {
+            background:linear-gradient(155deg,rgba(0,200,255,.11),rgba(0,120,200,.06),rgba(0,200,255,.04));
+            border:1.5px solid rgba(0,200,255,.45);
+            animation:cardBreathCyan 4.5s ease-in-out infinite 2.25s, slideRight .75s cubic-bezier(.22,1,.36,1) .1s both;
+        }
+
+        /* Topbar dégradée animée */
+        .nm-topbar {
+            position:absolute; top:0; left:0; right:0; height:3px;
+            border-radius:24px 24px 0 0;
+        }
+        .nm-topbar-g {
+            background:linear-gradient(90deg,#4a2e00,#FFD700,#fff5c0,#FFD700,#4a2e00);
+            background-size:200% auto; animation:shimmer 3s linear infinite;
+        }
+        .nm-topbar-c {
+            background:linear-gradient(90deg,#002840,#00d2ff,#7df9ff,#00d2ff,#002840);
+            background-size:200% auto; animation:shimmer 3s linear infinite;
+        }
+
+        /* Ligne scanline */
+        .nm-scan {
+            position:absolute; left:0; right:0; height:2px; pointer-events:none;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);
+            animation:scanline 5s linear infinite;
+        }
+
+        /* Coins décoratifs */
+        .nm-corner {
+            position:absolute; width:20px; height:20px;
+            border-color:inherit; opacity:.5;
+        }
+        .nm-corner-tl { top:10px; left:10px;
+            border-top:2px solid; border-left:2px solid; border-radius:4px 0 0 0; }
+        .nm-corner-tr { top:10px; right:10px;
+            border-top:2px solid; border-right:2px solid; border-radius:0 4px 0 0; }
+        .nm-corner-bl { bottom:10px; left:10px;
+            border-bottom:2px solid; border-left:2px solid; border-radius:0 0 0 4px; }
+        .nm-corner-br { bottom:10px; right:10px;
+            border-bottom:2px solid; border-right:2px solid; border-radius:0 0 4px 0; }
+        .nm-card-gold .nm-corner  { border-color:rgba(255,215,0,.4); }
+        .nm-card-cyan .nm-corner  { border-color:rgba(0,210,255,.4); }
+
+        /* Icône */
+        .nm-icon-wrap { position:relative; display:inline-block; margin-bottom:16px; }
+        .nm-icon { font-size:3.2rem; display:block; }
+        .nm-icon-gold { --ic:rgba(255,215,0,.8); animation:iconFloat 3.2s ease-in-out infinite; }
+        .nm-icon-cyan { --ic:rgba(0,210,255,.8); animation:iconFloat 3.2s ease-in-out infinite .5s; }
+        .nm-icon-ring1 {
+            position:absolute; inset:-8px; border-radius:50%; border:1.5px solid;
+            animation:rotateCW 7s linear infinite; opacity:.45;
+        }
+        .nm-icon-ring2 {
+            position:absolute; inset:-16px; border-radius:50%; border:1px dashed;
+            animation:rotateCCW 12s linear infinite; opacity:.2;
+        }
+        .nm-card-gold .nm-icon-ring1,
+        .nm-card-gold .nm-icon-ring2 { border-color:rgba(255,215,0,.7); }
+        .nm-card-cyan .nm-icon-ring1,
+        .nm-card-cyan .nm-icon-ring2 { border-color:rgba(0,210,255,.7); }
+
+        /* Sparkles */
+        .nm-spark {
+            position:absolute; font-size:.8rem; pointer-events:none;
+            animation:sparkle 2.4s ease-in-out infinite;
+        }
+        .nm-spark:nth-child(1){top:18%;left:14%;animation-delay:0s;}
+        .nm-spark:nth-child(2){top:22%;right:12%;animation-delay:.8s;}
+        .nm-spark:nth-child(3){bottom:22%;left:16%;animation-delay:1.6s;}
+
+        /* Badge */
+        .nm-badge {
+            display:inline-block; border-radius:50px;
+            padding:4px 15px; font-size:.67rem; font-weight:800;
+            letter-spacing:2px; margin-bottom:14px;
+            animation:badgePop .5s ease both;
+        }
+        .nm-badge-g {
+            background:rgba(255,215,0,.12); border:1px solid rgba(255,215,0,.5);
+            color:#FFD700; animation-delay:.4s;
+        }
+        .nm-badge-c {
+            background:rgba(0,210,255,.12); border:1px solid rgba(0,210,255,.5);
+            color:#00d2ff; animation-delay:.55s;
+        }
+
+        /* Titre carte */
+        .nm-card-title {
+            font-size:1.22rem; font-weight:900; margin-bottom:10px; letter-spacing:.5px;
+        }
+        .nm-card-gold .nm-card-title {
+            background:linear-gradient(90deg,#b8860b,#FFD700,#fff5c0,#FFD700,#b8860b);
+            background-size:200% auto; animation:shimmer 5s linear infinite;
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            background-clip:text;
+        }
+        .nm-card-cyan .nm-card-title {
+            background:linear-gradient(90deg,#0070aa,#00d2ff,#7df9ff,#00d2ff,#0070aa);
+            background-size:200% auto; animation:shimmer 5s linear infinite;
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            background-clip:text;
+        }
+
+        /* Description */
+        .nm-card-desc {
+            color:rgba(255,255,255,.48); font-size:.82rem;
+            line-height:1.8; margin-bottom:18px; flex:1;
+        }
+
+        /* Tags */
+        .nm-tags { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; margin-bottom:22px; }
+        .nm-tag {
+            font-size:.65rem; padding:3px 11px; border-radius:20px; font-weight:600;
+        }
+        .nm-tag:nth-child(1){animation:tagWave 2.8s ease-in-out infinite .0s;}
+        .nm-tag:nth-child(2){animation:tagWave 2.8s ease-in-out infinite .3s;}
+        .nm-tag:nth-child(3){animation:tagWave 2.8s ease-in-out infinite .6s;}
+        .nm-tag-g { background:rgba(255,215,0,.10); border:1px solid rgba(255,215,0,.22); color:rgba(255,215,0,.8); }
+        .nm-tag-c { background:rgba(0,210,255,.10); border:1px solid rgba(0,210,255,.22); color:rgba(0,210,255,.8); }
+
+        /* Bouton intégré */
+        .nm-btn {
+            display:block; width:100%; padding:14px 0;
+            border-radius:50px; border:none; cursor:pointer;
+            font-family:'Poppins',sans-serif; font-size:.82rem;
+            font-weight:800; letter-spacing:2px; text-transform:uppercase;
+            text-decoration:none; margin-top:auto;
+            transition:transform .25s ease, box-shadow .25s ease;
+        }
+        .nm-btn-g {
+            --bs:rgba(255,215,0,.45);
+            background:linear-gradient(90deg,#7a5500,#b8860b,#FFD700,#fff5c0,#FFD700,#b8860b,#7a5500);
+            background-size:250% auto; color:#0a0800;
+            animation:btnShimmer 3.5s linear infinite, btnFloat 3.5s ease-in-out infinite;
+        }
+        .nm-btn-c {
+            --bs:rgba(0,210,255,.45);
+            background:linear-gradient(90deg,#004060,#0090cc,#00d2ff,#7df9ff,#00d2ff,#0090cc,#004060);
+            background-size:250% auto; color:#001a2a;
+            animation:btnShimmer 3.5s linear infinite, btnFloat 3.5s ease-in-out infinite .5s;
+        }
+        .nm-btn:hover { transform:scale(1.03) translateY(-3px) !important; }
+
+        /* Footer */
         .nm-footer {
             position:relative; z-index:10;
-            font-size:.72rem; color:rgba(255,255,255,.22);
-            letter-spacing:2px; margin-top:28px; text-align:center;
+            text-align:center; margin-top:22px;
+            color:rgba(255,255,255,.14); font-size:.68rem; letter-spacing:1.5px;
+            animation:dropIn 1s ease 1.2s both;
         }
-        .nm-footer-dot { display:inline-block; width:3px; height:3px; border-radius:50%;
-            background:rgba(255,255,255,.25); margin:0 8px; vertical-align:middle; }
+        .nm-footer-dot {
+            display:inline-block; width:4px; height:4px; border-radius:50%;
+            background:rgba(255,215,0,.35); margin:0 7px; vertical-align:middle;
+            animation:tagWave 2.5s ease-in-out infinite;
+        }
         </style>
-        """, unsafe_allow_html=True)
 
-        # ── FOND + HALOS + PARTICULES ──────────────────────────────
-        st.markdown("""
-        <div class="nm-bg">
+        <div class="nm-page">
+
+          <!-- Halos d'ambiance -->
           <div class="nm-halo nm-halo-g"></div>
           <div class="nm-halo nm-halo-c"></div>
           <div class="nm-halo nm-halo-m"></div>
-          <div class="nm-ptc"></div><div class="nm-ptc"></div><div class="nm-ptc"></div>
-          <div class="nm-ptc"></div><div class="nm-ptc"></div><div class="nm-ptc"></div>
-          <div class="nm-ptc"></div><div class="nm-ptc"></div><div class="nm-ptc"></div>
-        </div>
-        """, unsafe_allow_html=True)
 
-        # ── HEADER ────────────────────────────────────────────────
-        st.markdown("""
-        <div class="nm-header">
-          <div class="nm-logo-wrap">
-            <div class="nm-logo-bg"></div>
-            <div class="nm-logo-ring1"></div>
-            <div class="nm-logo-ring2"></div>
-            <div class="nm-logo-icon">⚡</div>
+          <!-- Particules -->
+          <div class="nm-ptc"></div><div class="nm-ptc"></div><div class="nm-ptc"></div>
+          <div class="nm-ptc"></div><div class="nm-ptc"></div><div class="nm-ptc"></div>
+          <div class="nm-ptc"></div><div class="nm-ptc"></div><div class="nm-ptc"></div>
+
+          <!-- HEADER -->
+          <div class="nm-header">
+            <div class="nm-logo-wrap">
+              <div class="nm-logo-bg"></div>
+              <div class="nm-logo-ring1"></div>
+              <div class="nm-logo-ring2"></div>
+              <div class="nm-logo-icon">⚡</div>
+            </div>
+            <div class="nm-title">NOVA PLATFORM</div>
+            <div class="nm-sub">CHOISISSEZ VOTRE EXPÉRIENCE</div>
+            <div class="nm-divline">
+              <div class="nm-divline-l"></div>
+              <div class="nm-divline-d"></div>
+              <div class="nm-divline-l"></div>
+            </div>
           </div>
-          <div class="nm-title">NOVA PLATFORM</div>
-          <div class="nm-sub">CHOISISSEZ VOTRE EXPÉRIENCE</div>
-          <div class="nm-divline">
-            <div class="nm-divline-l"></div>
-            <div class="nm-divline-d"></div>
-            <div class="nm-divline-l"></div>
-          </div>
-        </div>
-        """, unsafe_allow_html=True)
 
-        # ── CARTES SIDE BY SIDE via colonnes Streamlit ────────────
-        col_gold, col_vs, col_cyan = st.columns([10, 1, 10])
+          <!-- GRILLE SIDE BY SIDE -->
+          <div class="nm-grid">
 
-        with col_gold:
-            st.markdown("""
-            <div class="nm-card nm-card-gold">
+            <!-- ── CARTE PLATEFORME ── -->
+            <div class="nm-card nm-card-gold" id="nm-card-platform">
+              <div class="nm-topbar nm-topbar-g"></div>
               <div class="nm-scan"></div>
               <div class="nm-corner nm-corner-tl"></div>
               <div class="nm-corner nm-corner-tr"></div>
@@ -5913,25 +5942,22 @@ def main_dashboard():
                 <span class="nm-tag nm-tag-g">📂 Mes livrables</span>
                 <span class="nm-tag nm-tag-g">👑 Dashboard complet</span>
               </div>
+              <button class="nm-btn nm-btn-g" onclick="document.getElementById('nm-btn-platform').click()">
+                🖥️ &nbsp; UTILISER LA PLATEFORME
+              </button>
             </div>
-            """, unsafe_allow_html=True)
-            if st.button("🖥️  UTILISER LA PLATEFORME", key="nm_btn_platform", use_container_width=True):
-                st.session_state["show_mode_modal"] = False
-                st.rerun()
 
-        with col_vs:
-            st.markdown("""
-            <div class="nm-vs" style="height:100%;">
+            <!-- ── SÉPARATEUR VS ── -->
+            <div class="nm-vs">
               <div class="nm-vs-line"></div>
               <div class="nm-vs-text">VS</div>
               <div class="nm-vs-line"></div>
             </div>
-            """, unsafe_allow_html=True)
 
-        with col_cyan:
-            st.markdown("""
-            <div class="nm-card nm-card-cyan">
-              <div class="nm-scan"></div>
+            <!-- ── CARTE NOVA IA ── -->
+            <div class="nm-card nm-card-cyan" id="nm-card-ia">
+              <div class="nm-topbar nm-topbar-c"></div>
+              <div class="nm-scan" style="animation-delay:2.5s"></div>
               <div class="nm-corner nm-corner-tl"></div>
               <div class="nm-corner nm-corner-tr"></div>
               <div class="nm-corner nm-corner-bl"></div>
@@ -5956,9 +5982,33 @@ def main_dashboard():
                 <span class="nm-tag nm-tag-c">✨ Génération intelligente</span>
                 <span class="nm-tag nm-tag-c">⚡ Instantané</span>
               </div>
+              <button class="nm-btn nm-btn-c" onclick="document.getElementById('nm-btn-ia').click()">
+                🤖 &nbsp; DISCUTER AVEC NOVA IA
+              </button>
             </div>
-            """, unsafe_allow_html=True)
-            if st.button("🤖  DISCUTER AVEC NOVA IA", key="nm_btn_ia", use_container_width=True):
+
+          </div><!-- /nm-grid -->
+
+          <!-- FOOTER -->
+          <div class="nm-footer">
+            Nova Platform
+            <span class="nm-footer-dot"></span>
+            Tu pourras changer de mode à tout moment
+            <span class="nm-footer-dot"></span>
+            Abidjan 🇨🇮
+          </div>
+
+        </div><!-- /nm-page -->
+        """, unsafe_allow_html=True)
+
+        # Boutons Streamlit cachés déclenchés par le JS des cartes
+        col_h1, col_h2 = st.columns(2)
+        with col_h1:
+            if st.button("PLATEFORME", key="nm-btn-platform", use_container_width=True):
+                st.session_state["show_mode_modal"] = False
+                st.rerun()
+        with col_h2:
+            if st.button("NOVA IA", key="nm-btn-ia", use_container_width=True):
                 st.session_state["show_mode_modal"] = False
                 st.session_state.pop("nova_ia_chat", None)
                 st.session_state.pop("nova_ia_phase", None)
@@ -5967,18 +6017,16 @@ def main_dashboard():
                 st.session_state["view"] = "nova_ia"
                 st.rerun()
 
+        # CSS pour masquer les boutons Streamlit (ils sont cliqués via JS)
         st.markdown("""
-        <div class="nm-footer">
-          Nova Platform
-          <span class="nm-footer-dot"></span>
-          Tu pourras changer de mode à tout moment
-          <span class="nm-footer-dot"></span>
-          Abidjan 🇨🇮
-        </div>
+        <style>
+        [data-testid="stButton"][data-key="nm-btn-platform"],
+        [data-testid="stButton"][data-key="nm-btn-ia"],
+        [data-testid="stHorizontalBlock"]   { display:none !important; }
+        </style>
         """, unsafe_allow_html=True)
 
-        st.stop()
-
+        return   # stoppe le dashboard le temps que le client choisit
 
     with st.sidebar:
         st.markdown(f"### 👤 {user if user else 'Visiteur'}")
