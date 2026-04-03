@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 from io import BytesIO
 import streamlit.components.v1 as components
 from supabase import create_client
-from streamlit_cookies_controller import CookieController
 
 # ══════════════════════════════════════════════════════════════════
 # SPLASH SCREEN — Fonction universelle pour tous les services
@@ -63,8 +62,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-cookie = CookieController()
 
 DATA_FILE = "data_nova_v3.json"
 ADMIN_CODE = st.secrets.get("ADMIN_CODE", "02110240")
@@ -4215,11 +4212,46 @@ if "premium_livrable" not in st.session_state:
     st.session_state["premium_livrable"] = None
 
 if st.session_state["current_user"] is None:
-    saved_uid = cookie.get("nova_uid")
-    if saved_uid and saved_uid in st.session_state["db"]["users"]:
-        st.session_state["current_user"] = saved_uid
+    stored_user = st.query_params.get("user_id")
+    if stored_user and stored_user in st.session_state["db"]["users"]:
+        st.session_state["current_user"] = stored_user
+    else:
+        components.html("""
+            <script>
+            (function() {
+                var uid = localStorage.getItem('nova_user_id') || localStorage.getItem('nova_user');
+                if (uid) {
+                    localStorage.setItem('nova_user_id', uid);
+                    localStorage.removeItem('nova_user');
+                    var ts = localStorage.getItem('nova_user_ts');
+                    var TRENTE_JOURS = 30 * 24 * 60 * 60 * 1000;
+                    if (!ts || (Date.now() - parseInt(ts)) < TRENTE_JOURS) {
+                        var url = new URL(window.parent.location.href);
+                        url.searchParams.set('user_id', uid);
+                        window.parent.location.replace(url.toString());
+                    } else {
+                        localStorage.removeItem('nova_user_id');
+                        localStorage.removeItem('nova_user_ts');
+                    }
+                }
+            })();
+            </script>
+        """, height=1)
 
-
+if st.session_state["current_user"]:
+    uid_connecte = st.session_state["current_user"]
+    components.html(f"""
+        <script>
+        (function() {{
+            var stored = localStorage.getItem('nova_user_id');
+            if (stored !== '{uid_connecte}') {{
+                localStorage.setItem('nova_user_id', '{uid_connecte}');
+                localStorage.setItem('nova_user_ts', Date.now().toString());
+                localStorage.removeItem('nova_user');
+            }}
+        }})();
+        </script>
+    """, height=1)
 
 def inject_custom_css():
     # ── Détection Premium ─────────────────────────────────────────
@@ -5149,25 +5181,39 @@ def show_auth_page():
             </div>
         </div>
         """, unsafe_allow_html=True)
-        with st.form("login"):
-            uid    = st.text_input("Nom ou surnom Nova", placeholder="Votre nom ou surnom...")
-            wa_auth_raw = st.text_input("Numéro WhatsApp", placeholder="Ex: 22501...")
-            wa_auth = "".join(c for c in wa_auth_raw if c.isdigit())
-            if wa_auth_raw != wa_auth and wa_auth_raw:
-                st.warning("⚠️ Le numéro WhatsApp ne doit contenir que des chiffres.")
-            if st.form_submit_button("⚡ S'IDENTIFIER"):
-                # Recharger depuis Supabase pour avoir les données fraîches
-                fresh_db = load_db()
-                st.session_state["db"] = fresh_db
-                db = fresh_db
-                if uid in db["users"] and db["users"][uid]["whatsapp"] == normalize_wa(wa_auth):
-                    st.session_state["current_user"] = uid
-                    st.session_state["view"] = "home"
-                    cookie.set("nova_uid", uid, max_age=30*24*3600)
-                    st.query_params.clear()
-                    st.rerun()
-                else:
-                    st.error("❌ Nom/surnom ou numéro inconnu.")
+        # --- LOGIN : numéro WhatsApp uniquement ---
+        wa_auth_raw = st.text_input("📱 Votre numéro WhatsApp", placeholder="Ex: 22501...", key="wa_login_input")
+        wa_auth = "".join(c for c in wa_auth_raw if c.isdigit())
+        if wa_auth_raw != wa_auth and wa_auth_raw:
+            st.warning("⚠️ Le numéro WhatsApp ne doit contenir que des chiffres.")
+        # Champ password caché pour que le téléphone propose d'enregistrer
+        components.html("""
+            <form id="nova-login-form" autocomplete="on" style="display:none;">
+                <input type="tel" name="username" autocomplete="username" />
+                <input type="password" name="password" autocomplete="current-password" value="nova_auth" />
+                <button type="submit">ok</button>
+            </form>
+            <script>
+            document.getElementById("nova-login-form").addEventListener("submit", function(e){ e.preventDefault(); });
+            </script>
+        """, height=1)
+        if st.button("⚡ S'IDENTIFIER", use_container_width=True, key="btn_login"):
+            fresh_db = load_db()
+            st.session_state["db"] = fresh_db
+            db = fresh_db
+            wa_norm = normalize_wa(wa_auth)
+            uid_trouve = None
+            for u_id, u_data in db["users"].items():
+                if u_data["whatsapp"] == wa_norm:
+                    uid_trouve = u_id
+                    break
+            if uid_trouve:
+                st.session_state["current_user"] = uid_trouve
+                st.session_state["view"] = "home"
+                st.query_params["user_id"] = uid_trouve
+                st.rerun()
+            else:
+                st.error("❌ Numéro WhatsApp inconnu. Vérifiez ou créez un compte.")
 
     with col2:
         st.markdown("""
@@ -5182,44 +5228,55 @@ def show_auth_page():
             </div>
         </div>
         """, unsafe_allow_html=True)
-        with st.form("signup"):
-            new_uid = st.text_input("Nom ou surnom au choix", placeholder="Choisissez un nom ou surnom...")
-            new_wa_raw = st.text_input("Votre WhatsApp (clé d'accès)", placeholder="Ex: 22507...")
-            new_wa = "".join(c for c in new_wa_raw if c.isdigit())
-            if new_wa_raw != new_wa and new_wa_raw:
-                st.warning("⚠️ Le numéro WhatsApp ne doit contenir que des chiffres.")
-            new_email = st.text_input("📧 Email (optionnel — pour recevoir vos fichiers par email)", placeholder="Ex: monmail@gmail.com")
-            if new_email and "@" not in new_email:
-                st.warning("⚠️ Adresse email invalide.")
-            if st.form_submit_button("💎 REJOINDRE NOVA PLATFORM"):
-                if new_uid and new_wa:
-                    db = st.session_state["db"]
-                    if new_uid not in db["users"]:
-                        email_val = new_email.strip() if new_email and "@" in new_email else "Non renseigné"
-                        succes = save_user(new_uid, normalize_wa(new_wa), email=email_val)
-                        if succes:
-                            db["users"][new_uid] = {
-                                "whatsapp": normalize_wa(new_wa),
-                                "email": email_val,
-                                "joined": str(datetime.now()),
-                                "premium": False,
-                                "premium_plan": None,
-                                "premium_expiry": None,
-                                "gen_used": 0,
-                                "gen_date": None,
-                            }
-                            st.session_state["current_user"] = new_uid
-                            st.session_state["view"] = "home"
-                            st.session_state["db"] = load_db()
-                            cookie.set("nova_uid", new_uid, max_age=30*24*3600)
-                            st.query_params.clear()
-                            st.rerun()
-                        else:
-                            st.error("❌ Impossible de créer le compte. Vérifie ta connexion ou contacte le support.")
+        # --- INSCRIPTION : nom + WhatsApp uniquement (sans email) ---
+        new_uid = st.text_input("👤 Nom ou surnom au choix", placeholder="Choisissez un nom ou surnom...", key="new_uid_input")
+        new_wa_raw = st.text_input("📱 Votre numéro WhatsApp", placeholder="Ex: 22507...", key="new_wa_input")
+        new_wa = "".join(c for c in new_wa_raw if c.isdigit())
+        if new_wa_raw != new_wa and new_wa_raw:
+            st.warning("⚠️ Le numéro WhatsApp ne doit contenir que des chiffres.")
+        # Formulaire HTML natif pour que le téléphone propose d'enregistrer
+        components.html("""
+            <form id="nova-signup-form" autocomplete="on" style="display:none;">
+                <input type="tel" name="username" autocomplete="username" />
+                <input type="password" name="new-password" autocomplete="new-password" value="nova_auth" />
+                <button type="submit">ok</button>
+            </form>
+            <script>
+            document.getElementById("nova-signup-form").addEventListener("submit", function(e){ e.preventDefault(); });
+            </script>
+        """, height=1)
+        if st.button("💎 REJOINDRE NOVA PLATFORM", use_container_width=True, key="btn_signup"):
+            if new_uid and new_wa:
+                db = st.session_state["db"]
+                wa_norm_new = normalize_wa(new_wa)
+                # Vérifier que le numéro WhatsApp n'est pas déjà utilisé
+                wa_deja_pris = any(u["whatsapp"] == wa_norm_new for u in db["users"].values())
+                if new_uid not in db["users"] and not wa_deja_pris:
+                    succes = save_user(new_uid, wa_norm_new)
+                    if succes:
+                        db["users"][new_uid] = {
+                            "whatsapp": wa_norm_new,
+                            "email": "Non renseigné",
+                            "joined": str(datetime.now()),
+                            "premium": False,
+                            "premium_plan": None,
+                            "premium_expiry": None,
+                            "gen_used": 0,
+                            "gen_date": None,
+                        }
+                        st.session_state["current_user"] = new_uid
+                        st.session_state["view"] = "home"
+                        st.session_state["db"] = load_db()
+                        st.query_params["user_id"] = new_uid
+                        st.rerun()
                     else:
-                        st.warning("⚠️ Ce nom ou surnom est déjà utilisé.")
+                        st.error("❌ Impossible de créer le compte. Vérifie ta connexion ou contacte le support.")
+                elif new_uid in db["users"]:
+                    st.warning("⚠️ Ce nom ou surnom est déjà utilisé.")
                 else:
-                    st.error("Champs obligatoires.")
+                    st.warning("⚠️ Ce numéro WhatsApp est déjà associé à un compte.")
+            else:
+                st.error("Champs obligatoires.")
 
 
     st.markdown("""
@@ -5450,9 +5507,16 @@ def main_dashboard():
             else:
                 st.markdown('<span class="badge-free">🔓 Compte Gratuit</span>', unsafe_allow_html=True)
             if st.button("Quitter la session"):
-                cookie.delete("nova_uid")
                 st.session_state["current_user"] = None
                 st.query_params.clear()
+                # Effacer localStorage
+                components.html("""
+                    <script>
+                    localStorage.removeItem('nova_user_id');
+                    localStorage.removeItem('nova_user_ts');
+                    localStorage.removeItem('nova_user');
+                    </script>
+                """, height=0)
                 st.rerun()
         else:
             if st.button("Connexion"):
@@ -8393,7 +8457,7 @@ Action requise si le problème n'est pas résolu.
 
 inject_custom_css()
 
-# Session gérée via cookie "nova_uid" (streamlit-cookies-controller)
+# localStorage géré en haut du fichier (nova_user_id + nova_user_ts)
 
 # Masquer l'iframe vide créée par components.html
 st.markdown("""
