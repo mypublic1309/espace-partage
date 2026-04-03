@@ -5503,54 +5503,257 @@ def main_dashboard():
     # MODALE CHOIX DU MODE — apparaît une seule fois à la connexion
     # ══════════════════════════════════════════════════════════════
     if st.session_state.get("show_mode_modal", False):
-        # Masquer complètement le reste de la page avec du CSS simple
+
+        # ── CSS : animations + cartes + boutons ──────────────────────
         st.markdown("""
         <style>
         section[data-testid="stSidebar"] { display: none !important; }
+
+        @keyframes slideLeft {
+            0%   { opacity:0; transform:translateX(-70px) scale(.94); }
+            100% { opacity:1; transform:translateX(0)     scale(1);   }
+        }
+        @keyframes slideRight {
+            0%   { opacity:0; transform:translateX( 70px) scale(.94); }
+            100% { opacity:1; transform:translateX(0)     scale(1);   }
+        }
+        @keyframes dropIn {
+            0%   { opacity:0; transform:translateY(-40px); }
+            100% { opacity:1; transform:translateY(0);     }
+        }
+        @keyframes pulseGold {
+            0%,100% { box-shadow: 0 0 28px rgba(255,215,0,.15), 0 8px 40px rgba(0,0,0,.4); }
+            50%      { box-shadow: 0 0 55px rgba(255,215,0,.35), 0 8px 50px rgba(0,0,0,.5); }
+        }
+        @keyframes pulseCyan {
+            0%,100% { box-shadow: 0 0 28px rgba(0,210,255,.15), 0 8px 40px rgba(0,0,0,.4); }
+            50%      { box-shadow: 0 0 55px rgba(0,210,255,.35), 0 8px 50px rgba(0,0,0,.5); }
+        }
+        @keyframes spinCW  { to { transform: rotate( 360deg); } }
+        @keyframes spinCCW { to { transform: rotate(-360deg); } }
+        @keyframes tagFloat {
+            0%,100% { transform: translateY(0);   }
+            50%      { transform: translateY(-4px); }
+        }
+        @keyframes scanline {
+            0%   { top: -4%; }
+            100% { top: 104%; }
+        }
+        @keyframes sparkle {
+            0%,100% { opacity:0; transform:scale(0) rotate(0deg);   }
+            50%      { opacity:1; transform:scale(1) rotate(180deg); }
+        }
+        @keyframes vsPulse {
+            0%,100% { opacity:.25; }
+            50%      { opacity:.7;  }
+        }
+        @keyframes shimmerBtn {
+            0%   { background-position: -200% center; }
+            100% { background-position:  200% center; }
+        }
+
+        /* ── CARTE ── */
+        .nm-card {
+            position: relative;
+            border-radius: 22px;
+            padding: 32px 22px 24px;
+            text-align: center;
+            overflow: hidden;
+            transition: transform .3s cubic-bezier(.22,1,.36,1);
+            cursor: default;
+        }
+        .nm-card:hover { transform: translateY(-7px) scale(1.013); }
+
+        .nm-card-gold {
+            background: linear-gradient(145deg, rgba(255,215,0,.11), rgba(255,140,0,.06), rgba(255,215,0,.04));
+            border: 1.5px solid rgba(255,215,0,.5);
+            animation: slideLeft .7s cubic-bezier(.22,1,.36,1) both, pulseGold 4s ease-in-out 1s infinite;
+        }
+        .nm-card-cyan {
+            background: linear-gradient(145deg, rgba(0,200,255,.11), rgba(0,120,200,.06), rgba(0,200,255,.04));
+            border: 1.5px solid rgba(0,200,255,.5);
+            animation: slideRight .7s cubic-bezier(.22,1,.36,1) both, pulseCyan 4s ease-in-out 1s infinite;
+        }
+
+        /* scanline */
+        .nm-scan {
+            position:absolute; left:0; right:0; height:3px; top:-4%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
+            animation: scanline 4s linear infinite;
+            pointer-events: none;
+        }
+        .nm-card-cyan .nm-scan { animation-delay: 2s; }
+
+        /* coins */
+        .nm-corner {
+            position:absolute; width:13px; height:13px;
+            border-style:solid; pointer-events:none;
+            transition: border-color .3s;
+        }
+        .nm-card:hover .nm-corner { border-color: rgba(255,255,255,.55) !important; }
+        .nm-corner-tl { top:10px; left:10px;   border-width:2px 0 0 2px; border-radius:4px 0 0 0;
+            border-color: rgba(255,215,0,.45); }
+        .nm-corner-tr { top:10px; right:10px;  border-width:2px 2px 0 0; border-radius:0 4px 0 0;
+            border-color: rgba(255,215,0,.45); }
+        .nm-corner-bl { bottom:10px; left:10px;  border-width:0 0 2px 2px; border-radius:0 0 0 4px;
+            border-color: rgba(255,215,0,.45); }
+        .nm-corner-br { bottom:10px; right:10px; border-width:0 2px 2px 0; border-radius:0 0 4px 0;
+            border-color: rgba(255,215,0,.45); }
+        .nm-card-cyan .nm-corner-tl,
+        .nm-card-cyan .nm-corner-tr,
+        .nm-card-cyan .nm-corner-bl,
+        .nm-card-cyan .nm-corner-br { border-color: rgba(0,210,255,.45); }
+
+        /* sparkles */
+        .nm-spark {
+            position:absolute; font-size:.55rem; pointer-events:none;
+            color: rgba(255,215,0,.75);
+            animation: sparkle 3s ease-in-out infinite;
+        }
+        .nm-card-cyan .nm-spark { color: rgba(0,210,255,.75); }
+        .nm-spark:nth-child(1) { top:16%; left:11%;  animation-delay:0s;   }
+        .nm-spark:nth-child(2) { top:52%; right:9%;  animation-delay:1.2s; }
+        .nm-spark:nth-child(3) { bottom:20%; left:18%; animation-delay:2.4s; }
+
+        /* icône + anneaux */
+        .nm-icon-wrap {
+            position:relative; width:70px; height:70px;
+            margin: 0 auto 14px;
+            display:flex; align-items:center; justify-content:center;
+        }
+        .nm-icon { font-size:2.1rem; position:relative; z-index:2; }
+        .nm-icon-gold { filter: drop-shadow(0 0 12px rgba(255,215,0,.85)); }
+        .nm-icon-cyan { filter: drop-shadow(0 0 12px rgba(0,210,255,.85)); }
+        .nm-ring1 {
+            position:absolute; inset:-8px; border-radius:50%;
+            border:1.5px dashed rgba(255,215,0,.55);
+            animation: spinCW 7s linear infinite;
+        }
+        .nm-ring2 {
+            position:absolute; inset:-17px; border-radius:50%;
+            border:1px dashed rgba(255,215,0,.28);
+            animation: spinCCW 11s linear infinite;
+        }
+        .nm-card-cyan .nm-ring1 { border-color: rgba(0,210,255,.55); }
+        .nm-card-cyan .nm-ring2 { border-color: rgba(0,210,255,.28); }
+
+        /* badge */
+        .nm-badge {
+            display:inline-block; border-radius:100px;
+            padding:4px 14px; font-size:.67rem; font-weight:700;
+            letter-spacing:1.5px; margin-bottom:11px;
+        }
+        .nm-badge-g { background:rgba(255,215,0,.12); border:1px solid rgba(255,215,0,.45); color:#FFD700; }
+        .nm-badge-c { background:rgba(0,210,255,.12); border:1px solid rgba(0,210,255,.45); color:#00d2ff; }
+
+        /* textes */
+        .nm-card-title-g { font-size:1.18rem; font-weight:900; color:#FFD700; margin-bottom:9px; }
+        .nm-card-title-c { font-size:1.18rem; font-weight:900; color:#00d2ff; margin-bottom:9px; }
+        .nm-card-desc { color:rgba(255,255,255,.5); font-size:.82rem; line-height:1.75; margin-bottom:16px; }
+
+        /* tags */
+        .nm-tags { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:18px; }
+        .nm-tag {
+            padding:4px 11px; border-radius:100px; font-size:.66rem; font-weight:600;
+            animation: tagFloat 2.5s ease-in-out infinite;
+        }
+        .nm-tag:nth-child(2) { animation-delay:.45s; }
+        .nm-tag:nth-child(3) { animation-delay:.9s; }
+        .nm-tag-g { background:rgba(255,215,0,.10); border:1px solid rgba(255,215,0,.32); color:rgba(255,215,0,.85); }
+        .nm-tag-c { background:rgba(0,210,255,.10); border:1px solid rgba(0,210,255,.32); color:rgba(0,210,255,.85); }
+
+        /* boutons Streamlit stylisés */
+        [data-testid="stButton"][data-key="mode_platform_btn"] button {
+            background: linear-gradient(90deg,#FFD700,#FFA500,#FFD700);
+            background-size: 200% auto;
+            color: #000 !important; font-weight:800; letter-spacing:1.5px;
+            border:none; border-radius:50px; padding:13px;
+            box-shadow: 0 5px 24px rgba(255,180,0,.4);
+            animation: shimmerBtn 3s linear infinite;
+            transition: transform .25s, box-shadow .25s;
+        }
+        [data-testid="stButton"][data-key="mode_platform_btn"] button:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 9px 32px rgba(255,180,0,.55);
+        }
+        [data-testid="stButton"][data-key="mode_chat_btn"] button {
+            background: linear-gradient(90deg,#00d2ff,#3a7bd5,#00d2ff);
+            background-size: 200% auto;
+            color: #fff !important; font-weight:800; letter-spacing:1.5px;
+            border:none; border-radius:50px; padding:13px;
+            box-shadow: 0 5px 24px rgba(0,180,255,.4);
+            animation: shimmerBtn 3s linear infinite;
+            transition: transform .25s, box-shadow .25s;
+        }
+        [data-testid="stButton"][data-key="mode_chat_btn"] button:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 9px 32px rgba(0,180,255,.55);
+        }
+
+        /* séparateur VS */
+        .nm-vs-wrap {
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            height:100%; gap:8px; padding:20px 0;
+        }
+        .nm-vs-line {
+            flex:1; width:1px;
+            background: linear-gradient(180deg,transparent,rgba(255,255,255,.15),transparent);
+            animation: vsPulse 3s ease-in-out infinite;
+        }
+        .nm-vs-text {
+            font-size:.72rem; font-weight:900; letter-spacing:3px;
+            color:rgba(255,255,255,.22); animation: vsPulse 3s ease-in-out infinite;
+        }
         </style>
         """, unsafe_allow_html=True)
 
-        # Centrage via colonnes Streamlit
-        _, col_center, _ = st.columns([1, 3, 1])
-        with col_center:
-            st.markdown("<br><br>", unsafe_allow_html=True)
-
-            # En-tête
-            st.markdown("""
-            <div style="text-align:center; padding: 20px 0 10px 0;">
-                <div style="font-size:2.8rem; margin-bottom:8px;">👋</div>
-                <div style="font-size:1.6rem; font-weight:900; color:#ffffff; margin-bottom:6px;">
-                    Bienvenue sur Nova Platform
-                </div>
-                <div style="color:rgba(255,255,255,0.4); font-size:0.9rem; letter-spacing:2px; margin-bottom:30px;">
-                    CHOISISSEZ VOTRE MODE
-                </div>
+        # ── EN-TÊTE ──────────────────────────────────────────────────
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="text-align:center; animation:dropIn .6s cubic-bezier(.22,1,.36,1) both;">
+            <div style="font-size:1.7rem; font-weight:900; color:#fff; letter-spacing:4px;
+                background:linear-gradient(90deg,#FFD700,#fff,#00d2ff);
+                -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+                background-clip:text; margin-bottom:6px;">
+                NOVA PLATFORM
             </div>
-            """, unsafe_allow_html=True)
+            <div style="color:rgba(255,255,255,.3); font-size:.78rem; letter-spacing:3px; margin-bottom:28px;">
+                CHOISISSEZ VOTRE EXPÉRIENCE
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-            # Carte Plateforme
+        # ── CARTES CÔTE À CÔTE ───────────────────────────────────────
+        col_gold, col_vs, col_cyan = st.columns([10, 1, 10])
+
+        with col_gold:
             st.markdown("""
-            <div style="
-                background: linear-gradient(145deg, rgba(255,215,0,0.1), rgba(255,140,0,0.06));
-                border: 2px solid rgba(255,215,0,0.5);
-                border-radius: 20px;
-                padding: 28px 24px;
-                margin-bottom: 16px;
-                text-align: center;
-            ">
-                <div style="font-size:2.8rem; margin-bottom:10px;">🖥️</div>
-                <div style="display:inline-block; background:rgba(255,215,0,0.15);
-                    border:1px solid rgba(255,215,0,0.35); border-radius:20px;
-                    padding:3px 14px; font-size:0.75rem; font-weight:700;
-                    color:#FFD700; letter-spacing:1px; margin-bottom:12px;">
-                    MODE CLASSIQUE
+            <div class="nm-card nm-card-gold">
+                <div class="nm-scan"></div>
+                <div class="nm-corner nm-corner-tl"></div>
+                <div class="nm-corner nm-corner-tr"></div>
+                <div class="nm-corner nm-corner-bl"></div>
+                <div class="nm-corner nm-corner-br"></div>
+                <span class="nm-spark">✦</span>
+                <span class="nm-spark">✦</span>
+                <span class="nm-spark">✦</span>
+                <div class="nm-icon-wrap">
+                    <span class="nm-icon nm-icon-gold">🖥️</span>
+                    <div class="nm-ring1"></div>
+                    <div class="nm-ring2"></div>
                 </div>
-                <div style="font-size:1.15rem; font-weight:800; color:#FFD700; margin-bottom:10px;">
-                    Version Plateforme
+                <div class="nm-badge nm-badge-g">✦ MODE CLASSIQUE ✦</div>
+                <div class="nm-card-title-g">Version Plateforme</div>
+                <div class="nm-card-desc">
+                    Parcours les services Nova,<br>
+                    décris ton besoin et soumets<br>
+                    ta demande ou génère en 1 clic.
                 </div>
-                <div style="color:rgba(255,255,255,0.5); font-size:0.85rem; line-height:1.7;">
-                    Parcours les services Nova, decris ton besoin<br>
-                    et soumets ta demande ou genere en 1 clic.
+                <div class="nm-tags">
+                    <span class="nm-tag nm-tag-g">⚡ Génération auto</span>
+                    <span class="nm-tag nm-tag-g">📂 Mes livrables</span>
+                    <span class="nm-tag nm-tag-g">👑 Dashboard complet</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -5558,32 +5761,42 @@ def main_dashboard():
                 st.session_state["show_mode_modal"] = False
                 st.rerun()
 
-            st.markdown("<div style='text-align:center; color:rgba(255,255,255,0.2); padding:8px 0; font-size:0.85rem;'>— ou —</div>", unsafe_allow_html=True)
-
-            # Carte Chat Nova IA
+        with col_vs:
             st.markdown("""
-            <div style="
-                background: linear-gradient(145deg, rgba(0,200,255,0.1), rgba(0,120,200,0.06));
-                border: 2px solid rgba(0,200,255,0.5);
-                border-radius: 20px;
-                padding: 28px 24px;
-                margin-bottom: 16px;
-                text-align: center;
-            ">
-                <div style="font-size:2.8rem; margin-bottom:10px;">🤖</div>
-                <div style="display:inline-block; background:rgba(0,200,255,0.15);
-                    border:1px solid rgba(0,200,255,0.35); border-radius:20px;
-                    padding:3px 14px; font-size:0.75rem; font-weight:700;
-                    color:#00d2ff; letter-spacing:1px; margin-bottom:12px;">
-                    MODE IA
+            <div class="nm-vs-wrap">
+                <div class="nm-vs-line"></div>
+                <div class="nm-vs-text">VS</div>
+                <div class="nm-vs-line"></div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        with col_cyan:
+            st.markdown("""
+            <div class="nm-card nm-card-cyan">
+                <div class="nm-scan"></div>
+                <div class="nm-corner nm-corner-tl"></div>
+                <div class="nm-corner nm-corner-tr"></div>
+                <div class="nm-corner nm-corner-bl"></div>
+                <div class="nm-corner nm-corner-br"></div>
+                <span class="nm-spark">✦</span>
+                <span class="nm-spark">✦</span>
+                <span class="nm-spark">✦</span>
+                <div class="nm-icon-wrap">
+                    <span class="nm-icon nm-icon-cyan">🤖</span>
+                    <div class="nm-ring1"></div>
+                    <div class="nm-ring2"></div>
                 </div>
-                <div style="font-size:1.15rem; font-weight:800; color:#00d2ff; margin-bottom:10px;">
-                    Chat avec Nova IA
-                </div>
-                <div style="color:rgba(255,255,255,0.5); font-size:0.85rem; line-height:1.7;">
+                <div class="nm-badge nm-badge-c">✦ MODE IA ✦</div>
+                <div class="nm-card-title-c">Chat avec Nova IA</div>
+                <div class="nm-card-desc">
                     Dis ce que tu veux en langage naturel.<br>
-                    Nova IA pose les bonnes questions et genere<br>
-                    ou soumet ta demande automatiquement.
+                    Nova IA pose les bonnes questions<br>
+                    et génère automatiquement.
+                </div>
+                <div class="nm-tags">
+                    <span class="nm-tag nm-tag-c">🧠 IA conversationnelle</span>
+                    <span class="nm-tag nm-tag-c">✨ Génération intelligente</span>
+                    <span class="nm-tag nm-tag-c">⚡ Instantané</span>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -5596,12 +5809,12 @@ def main_dashboard():
                 st.session_state["view"] = "nova_ia"
                 st.rerun()
 
-            st.markdown("""
-            <div style="text-align:center; color:rgba(255,255,255,0.2);
-                font-size:0.75rem; padding-top:16px;">
-                Tu pourras changer de mode a tout moment depuis le menu
-            </div>
-            """, unsafe_allow_html=True)
+        st.markdown("""
+        <div style="text-align:center; color:rgba(255,255,255,.2);
+            font-size:.73rem; padding-top:18px; letter-spacing:1px;">
+            Tu pourras changer de mode à tout moment depuis le menu
+        </div>
+        """, unsafe_allow_html=True)
 
         return   # stoppe le dashboard le temps que le client choisit
 
