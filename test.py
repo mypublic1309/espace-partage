@@ -4934,28 +4934,6 @@ def inject_custom_css():
 
 
 def show_auth_page():
-    # ── Traitement connexion via formulaire HTML natif (autocomplete navigateur) ──
-    _nova_wa_form = st.query_params.get("nova_wa_login", "")
-    _nova_login_err = st.query_params.get("nova_login_err", "")
-    if _nova_wa_form:
-        _wa_digits = "".join(c for c in _nova_wa_form if c.isdigit())
-        _wa_norm   = normalize_wa(_wa_digits)
-        _fresh_db  = load_db()
-        st.session_state["db"] = _fresh_db
-        _uid_found = None
-        for _u_id, _u_data in _fresh_db["users"].items():
-            if _u_data["whatsapp"] == _wa_norm:
-                _uid_found = _u_id
-                break
-        if _uid_found:
-            st.session_state["current_user"] = _uid_found
-            st.session_state["view"] = "home"
-            st.query_params["user_id"] = _uid_found
-            st.rerun()
-        else:
-            st.query_params["nova_login_err"] = "1"
-            st.rerun()
-
     st.markdown("""
     <style>
     @keyframes shimmer {
@@ -5203,87 +5181,42 @@ def show_auth_page():
             </div>
         </div>
         """, unsafe_allow_html=True)
-        # --- LOGIN : formulaire HTML natif avec autocomplete navigateur ---
-        _prefill_wa = st.query_params.get("nova_wa_login", "")
-        _show_err   = st.query_params.get("nova_login_err", "")
-        components.html(f"""
-        <style>
-          * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-          body {{ background: transparent; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }}
-          .nv-label {{
-            color: #c87aff; font-size: 0.8rem; font-weight: 700;
-            letter-spacing: 0.5px; margin-bottom: 6px; display: block;
-          }}
-          .nv-input {{
-            width: 100%; padding: 10px 14px;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(200,122,255,0.35);
-            border-radius: 8px; color: #fff; font-size: 0.95rem;
-            outline: none; transition: border-color .2s;
-          }}
-          .nv-input:focus {{ border-color: #c87aff; box-shadow: 0 0 0 3px rgba(200,122,255,0.15); }}
-          .nv-input::placeholder {{ color: rgba(255,255,255,0.28); }}
-          .nv-btn {{
-            width: 100%; padding: 11px; margin-top: 12px;
-            background: linear-gradient(135deg, #7c3aed, #a855f7);
-            border: none; border-radius: 8px; color: #fff;
-            font-size: 0.93rem; font-weight: 800; cursor: pointer;
-            letter-spacing: 1px;
-          }}
-          .nv-err {{
-            color: #ff7070; font-size: 0.8rem; margin-top: 8px;
-            padding: 7px 12px; background: rgba(255,60,60,0.1);
-            border-radius: 6px; border: 1px solid rgba(255,60,60,0.25);
-          }}
-        </style>
-        <!-- Formulaire natif : le navigateur voit username+password → propose d'enregistrer -->
-        <form id="nv-login" autocomplete="on">
-          <div style="margin-bottom:10px;">
-            <label class="nv-label">📱 Votre numéro WhatsApp</label>
-            <input
-              type="tel"
-              id="nv-wa"
-              name="nova_wa_login"
-              class="nv-input"
-              placeholder="Ex: 22501..."
-              autocomplete="username"
-              value="{_prefill_wa}"
-              required
-            />
-          </div>
-          <!-- Champ password présent pour déclencher la sauvegarde du navigateur -->
-          <input
-            type="password"
-            name="_nv_p"
-            autocomplete="current-password"
-            value="nova_platform_auth"
-            tabindex="-1"
-            style="position:absolute;width:1px;height:1px;opacity:0.01;pointer-events:none;border:none;"
-          />
-          {"<div class='nv-err'>❌ Numéro WhatsApp inconnu. Vérifiez ou créez un compte.</div>" if _show_err else ""}
-          <button type="submit" class="nv-btn">⚡ S'IDENTIFIER</button>
-        </form>
-        <script>
-        document.getElementById('nv-login').addEventListener('submit', function(e) {{
-            e.preventDefault();
-            var wa = document.getElementById('nv-wa').value.trim();
-            if (!wa) return;
-            // Déclenché par clic utilisateur → window.top.location autorisé
-            var url = new URL(window.top.location.href);
-            url.searchParams.set('nova_wa_login', wa);
-            url.searchParams.delete('nova_login_err');
-            window.top.location.href = url.toString();
-        }});
-        // Nettoyer le flag d'erreur après affichage
-        (function() {{
-            var url = new URL(window.top.location.href);
-            if (url.searchParams.has('nova_login_err')) {{
-                url.searchParams.delete('nova_login_err');
-                window.top.history.replaceState({{}}, '', url.toString());
-            }}
-        }})();
-        </script>
-        """, height=165)
+        # --- LOGIN : champ Streamlit natif + bouton Python ---
+        wa_auth_raw = st.text_input(
+            "📱 Votre numéro WhatsApp",
+            placeholder="Ex: 22501...",
+            key="wa_login_input"
+        )
+        wa_auth = "".join(c for c in wa_auth_raw if c.isdigit())
+        if wa_auth_raw != wa_auth and wa_auth_raw:
+            st.warning("⚠️ Le numéro WhatsApp ne doit contenir que des chiffres.")
+        # Formulaire HTML invisible uniquement pour déclencher l'autocomplete mobile
+        components.html("""
+            <form id="nova-login-form" autocomplete="on" style="display:none;">
+                <input type="tel" name="username" autocomplete="username" />
+                <input type="password" name="password" autocomplete="current-password" value="nova_platform_auth" />
+                <button type="submit">ok</button>
+            </form>
+            <script>
+            document.getElementById("nova-login-form").addEventListener("submit", function(e){ e.preventDefault(); });
+            </script>
+        """, height=1)
+        if st.button("⚡ S'IDENTIFIER", use_container_width=True, key="btn_login"):
+            fresh_db = load_db()
+            st.session_state["db"] = fresh_db
+            wa_norm = normalize_wa(wa_auth)
+            uid_trouve = None
+            for u_id, u_data in fresh_db["users"].items():
+                if u_data["whatsapp"] == wa_norm:
+                    uid_trouve = u_id
+                    break
+            if uid_trouve:
+                st.session_state["current_user"] = uid_trouve
+                st.session_state["view"] = "home"
+                st.query_params["user_id"] = uid_trouve
+                st.rerun()
+            else:
+                st.error("❌ Numéro WhatsApp inconnu. Vérifiez ou créez un compte.")
 
     with col2:
         st.markdown("""
