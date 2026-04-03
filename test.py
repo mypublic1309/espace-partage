@@ -4213,30 +4213,52 @@ if "premium_livrable" not in st.session_state:
 
 if st.session_state["current_user"] is None:
     stored_user = st.query_params.get("user_id")
+    _already_checked = st.query_params.get("_session_checked")
+
     if stored_user and stored_user in st.session_state["db"]["users"]:
+        # ✅ user_id dans l'URL → restauration de session
         st.session_state["current_user"] = stored_user
-    else:
+
+    elif not _already_checked:
+        # ⏳ Pas encore vérifié localStorage → on bloque le rendu et on laisse le JS décider
         components.html("""
             <script>
-            (function() {
+            setTimeout(function() {
                 var uid = localStorage.getItem('nova_user_id') || localStorage.getItem('nova_user');
-                if (uid) {
+                var ts  = localStorage.getItem('nova_user_ts');
+                var TRENTE_JOURS = 30 * 24 * 60 * 60 * 1000;
+                var url = new URL(window.parent.location.href);
+
+                if (uid && (!ts || (Date.now() - parseInt(ts)) < TRENTE_JOURS)) {
+                    // Compte trouvé et encore valide → on restaure la session
                     localStorage.setItem('nova_user_id', uid);
                     localStorage.removeItem('nova_user');
-                    var ts = localStorage.getItem('nova_user_ts');
-                    var TRENTE_JOURS = 30 * 24 * 60 * 60 * 1000;
-                    if (!ts || (Date.now() - parseInt(ts)) < TRENTE_JOURS) {
-                        var url = new URL(window.parent.location.href);
-                        url.searchParams.set('user_id', uid);
-                        window.parent.location.replace(url.toString());
-                    } else {
-                        localStorage.removeItem('nova_user_id');
-                        localStorage.removeItem('nova_user_ts');
-                    }
+                    url.searchParams.set('user_id', uid);
+                } else {
+                    // Rien de valide → on marque "déjà vérifié" pour éviter boucle infinie
+                    localStorage.removeItem('nova_user_id');
+                    localStorage.removeItem('nova_user_ts');
+                    localStorage.removeItem('nova_user');
+                    url.searchParams.set('_session_checked', '1');
                 }
-            })();
+                window.parent.location.replace(url.toString());
+            }, 150);
             </script>
-        """, height=1)
+        """, height=0)
+
+        # 🔒 Bloquer tout rendu ici — rien ne s'affiche avant la réponse JS
+        st.markdown("""
+        <div style="display:flex;align-items:center;justify-content:center;
+            height:80vh;flex-direction:column;gap:20px;">
+            <div style="font-size:3.5rem;filter:drop-shadow(0 0 24px #c87aff);">⚡</div>
+            <div style="color:#c87aff;font-family:monospace;font-size:1.1rem;
+                font-weight:900;letter-spacing:4px;">NOVA AI</div>
+            <div style="color:rgba(255,255,255,0.35);font-size:.82rem;
+                font-family:monospace;letter-spacing:2px;">
+                Vérification de votre session...</div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.stop()
 
 if st.session_state["current_user"]:
     uid_connecte = st.session_state["current_user"]
