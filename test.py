@@ -4210,6 +4210,8 @@ if "gemini_results" not in st.session_state:
     st.session_state["gemini_results"] = {}
 if "premium_livrable" not in st.session_state:
     st.session_state["premium_livrable"] = None
+if "show_mode_modal" not in st.session_state:
+    st.session_state["show_mode_modal"] = False
 
 if st.session_state["current_user"] is None:
     stored_user = st.query_params.get("user_id")
@@ -5213,6 +5215,7 @@ def show_auth_page():
             if uid_trouve:
                 st.session_state["current_user"] = uid_trouve
                 st.session_state["view"] = "home"
+                st.session_state["show_mode_modal"] = True
                 st.query_params["user_id"] = uid_trouve
                 st.rerun()
             else:
@@ -5269,6 +5272,7 @@ def show_auth_page():
                         }
                         st.session_state["current_user"] = new_uid
                         st.session_state["view"] = "home"
+                        st.session_state["show_mode_modal"] = True
                         st.session_state["db"] = load_db()
                         st.query_params["user_id"] = new_uid
                         st.rerun()
@@ -5494,6 +5498,169 @@ def main_dashboard():
     user_data     = db["users"].get(user, {}) if user else {}
     premium_actif = is_premium_actif(user_data)
     premium_info  = get_premium_info(user_data)
+
+    # ══════════════════════════════════════════════════════════════
+    # MODALE CHOIX DU MODE — apparaît une seule fois à la connexion
+    # ══════════════════════════════════════════════════════════════
+    if st.session_state.get("show_mode_modal", False):
+        st.markdown("""
+        <style>
+        @keyframes modeOverlayIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        @keyframes modeCardIn {
+            from { opacity: 0; transform: translateY(40px) scale(.96); }
+            to   { opacity: 1; transform: translateY(0)    scale(1);   }
+        }
+        @keyframes modeShimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position:  200% center; }
+        }
+        @keyframes modePulse {
+            0%,100% { box-shadow: 0 0 10px 2px rgba(0,200,255,.25); }
+            50%     { box-shadow: 0 0 28px 8px rgba(0,200,255,.55); }
+        }
+        @keyframes modePulseGold {
+            0%,100% { box-shadow: 0 0 10px 2px rgba(255,215,0,.25); }
+            50%     { box-shadow: 0 0 28px 8px rgba(255,215,0,.55); }
+        }
+        .mode-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: rgba(0,0,0,.82);
+            backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            animation: modeOverlayIn .35s ease both;
+        }
+        .mode-panel {
+            background: linear-gradient(160deg, #0a0a14 0%, #0d1020 60%, #080810 100%);
+            border: 1.5px solid rgba(255,255,255,.12);
+            border-radius: 28px;
+            padding: 44px 36px 36px;
+            max-width: 680px; width: 92%;
+            animation: modeCardIn .45s cubic-bezier(.22,1,.36,1) both;
+            text-align: center;
+            position: relative;
+        }
+        .mode-title {
+            font-size: 1.7rem; font-weight: 900; letter-spacing: .5px;
+            background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,.7) 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+        .mode-sub {
+            color: rgba(255,255,255,.38); font-size: .88rem;
+            letter-spacing: 1px; margin-bottom: 36px;
+        }
+        .mode-cards-row {
+            display: flex; gap: 18px; justify-content: center; flex-wrap: wrap;
+        }
+        .mode-card {
+            flex: 1; min-width: 220px; max-width: 270px;
+            border-radius: 20px; padding: 28px 20px;
+            cursor: pointer; transition: transform .2s;
+            position: relative; overflow: hidden;
+        }
+        .mode-card:hover { transform: translateY(-4px); }
+        .mode-card-platform {
+            background: linear-gradient(145deg, rgba(255,215,0,.1), rgba(255,140,0,.06));
+            border: 1.5px solid rgba(255,215,0,.45);
+            animation: modePulseGold 3s ease-in-out infinite;
+        }
+        .mode-card-chat {
+            background: linear-gradient(145deg, rgba(0,200,255,.1), rgba(0,120,200,.06));
+            border: 1.5px solid rgba(0,200,255,.45);
+            animation: modePulse 3s ease-in-out infinite;
+        }
+        .mode-card::before {
+            content: '';
+            position: absolute; top: 0; left: -100%; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+            background-size: 200% 100%;
+            animation: modeShimmer 3s linear infinite;
+        }
+        .mode-icon { font-size: 3rem; display: block; margin-bottom: 12px; }
+        .mode-card-title {
+            font-size: 1.1rem; font-weight: 800;
+            letter-spacing: .5px; margin-bottom: 8px;
+        }
+        .mode-card-desc {
+            color: rgba(255,255,255,.45); font-size: .78rem;
+            line-height: 1.6;
+        }
+        .mode-badge {
+            display: inline-block;
+            border-radius: 20px; padding: 3px 12px;
+            font-size: .72rem; font-weight: 700;
+            letter-spacing: .5px; margin-bottom: 12px;
+        }
+        .mode-badge-platform { background: rgba(255,215,0,.15); color: #FFD700; border: 1px solid rgba(255,215,0,.35); }
+        .mode-badge-chat     { background: rgba(0,200,255,.15); color: #00d2ff; border: 1px solid rgba(0,200,255,.35); }
+        </style>
+
+        <div class="mode-overlay" id="nova-mode-overlay">
+            <div class="mode-panel">
+                <div class="mode-title">👋 Bienvenue sur Nova Platform</div>
+                <div class="mode-sub">CHOISISSEZ VOTRE MODE D'UTILISATION</div>
+                <div class="mode-cards-row">
+
+                    <div class="mode-card mode-card-platform" onclick="choosePlatform()">
+                        <span class="mode-icon">🖥️</span>
+                        <div class="mode-badge mode-badge-platform">MODE CLASSIQUE</div>
+                        <div class="mode-card-title" style="color:#FFD700;">Version Plateforme</div>
+                        <div class="mode-card-desc">
+                            Accède aux services Nova comme d'habitude :<br>
+                            sélectionne un service, décris ton besoin,<br>
+                            et soumet ta demande ou génère en 1 clic.
+                        </div>
+                    </div>
+
+                    <div class="mode-card mode-card-chat" onclick="chooseChat()">
+                        <span class="mode-icon">🤖</span>
+                        <div class="mode-badge mode-badge-chat">MODE IA</div>
+                        <div class="mode-card-title" style="color:#00d2ff;">Chat avec Nova IA</div>
+                        <div class="mode-card-desc">
+                            Dis simplement ce que tu veux en langage naturel.<br>
+                            Nova IA comprend, pose les bonnes questions<br>
+                            et génère ou soumet ta demande automatiquement.
+                        </div>
+                    </div>
+
+                </div>
+                <div style="margin-top:28px; color:rgba(255,255,255,.22); font-size:.75rem; letter-spacing:.5px;">
+                    Tu pourras changer de mode à tout moment depuis le menu
+                </div>
+            </div>
+        </div>
+
+        <script>
+        function choosePlatform() {
+            document.getElementById('nova-mode-overlay').style.display = 'none';
+            window.parent.postMessage({type:'nova_mode', choice:'platform'}, '*');
+        }
+        function chooseChat() {
+            document.getElementById('nova-mode-overlay').style.display = 'none';
+            window.parent.postMessage({type:'nova_mode', choice:'chat'}, '*');
+        }
+        </script>
+        """, unsafe_allow_html=True)
+
+        col_plat, col_chat = st.columns(2)
+        with col_plat:
+            if st.button("🖥️  Version Plateforme", key="mode_platform_btn", use_container_width=True):
+                st.session_state["show_mode_modal"] = False
+                st.rerun()
+        with col_chat:
+            if st.button("🤖  Chat avec Nova IA", key="mode_chat_btn", use_container_width=True):
+                st.session_state["show_mode_modal"] = False
+                st.session_state.pop("nova_ia_chat", None)
+                st.session_state.pop("nova_ia_phase", None)
+                st.session_state.pop("nova_ia_service_detecte", None)
+                st.session_state.pop("nova_ia_prompt_final", None)
+                st.session_state["view"] = "nova_ia"
+                st.rerun()
+        return   # stoppe le dashboard le temps que le client choisit
 
     with st.sidebar:
         st.markdown(f"### 👤 {user if user else 'Visiteur'}")
