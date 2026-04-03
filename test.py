@@ -8072,6 +8072,15 @@ Action requise si le problème n'est pas résolu.
                     st.session_state["view"] = "arsene_ia"
                     st.rerun()
 
+        st.divider()
+        if st.button("🤖 Nova IA — Créer un document", key="btn_nova_ia_page", use_container_width=True):
+            st.session_state.pop("nova_ia_chat", None)
+            st.session_state.pop("nova_ia_phase", None)
+            st.session_state.pop("nova_ia_service_detecte", None)
+            st.session_state.pop("nova_ia_prompt_final", None)
+            st.session_state["view"] = "nova_ia"
+            st.rerun()
+
     with st.expander("🛠 Console Admin Nova"):
         if st.text_input("Master Key", type="password") == ADMIN_CODE:
 
@@ -8771,9 +8780,406 @@ Intervenir si problème non résolu.
             st.rerun()
 
 
+# ══════════════════════════════════════════════════════════════════
+# PAGE NOVA IA — Chat intelligent dédié, génération ou demande
+# ══════════════════════════════════════════════════════════════════
+def show_nova_ia_page():
+    user = st.session_state.get("current_user", "")
+    db   = st.session_state.get("db", {"users": {}, "demandes": [], "liens": {}})
+    user_data     = db["users"].get(user, {}) if user else {}
+    premium_actif = is_premium_actif(user_data)
+    wa_user       = user_data.get("whatsapp", "—")
+
+    # ── STYLES ────────────────────────────────────────────────────
+    st.markdown("""
+    <style>
+    @keyframes novaGlow {
+        0%,100%{box-shadow:0 0 14px 4px rgba(0,200,255,0.25),0 0 35px 8px rgba(0,150,255,0.12);}
+        50%     {box-shadow:0 0 32px 12px rgba(0,220,255,0.55),0 0 65px 22px rgba(0,180,255,0.3);}
+    }
+    @keyframes novaShimmer {
+        0%  {background-position:-200% center;}
+        100%{background-position: 200% center;}
+    }
+    @keyframes floatBot {
+        0%,100%{transform:translateY(0);}
+        50%    {transform:translateY(-8px);}
+    }
+    @keyframes pulseDot {
+        0%,100%{opacity:1;transform:scale(1);}
+        50%    {opacity:.4;transform:scale(.6);}
+    }
+    .nova-ia-header{
+        background:linear-gradient(135deg,rgba(0,180,255,.13) 0%,rgba(0,100,200,.08) 50%,rgba(0,180,255,.07) 100%);
+        border:2px solid rgba(0,200,255,.4);
+        border-radius:22px;padding:32px 24px 24px;text-align:center;
+        animation:novaGlow 2.8s ease-in-out infinite;margin-bottom:20px;
+        position:relative;overflow:hidden;
+    }
+    .nova-ia-header::before{
+        content:"";position:absolute;top:0;left:-100%;right:0;bottom:0;
+        background:linear-gradient(90deg,transparent,rgba(0,200,255,.08),rgba(255,255,255,.1),rgba(0,200,255,.08),transparent);
+        background-size:200% 100%;animation:novaShimmer 3.5s linear infinite;
+    }
+    .nova-bot-icon{font-size:4.2rem;display:block;margin-bottom:10px;
+        animation:floatBot 3s ease-in-out infinite;
+        filter:drop-shadow(0 0 14px rgba(0,220,255,.7));}
+    .nova-ia-title{
+        background:linear-gradient(135deg,#00d2ff 0%,#7df9ff 40%,#00aaff 70%,#e0f7ff 100%);
+        background-size:200% auto;-webkit-background-clip:text;
+        -webkit-text-fill-color:transparent;background-clip:text;
+        font-size:2rem;font-weight:900;letter-spacing:1px;display:block;
+        animation:novaShimmer 4s linear infinite;
+    }
+    .nova-badge{
+        display:inline-block;
+        background:linear-gradient(135deg,rgba(0,200,255,.18),rgba(0,120,200,.12));
+        border:1px solid rgba(0,200,255,.5);border-radius:30px;
+        padding:5px 16px;margin-top:10px;font-size:.82rem;
+        color:#00d2ff;font-weight:700;letter-spacing:.5px;
+    }
+    .online-dot-nova{
+        display:inline-block;width:9px;height:9px;
+        background:#2ecc71;border-radius:50%;margin-right:6px;
+        box-shadow:0 0 6px #2ecc71;animation:pulseDot 1.5s ease-in-out infinite;
+    }
+    .nova-divider{height:2px;
+        background:linear-gradient(90deg,transparent,#00d2ff,#7df9ff,#00d2ff,transparent);
+        border:none;margin:14px 0;border-radius:2px;}
+    .msg-nova{
+        background:linear-gradient(135deg,rgba(0,200,255,.1),rgba(0,120,200,.06));
+        border:1px solid rgba(0,200,255,.22);border-left:3px solid #00d2ff;
+        border-radius:0 14px 14px 14px;
+    }
+    .msg-user-nova{
+        background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+        border-radius:14px 0 14px 14px;
+    }
+    .nova-service-chip{
+        display:inline-block;background:rgba(0,200,255,.1);
+        border:1px solid rgba(0,200,255,.3);border-radius:20px;
+        padding:4px 12px;margin:3px;font-size:.8rem;color:#7df9ff;cursor:pointer;
+    }
+    .nova-livraison-badge{
+        background:linear-gradient(135deg,rgba(46,204,113,.18),rgba(0,200,100,.1));
+        border:1px solid rgba(46,204,113,.4);border-radius:12px;
+        padding:10px 16px;margin-top:10px;font-size:.85rem;color:#2ecc71;
+    }
+    .nova-attente-badge{
+        background:linear-gradient(135deg,rgba(255,193,7,.15),rgba(255,150,0,.08));
+        border:1px solid rgba(255,193,7,.4);border-radius:12px;
+        padding:10px 16px;margin-top:10px;font-size:.85rem;color:#FFD700;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # ── EN-TÊTE ───────────────────────────────────────────────────
+    statut_label = "⭐ Membre Premium" if premium_actif else "👤 Compte Gratuit"
+    st.markdown(f"""
+    <div class="nova-ia-header">
+        <span class="nova-bot-icon">🤖</span>
+        <span class="nova-ia-title">✦ Nova IA ✦</span>
+        <div style="margin-top:10px;">
+            <span class="nova-badge">
+                <span class="online-dot-nova"></span>En ligne · {statut_label}
+            </span>
+        </div>
+        <span style="color:rgba(0,200,255,.5);font-size:.8rem;display:block;margin-top:10px;">
+            Dis-moi ce dont tu as besoin · Je génère ou soumets ta demande automatiquement ✨
+        </span>
+    </div>
+    <hr class="nova-divider">
+    """, unsafe_allow_html=True)
+
+    if st.button("← Retour au dashboard", key="retour_nova_ia"):
+        st.session_state["view"] = "home"
+        st.rerun()
+
+    st.markdown('<hr class="nova-divider">', unsafe_allow_html=True)
+
+    # ── INIT SESSION ──────────────────────────────────────────────
+    if "nova_ia_chat" not in st.session_state:
+        intro = (
+            f"Salut {user} ! 👋 Moi c'est **Nova IA**, ton assistant intelligent Nova Platform. "
+            if user else
+            "Salut ! 👋 Moi c'est **Nova IA**, ton assistant intelligent Nova Platform. "
+        )
+        if premium_actif:
+            intro += "✨ Tu es **Premium** — je peux générer tes documents instantanément ! Dis-moi ce dont tu as besoin."
+        else:
+            intro += "Je peux soumettre une demande pour toi, elle sera traitée par l'équipe Nova. Dis-moi ce que tu veux créer !"
+        st.session_state["nova_ia_chat"] = [{"role": "assistant", "content": intro}]
+
+    if "nova_ia_phase" not in st.session_state:
+        st.session_state["nova_ia_phase"] = "dialogue"   # dialogue | confirmation | traitement | termine
+
+    if "nova_ia_service_detecte" not in st.session_state:
+        st.session_state["nova_ia_service_detecte"] = None
+
+    if "nova_ia_prompt_final" not in st.session_state:
+        st.session_state["nova_ia_prompt_final"] = ""
+
+    # ── AFFICHAGE HISTORIQUE ──────────────────────────────────────
+    for msg in st.session_state["nova_ia_chat"]:
+        align = "flex-end" if msg["role"] == "user" else "flex-start"
+        css   = "msg-user-nova" if msg["role"] == "user" else "msg-nova"
+        color = "rgba(255,255,255,.85)" if msg["role"] == "user" else "#00d2ff"
+        icon  = "🧑" if msg["role"] == "user" else "🤖"
+        label = "Vous" if msg["role"] == "user" else "Nova IA"
+        # Remplace **texte** par <strong>texte</strong> pour le gras en HTML
+        contenu = msg["content"].replace("**", "<strong>", 1)
+        while "**" in contenu:
+            contenu = contenu.replace("**", "</strong>", 1).replace("**", "<strong>", 1) if "**" in contenu else contenu.replace("**", "</strong>", 1)
+        st.markdown(f"""
+        <div style="display:flex;justify-content:{align};margin:8px 0;">
+            <div class="{css}" style="padding:12px 16px;max-width:84%;">
+                <span style="color:{color};font-size:.8rem;font-weight:800;">{icon} {label}</span>
+                <p style="color:#eee;margin:5px 0 0 0;font-size:.92rem;line-height:1.65;">{contenu}</p>
+            </div>
+        </div>""", unsafe_allow_html=True)
+
+    # ── PHASE : DIALOGUE / COLLECTE ───────────────────────────────
+    if st.session_state["nova_ia_phase"] in ("dialogue",):
+        with st.form("nova_ia_form", clear_on_submit=True):
+            msg_input = st.text_input(
+                "Message",
+                placeholder="Ex: Je veux un exposé sur la photosynthèse pour le lycée...",
+                label_visibility="collapsed"
+            )
+            col_env, col_reinit = st.columns([5, 1])
+            with col_env:
+                envoyer = st.form_submit_button("📨 Envoyer", use_container_width=True)
+            with col_reinit:
+                reinit = st.form_submit_button("🔄", use_container_width=True)
+
+        if reinit:
+            st.session_state.pop("nova_ia_chat", None)
+            st.session_state.pop("nova_ia_phase", None)
+            st.session_state.pop("nova_ia_service_detecte", None)
+            st.session_state.pop("nova_ia_prompt_final", None)
+            st.rerun()
+
+        if envoyer and msg_input.strip():
+            st.session_state["nova_ia_chat"].append({"role": "user", "content": msg_input.strip()})
+
+            historique_txt = "\n".join([
+                f"{'Client' if m['role']=='user' else 'Nova IA'}: {m['content']}"
+                for m in st.session_state["nova_ia_chat"]
+            ])
+
+            prompt_nova = f"""Tu es NOVA IA, l'assistante intelligente de Nova Platform (Côte d'Ivoire).
+Tu t'appelles Nova IA — jamais Gemini, jamais ChatGPT, jamais Claude, jamais Arsène IA.
+Tu parles toujours en français, avec bienveillance et précision.
+TON RÔLE : comprendre ce que le client veut créer, collecter les informations nécessaires, puis confirmer.
+
+════════════════════════════════════════
+CATALOGUE COMPLET DES SERVICES NOVA PLATFORM
+════════════════════════════════════════
+
+1. 📝 EXPOSÉ SCOLAIRE COMPLET IA
+   → Infos ESSENTIELLES : sujet de l'exposé, niveau scolaire (CP / Collège / Lycée / BTS / Licence / Master)
+   → Infos FACULTATIVES : matière, plan souhaité, langue (français par défaut), longueur (court/moyen/long), introduction/conclusion personnalisée
+
+2. 📖 FICHE DE COURS PROFESSEUR IA
+   → Infos ESSENTIELLES : matière, sujet précis, niveau des élèves
+   → Infos FACULTATIVES : objectifs pédagogiques, exercices souhaités, exemples concrets, durée de la séance
+
+3. 📝 CRÉATION DE SUJETS & EXAMENS
+   → Infos ESSENTIELLES : matière, type d'évaluation (QCM / Vrai-Faux / Dissertation / Cas pratique / Devoir complet), niveau
+   → Infos FACULTATIVES : nombre de questions, thèmes précis, barème, durée de l'épreuve, avec ou sans corrigé
+
+4. 📄 CRÉATION DOCUMENT WORD (depuis zéro)
+   → Infos ESSENTIELLES : type de document (rapport, lettre, contrat, procès-verbal, note de service...), sujet/contexte
+   → Infos FACULTATIVES : nom de l'entreprise/personne, destinataire, date, logo à intégrer, ton (formel/informel), longueur
+
+5. 👔 CV & LETTRE DE MOTIVATION
+   → Infos ESSENTIELLES : prénom et nom, poste visé, secteur d'activité
+   → Infos FACULTATIVES : expériences passées, formations, compétences clés, langues parlées, ton (dynamique/classique/créatif), lettre de motivation souhaitée (oui/non)
+
+6. 🎨 CRÉATION DESIGN IA (affiches, flyers, bannières, logos)
+   → Infos ESSENTIELLES : type de visuel, sujet/thème, texte principal à afficher
+   → Infos FACULTATIVES : couleurs souhaitées, style (moderne/traditionnel/coloré/épuré), taille/format, slogan, contact à afficher
+
+7. 📊 DATA & EXCEL ANALYTICS
+   → Infos ESSENTIELLES : type d'analyse (tableau de bord / graphique / rapport de données), description des données
+   → Infos FACULTATIVES : secteur (RH / finance / commerce / santé...), indicateurs clés à afficher, format de sortie
+
+8. 📎 MODIFIER MON FICHIER (Word, Excel, PowerPoint)
+   → Infos ESSENTIELLES : type de fichier, nature des modifications souhaitées
+   → Infos FACULTATIVES : fichier joint, mise en forme souhaitée, ajouts/suppressions précis
+
+9. 🔄 CONVERSION & FICHIER PDF
+   → Infos ESSENTIELLES : format source, format cible (PDF→Word, Word→PDF, Excel→PDF, Image→PDF...)
+   → Infos FACULTATIVES : qualité souhaitée, fichiers multiples ou un seul
+
+10. 🔍 NUMÉRISATION OCR
+    → Infos ESSENTIELLES : type de document scanné (image ou PDF scanné), langue du texte
+    → Infos FACULTATIVES : format de sortie souhaité (.docx / .txt), corrections orthographiques
+
+════════════════════════════════════════
+PLANS & FONCTIONNEMENT
+════════════════════════════════════════
+- PREMIUM ({premium_actif}) : génération AUTOMATIQUE IA en moins d'1 min → livraison directe dans "Mes Livrables"
+  · Journalier : 600 FC → 2 générations
+  · 10 Jours : 1000 FC → 9 générations
+  · 30 Jours : 2500 FC → Illimité
+- GRATUIT : demande soumise → traitée par l'équipe Nova sous quelques heures → livraison par lien WhatsApp
+
+════════════════════════════════════════
+INSTRUCTIONS COMPORTEMENT
+════════════════════════════════════════
+- Si le client exprime son besoin → identifie le service correspondant parmi les 10 ci-dessus
+- Pose les questions ESSENTIELLES manquantes une à une (pas toutes en même temps, 1-2 max par message)
+- Les infos FACULTATIVES : demande-les poliment APRÈS les essentielles, ou propose de continuer sans elles
+- Quand tu as toutes les infos ESSENTIELLES → propose un récapitulatif et demande confirmation avec la phrase EXACTE :
+  "✅ J'ai tout ce qu'il me faut ! Voici le récapitulatif : [récap] — Tu confirmes ? Réponds OUI pour lancer."
+- Si le client répond OUI / oui / ok / ouais / confirme → réponds UNIQUEMENT : __NOVA_CONFIRME__|SERVICE:[nom_service]|DESC:[description_complète]
+- Ne génère JAMAIS le document toi-même dans le chat
+- Ne commence JAMAIS par "Bonjour [nom]" après le premier message
+- Problème grave / technique → propose WhatsApp : {WHATSAPP_NUMBER}
+
+CLIENT : {user if user else "visiteur"} | Premium : {"OUI" if premium_actif else "NON"}
+
+Historique :
+{historique_txt}
+
+Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le récapitulatif."""
+
+            with st.spinner("🤖 Nova IA réfléchit..."):
+                reponse = generer_avec_gemini("Nova IA Chat", prompt_nova, user or "visiteur")
+
+            if reponse.startswith("❌"):
+                reponse = f"Désolé, une erreur s'est produite. Contacte Nova directement sur WhatsApp : {WHATSAPP_NUMBER} 📲"
+
+            # Détection de la confirmation
+            if "__NOVA_CONFIRME__" in reponse:
+                # Parser service et description
+                try:
+                    partie = reponse.split("__NOVA_CONFIRME__|")[1]
+                    service_part = partie.split("|DESC:")[0].replace("SERVICE:", "").strip()
+                    desc_part    = partie.split("|DESC:")[1].strip() if "|DESC:" in partie else msg_input.strip()
+                except Exception:
+                    service_part = "Demande Nova IA"
+                    desc_part    = msg_input.strip()
+
+                st.session_state["nova_ia_service_detecte"] = service_part
+                st.session_state["nova_ia_prompt_final"]    = desc_part
+                st.session_state["nova_ia_phase"]           = "traitement"
+                reponse_affichee = f"✅ Parfait ! Je lance maintenant {'la génération automatique ⚡' if premium_actif else 'ta demande 📋'}..."
+                st.session_state["nova_ia_chat"].append({"role": "assistant", "content": reponse_affichee})
+                st.rerun()
+            else:
+                st.session_state["nova_ia_chat"].append({"role": "assistant", "content": reponse})
+                st.rerun()
+
+    # ── PHASE : TRAITEMENT ────────────────────────────────────────
+    elif st.session_state["nova_ia_phase"] == "traitement":
+        service_final = st.session_state.get("nova_ia_service_detecte", "Demande Nova IA")
+        desc_finale   = st.session_state.get("nova_ia_prompt_final", "")
+
+        if premium_actif:
+            # ── CAS PREMIUM : génération Gemini immédiate ────────
+            user_data_frais = db["users"].get(user, {})
+            restant = quota_restant(user_data_frais)
+            plan_actuel = user_data_frais.get("premium_plan", "")
+            quota_max = PLANS_PREMIUM.get(plan_actuel, {}).get("generations", 0)
+            used_auj, _ = get_gen_quota(user_data_frais)
+
+            if restant <= 0 and quota_max < 999:
+                msg_quota = (
+                    f"🚫 Tu as atteint ta limite de générations pour aujourd'hui "
+                    f"({used_auj}/{quota_max}). Ton quota se renouvelle demain à minuit, "
+                    f"ou contacte Nova pour étendre ton abonnement : {WHATSAPP_NUMBER} 📲"
+                )
+                st.session_state["nova_ia_chat"].append({"role": "assistant", "content": msg_quota})
+                st.session_state["nova_ia_phase"] = "dialogue"
+                st.rerun()
+            else:
+                with st.spinner("⚡ Génération en cours... Cela prend moins d'1 minute."):
+                    resultat = generer_avec_gemini(
+                        service_final,
+                        desc_finale,
+                        user,
+                        is_premium=True,
+                        gen_used=used_auj
+                    )
+
+                if resultat.startswith("❌"):
+                    msg_err = f"❌ Une erreur est survenue lors de la génération. Contacte Nova : {WHATSAPP_NUMBER} 📲"
+                    st.session_state["nova_ia_chat"].append({"role": "assistant", "content": msg_err})
+                    st.session_state["nova_ia_phase"] = "dialogue"
+                    st.rerun()
+                else:
+                    # Sauvegarder comme livrable dans Supabase
+                    nom_fichier = f"Nova_IA_{service_final.replace(' ', '_')[:30]}_{datetime.now().strftime('%d%m%Y_%H%M')}.txt"
+                    incrementer_gen(user)
+                    save_lien(user, f"✨ {service_final}", f"__nova_ia__{resultat[:2000]}", datetime.now().strftime("%d/%m/%Y"))
+                    notifier_livraison_gemini(user, wa_user, user_data.get("email", "Non renseigné"), service_final, nom_fichier, demande_complete=desc_finale)
+
+                    msg_ok = (
+                        f"✅ Ton document **{service_final}** a été généré avec succès ! "
+                        f"Tu peux le retrouver dans l'onglet **Mes Livrables** de ton tableau de bord. "
+                        f"Tu as encore **{quota_restant(db['users'].get(user, {})) - 1}** génération(s) disponible(s) aujourd'hui."
+                    )
+                    st.session_state["nova_ia_chat"].append({"role": "assistant", "content": msg_ok})
+                    st.session_state["nova_ia_phase"] = "termine"
+                    st.rerun()
+
+        else:
+            # ── CAS GRATUIT : save_demande comme les autres services ──
+            import uuid
+            req_id = str(uuid.uuid4())[:8]
+            nouvelle_demande = {
+                "id": req_id,
+                "user": user or "visiteur",
+                "service": service_final,
+                "desc": desc_finale,
+                "whatsapp": wa_user,
+                "status": "en_attente",
+                "incomplet": False,
+                "champs_manquants": [],
+                "timestamp": datetime.now().strftime("%d/%m/%Y %H:%M")
+            }
+            save_demande(nouvelle_demande)
+            db["demandes"].append(nouvelle_demande)
+            st.session_state["db"] = db
+
+            msg_attente = (
+                f"📋 Ta demande **{service_final}** a bien été soumise à l'équipe Nova ! "
+                f"Référence : `{req_id}`. "
+                f"Tu seras contacté(e) sur WhatsApp ({wa_user}) dès que ton document est prêt, généralement sous quelques heures. "
+                f"Pour aller plus vite, passe en **Premium** : {WHATSAPP_NUMBER} 📲"
+            )
+            st.session_state["nova_ia_chat"].append({"role": "assistant", "content": msg_attente})
+            st.session_state["nova_ia_phase"] = "termine"
+            st.rerun()
+
+    # ── PHASE : TERMINÉ ───────────────────────────────────────────
+    elif st.session_state["nova_ia_phase"] == "termine":
+        if premium_actif:
+            st.markdown('<div class="nova-livraison-badge">✅ Livraison instantanée effectuée · Retrouve ton document dans <strong>Mes Livrables</strong></div>', unsafe_allow_html=True)
+        else:
+            st.markdown('<div class="nova-attente-badge">📋 Demande soumise · L\'équipe Nova traite ta demande · Livraison par WhatsApp</div>', unsafe_allow_html=True)
+
+        col_new, col_dash = st.columns(2)
+        with col_new:
+            if st.button("✨ Nouvelle demande", key="nova_ia_new", use_container_width=True):
+                st.session_state.pop("nova_ia_chat", None)
+                st.session_state.pop("nova_ia_phase", None)
+                st.session_state.pop("nova_ia_service_detecte", None)
+                st.session_state.pop("nova_ia_prompt_final", None)
+                st.rerun()
+        with col_dash:
+            if st.button("🏠 Tableau de bord", key="nova_ia_dash", use_container_width=True):
+                st.session_state["view"] = "home"
+                st.rerun()
+
+
 if st.session_state["view"] == "auth" and st.session_state["current_user"] is None:
     show_auth_page()
 elif st.session_state["view"] == "arsene_ia":
     show_arsene_ia_page()
+elif st.session_state["view"] == "nova_ia":
+    show_nova_ia_page()
 else:
     main_dashboard()
