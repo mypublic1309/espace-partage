@@ -6021,12 +6021,11 @@ def main_dashboard():
         st.markdown("""
         <style>
         [data-testid="stButton"][data-key="nm-btn-platform"],
-        [data-testid="stButton"][data-key="nm-btn-ia"],
-        [data-testid="stHorizontalBlock"]   { display:none !important; }
+        [data-testid="stButton"][data-key="nm-btn-ia"] { display:none !important; }
         </style>
         """, unsafe_allow_html=True)
 
-        return   # stoppe le dashboard le temps que le client choisit
+        st.stop()  # stoppe le dashboard le temps que le client choisit
 
     with st.sidebar:
         st.markdown(f"### 👤 {user if user else 'Visiteur'}")
