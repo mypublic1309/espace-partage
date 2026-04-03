@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from io import BytesIO
 import streamlit.components.v1 as components
 from supabase import create_client
+from streamlit_cookies_controller import CookieController
 
 # ══════════════════════════════════════════════════════════════════
 # SPLASH SCREEN — Fonction universelle pour tous les services
@@ -62,6 +63,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+cookie = CookieController()
 
 DATA_FILE = "data_nova_v3.json"
 ADMIN_CODE = st.secrets.get("ADMIN_CODE", "02110240")
@@ -4212,46 +4215,11 @@ if "premium_livrable" not in st.session_state:
     st.session_state["premium_livrable"] = None
 
 if st.session_state["current_user"] is None:
-    stored_user = st.query_params.get("user_id")
-    if stored_user and stored_user in st.session_state["db"]["users"]:
-        st.session_state["current_user"] = stored_user
-    else:
-        components.html("""
-            <script>
-            (function() {
-                var uid = localStorage.getItem('nova_user_id') || localStorage.getItem('nova_user');
-                if (uid) {
-                    localStorage.setItem('nova_user_id', uid);
-                    localStorage.removeItem('nova_user');
-                    var ts = localStorage.getItem('nova_user_ts');
-                    var TRENTE_JOURS = 30 * 24 * 60 * 60 * 1000;
-                    if (!ts || (Date.now() - parseInt(ts)) < TRENTE_JOURS) {
-                        var url = new URL(window.parent.location.href);
-                        url.searchParams.set('user_id', uid);
-                        window.parent.location.replace(url.toString());
-                    } else {
-                        localStorage.removeItem('nova_user_id');
-                        localStorage.removeItem('nova_user_ts');
-                    }
-                }
-            })();
-            </script>
-        """, height=1)
+    saved_uid = cookie.get("nova_uid")
+    if saved_uid and saved_uid in st.session_state["db"]["users"]:
+        st.session_state["current_user"] = saved_uid
 
-if st.session_state["current_user"]:
-    uid_connecte = st.session_state["current_user"]
-    components.html(f"""
-        <script>
-        (function() {{
-            var stored = localStorage.getItem('nova_user_id');
-            if (stored !== '{uid_connecte}') {{
-                localStorage.setItem('nova_user_id', '{uid_connecte}');
-                localStorage.setItem('nova_user_ts', Date.now().toString());
-                localStorage.removeItem('nova_user');
-            }}
-        }})();
-        </script>
-    """, height=1)
+
 
 def inject_custom_css():
     # ── Détection Premium ─────────────────────────────────────────
@@ -5195,7 +5163,8 @@ def show_auth_page():
                 if uid in db["users"] and db["users"][uid]["whatsapp"] == normalize_wa(wa_auth):
                     st.session_state["current_user"] = uid
                     st.session_state["view"] = "home"
-                    st.query_params["user_id"] = uid
+                    cookie.set("nova_uid", uid, max_age=30*24*3600)
+                    st.query_params.clear()
                     st.rerun()
                 else:
                     st.error("❌ Nom/surnom ou numéro inconnu.")
@@ -5242,7 +5211,8 @@ def show_auth_page():
                             st.session_state["current_user"] = new_uid
                             st.session_state["view"] = "home"
                             st.session_state["db"] = load_db()
-                            st.query_params["user_id"] = new_uid
+                            cookie.set("nova_uid", new_uid, max_age=30*24*3600)
+                            st.query_params.clear()
                             st.rerun()
                         else:
                             st.error("❌ Impossible de créer le compte. Vérifie ta connexion ou contacte le support.")
@@ -5480,16 +5450,9 @@ def main_dashboard():
             else:
                 st.markdown('<span class="badge-free">🔓 Compte Gratuit</span>', unsafe_allow_html=True)
             if st.button("Quitter la session"):
+                cookie.delete("nova_uid")
                 st.session_state["current_user"] = None
                 st.query_params.clear()
-                # Effacer localStorage
-                components.html("""
-                    <script>
-                    localStorage.removeItem('nova_user_id');
-                    localStorage.removeItem('nova_user_ts');
-                    localStorage.removeItem('nova_user');
-                    </script>
-                """, height=0)
                 st.rerun()
         else:
             if st.button("Connexion"):
@@ -8430,7 +8393,7 @@ Action requise si le problème n'est pas résolu.
 
 inject_custom_css()
 
-# localStorage géré en haut du fichier (nova_user_id + nova_user_ts)
+# Session gérée via cookie "nova_uid" (streamlit-cookies-controller)
 
 # Masquer l'iframe vide créée par components.html
 st.markdown("""
