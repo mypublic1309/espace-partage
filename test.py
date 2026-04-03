@@ -4953,7 +4953,6 @@ def show_auth_page():
             st.query_params["user_id"] = _uid_found
             st.rerun()
         else:
-            # Numéro inconnu → on repasse sur la page auth avec un flag d'erreur
             st.query_params["nova_login_err"] = "1"
             st.rerun()
 
@@ -5204,7 +5203,7 @@ def show_auth_page():
             </div>
         </div>
         """, unsafe_allow_html=True)
-        # --- LOGIN : formulaire HTML natif — le navigateur propose d'enregistrer ---
+        # --- LOGIN : formulaire HTML natif avec autocomplete navigateur ---
         _prefill_wa = st.query_params.get("nova_wa_login", "")
         _show_err   = st.query_params.get("nova_login_err", "")
         components.html(f"""
@@ -5229,54 +5228,60 @@ def show_auth_page():
             background: linear-gradient(135deg, #7c3aed, #a855f7);
             border: none; border-radius: 8px; color: #fff;
             font-size: 0.93rem; font-weight: 800; cursor: pointer;
-            letter-spacing: 1px; transition: opacity .2s;
+            letter-spacing: 1px;
           }}
-          .nv-btn:hover {{ opacity: 0.88; }}
           .nv-err {{
             color: #ff7070; font-size: 0.8rem; margin-top: 8px;
             padding: 7px 12px; background: rgba(255,60,60,0.1);
             border-radius: 6px; border: 1px solid rgba(255,60,60,0.25);
           }}
         </style>
-        <form id="nv-login" method="GET" target="_top" autocomplete="on">
+        <!-- Formulaire natif : le navigateur voit username+password → propose d'enregistrer -->
+        <form id="nv-login" autocomplete="on">
           <div style="margin-bottom:10px;">
             <label class="nv-label">📱 Votre numéro WhatsApp</label>
             <input
               type="tel"
+              id="nv-wa"
               name="nova_wa_login"
               class="nv-input"
               placeholder="Ex: 22501..."
               autocomplete="username"
               value="{_prefill_wa}"
-              id="nv-wa"
               required
             />
           </div>
-          <!-- Champ password visible par le navigateur → déclenche la proposition d'enregistrer -->
+          <!-- Champ password présent pour déclencher la sauvegarde du navigateur -->
           <input
             type="password"
             name="_nv_p"
             autocomplete="current-password"
             value="nova_platform_auth"
             tabindex="-1"
-            aria-hidden="true"
             style="position:absolute;width:1px;height:1px;opacity:0.01;pointer-events:none;border:none;"
           />
           {"<div class='nv-err'>❌ Numéro WhatsApp inconnu. Vérifiez ou créez un compte.</div>" if _show_err else ""}
           <button type="submit" class="nv-btn">⚡ S'IDENTIFIER</button>
         </form>
         <script>
-          (function() {{
-            var form = document.getElementById('nv-login');
-            var base = window.top.location.origin + window.top.location.pathname;
-            form.action = base;
-            // Supprimer le flag d'erreur de l'URL après affichage
-            if (window.top.location.search.includes('nova_login_err')) {{
-              var url = new URL(window.top.location.href);
-              url.searchParams.delete('nova_login_err');
-              window.top.history.replaceState({{}}, '', url.toString());
+        document.getElementById('nv-login').addEventListener('submit', function(e) {{
+            e.preventDefault();
+            var wa = document.getElementById('nv-wa').value.trim();
+            if (!wa) return;
+            // Déclenché par clic utilisateur → window.top.location autorisé
+            var url = new URL(window.top.location.href);
+            url.searchParams.set('nova_wa_login', wa);
+            url.searchParams.delete('nova_login_err');
+            window.top.location.href = url.toString();
+        }});
+        // Nettoyer le flag d'erreur après affichage
+        (function() {{
+            var url = new URL(window.top.location.href);
+            if (url.searchParams.has('nova_login_err')) {{
+                url.searchParams.delete('nova_login_err');
+                window.top.history.replaceState({{}}, '', url.toString());
             }}
-          }})();
+        }})();
         </script>
         """, height=165)
 
