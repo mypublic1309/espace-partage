@@ -5503,156 +5503,91 @@ def main_dashboard():
     # MODALE CHOIX DU MODE — apparaît une seule fois à la connexion
     # ══════════════════════════════════════════════════════════════
     if st.session_state.get("show_mode_modal", False):
+        # Masquer complètement le reste de la page avec du CSS simple
         st.markdown("""
         <style>
-        @keyframes modeOverlayIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-        @keyframes modeCardIn {
-            from { opacity: 0; transform: translateY(40px) scale(.96); }
-            to   { opacity: 1; transform: translateY(0)    scale(1);   }
-        }
-        @keyframes modeShimmer {
-            0%   { background-position: -200% center; }
-            100% { background-position:  200% center; }
-        }
-        @keyframes modePulse {
-            0%,100% { box-shadow: 0 0 10px 2px rgba(0,200,255,.25); }
-            50%     { box-shadow: 0 0 28px 8px rgba(0,200,255,.55); }
-        }
-        @keyframes modePulseGold {
-            0%,100% { box-shadow: 0 0 10px 2px rgba(255,215,0,.25); }
-            50%     { box-shadow: 0 0 28px 8px rgba(255,215,0,.55); }
-        }
-        .mode-overlay {
-            position: fixed; inset: 0; z-index: 99999;
-            background: rgba(0,0,0,.82);
-            backdrop-filter: blur(6px);
-            display: flex; align-items: center; justify-content: center;
-            animation: modeOverlayIn .35s ease both;
-        }
-        .mode-panel {
-            background: linear-gradient(160deg, #0a0a14 0%, #0d1020 60%, #080810 100%);
-            border: 1.5px solid rgba(255,255,255,.12);
-            border-radius: 28px;
-            padding: 44px 36px 36px;
-            max-width: 680px; width: 92%;
-            animation: modeCardIn .45s cubic-bezier(.22,1,.36,1) both;
-            text-align: center;
-            position: relative;
-        }
-        .mode-title {
-            font-size: 1.7rem; font-weight: 900; letter-spacing: .5px;
-            background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,.7) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-        .mode-sub {
-            color: rgba(255,255,255,.38); font-size: .88rem;
-            letter-spacing: 1px; margin-bottom: 36px;
-        }
-        .mode-cards-row {
-            display: flex; gap: 18px; justify-content: center; flex-wrap: wrap;
-        }
-        .mode-card {
-            flex: 1; min-width: 220px; max-width: 270px;
-            border-radius: 20px; padding: 28px 20px;
-            cursor: pointer; transition: transform .2s;
-            position: relative; overflow: hidden;
-        }
-        .mode-card:hover { transform: translateY(-4px); }
-        .mode-card-platform {
-            background: linear-gradient(145deg, rgba(255,215,0,.1), rgba(255,140,0,.06));
-            border: 1.5px solid rgba(255,215,0,.45);
-            animation: modePulseGold 3s ease-in-out infinite;
-        }
-        .mode-card-chat {
-            background: linear-gradient(145deg, rgba(0,200,255,.1), rgba(0,120,200,.06));
-            border: 1.5px solid rgba(0,200,255,.45);
-            animation: modePulse 3s ease-in-out infinite;
-        }
-        .mode-card::before {
-            content: '';
-            position: absolute; top: 0; left: -100%; right: 0; bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
-            background-size: 200% 100%;
-            animation: modeShimmer 3s linear infinite;
-        }
-        .mode-icon { font-size: 3rem; display: block; margin-bottom: 12px; }
-        .mode-card-title {
-            font-size: 1.1rem; font-weight: 800;
-            letter-spacing: .5px; margin-bottom: 8px;
-        }
-        .mode-card-desc {
-            color: rgba(255,255,255,.45); font-size: .78rem;
-            line-height: 1.6;
-        }
-        .mode-badge {
-            display: inline-block;
-            border-radius: 20px; padding: 3px 12px;
-            font-size: .72rem; font-weight: 700;
-            letter-spacing: .5px; margin-bottom: 12px;
-        }
-        .mode-badge-platform { background: rgba(255,215,0,.15); color: #FFD700; border: 1px solid rgba(255,215,0,.35); }
-        .mode-badge-chat     { background: rgba(0,200,255,.15); color: #00d2ff; border: 1px solid rgba(0,200,255,.35); }
+        section[data-testid="stSidebar"] { display: none !important; }
         </style>
-
-        <div class="mode-overlay" id="nova-mode-overlay">
-            <div class="mode-panel">
-                <div class="mode-title">👋 Bienvenue sur Nova Platform</div>
-                <div class="mode-sub">CHOISISSEZ VOTRE MODE D'UTILISATION</div>
-                <div class="mode-cards-row">
-
-                    <div class="mode-card mode-card-platform" onclick="choosePlatform()">
-                        <span class="mode-icon">🖥️</span>
-                        <div class="mode-badge mode-badge-platform">MODE CLASSIQUE</div>
-                        <div class="mode-card-title" style="color:#FFD700;">Version Plateforme</div>
-                        <div class="mode-card-desc">
-                            Accède aux services Nova comme d'habitude :<br>
-                            sélectionne un service, décris ton besoin,<br>
-                            et soumet ta demande ou génère en 1 clic.
-                        </div>
-                    </div>
-
-                    <div class="mode-card mode-card-chat" onclick="chooseChat()">
-                        <span class="mode-icon">🤖</span>
-                        <div class="mode-badge mode-badge-chat">MODE IA</div>
-                        <div class="mode-card-title" style="color:#00d2ff;">Chat avec Nova IA</div>
-                        <div class="mode-card-desc">
-                            Dis simplement ce que tu veux en langage naturel.<br>
-                            Nova IA comprend, pose les bonnes questions<br>
-                            et génère ou soumet ta demande automatiquement.
-                        </div>
-                    </div>
-
-                </div>
-                <div style="margin-top:28px; color:rgba(255,255,255,.22); font-size:.75rem; letter-spacing:.5px;">
-                    Tu pourras changer de mode à tout moment depuis le menu
-                </div>
-            </div>
-        </div>
-
-        <script>
-        function choosePlatform() {
-            document.getElementById('nova-mode-overlay').style.display = 'none';
-            window.parent.postMessage({type:'nova_mode', choice:'platform'}, '*');
-        }
-        function chooseChat() {
-            document.getElementById('nova-mode-overlay').style.display = 'none';
-            window.parent.postMessage({type:'nova_mode', choice:'chat'}, '*');
-        }
-        </script>
         """, unsafe_allow_html=True)
 
-        col_plat, col_chat = st.columns(2)
-        with col_plat:
-            if st.button("🖥️  Version Plateforme", key="mode_platform_btn", use_container_width=True):
+        # Centrage via colonnes Streamlit
+        _, col_center, _ = st.columns([1, 3, 1])
+        with col_center:
+            st.markdown("<br><br>", unsafe_allow_html=True)
+
+            # En-tête
+            st.markdown("""
+            <div style="text-align:center; padding: 20px 0 10px 0;">
+                <div style="font-size:2.8rem; margin-bottom:8px;">👋</div>
+                <div style="font-size:1.6rem; font-weight:900; color:#ffffff; margin-bottom:6px;">
+                    Bienvenue sur Nova Platform
+                </div>
+                <div style="color:rgba(255,255,255,0.4); font-size:0.9rem; letter-spacing:2px; margin-bottom:30px;">
+                    CHOISISSEZ VOTRE MODE
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            # Carte Plateforme
+            st.markdown("""
+            <div style="
+                background: linear-gradient(145deg, rgba(255,215,0,0.1), rgba(255,140,0,0.06));
+                border: 2px solid rgba(255,215,0,0.5);
+                border-radius: 20px;
+                padding: 28px 24px;
+                margin-bottom: 16px;
+                text-align: center;
+            ">
+                <div style="font-size:2.8rem; margin-bottom:10px;">🖥️</div>
+                <div style="display:inline-block; background:rgba(255,215,0,0.15);
+                    border:1px solid rgba(255,215,0,0.35); border-radius:20px;
+                    padding:3px 14px; font-size:0.75rem; font-weight:700;
+                    color:#FFD700; letter-spacing:1px; margin-bottom:12px;">
+                    MODE CLASSIQUE
+                </div>
+                <div style="font-size:1.15rem; font-weight:800; color:#FFD700; margin-bottom:10px;">
+                    Version Plateforme
+                </div>
+                <div style="color:rgba(255,255,255,0.5); font-size:0.85rem; line-height:1.7;">
+                    Parcours les services Nova, decris ton besoin<br>
+                    et soumets ta demande ou genere en 1 clic.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("🖥️  Utiliser la Version Plateforme", key="mode_platform_btn", use_container_width=True):
                 st.session_state["show_mode_modal"] = False
                 st.rerun()
-        with col_chat:
-            if st.button("🤖  Chat avec Nova IA", key="mode_chat_btn", use_container_width=True):
+
+            st.markdown("<div style='text-align:center; color:rgba(255,255,255,0.2); padding:8px 0; font-size:0.85rem;'>— ou —</div>", unsafe_allow_html=True)
+
+            # Carte Chat Nova IA
+            st.markdown("""
+            <div style="
+                background: linear-gradient(145deg, rgba(0,200,255,0.1), rgba(0,120,200,0.06));
+                border: 2px solid rgba(0,200,255,0.5);
+                border-radius: 20px;
+                padding: 28px 24px;
+                margin-bottom: 16px;
+                text-align: center;
+            ">
+                <div style="font-size:2.8rem; margin-bottom:10px;">🤖</div>
+                <div style="display:inline-block; background:rgba(0,200,255,0.15);
+                    border:1px solid rgba(0,200,255,0.35); border-radius:20px;
+                    padding:3px 14px; font-size:0.75rem; font-weight:700;
+                    color:#00d2ff; letter-spacing:1px; margin-bottom:12px;">
+                    MODE IA
+                </div>
+                <div style="font-size:1.15rem; font-weight:800; color:#00d2ff; margin-bottom:10px;">
+                    Chat avec Nova IA
+                </div>
+                <div style="color:rgba(255,255,255,0.5); font-size:0.85rem; line-height:1.7;">
+                    Dis ce que tu veux en langage naturel.<br>
+                    Nova IA pose les bonnes questions et genere<br>
+                    ou soumet ta demande automatiquement.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("🤖  Discuter avec Nova IA", key="mode_chat_btn", use_container_width=True):
                 st.session_state["show_mode_modal"] = False
                 st.session_state.pop("nova_ia_chat", None)
                 st.session_state.pop("nova_ia_phase", None)
@@ -5660,6 +5595,14 @@ def main_dashboard():
                 st.session_state.pop("nova_ia_prompt_final", None)
                 st.session_state["view"] = "nova_ia"
                 st.rerun()
+
+            st.markdown("""
+            <div style="text-align:center; color:rgba(255,255,255,0.2);
+                font-size:0.75rem; padding-top:16px;">
+                Tu pourras changer de mode a tout moment depuis le menu
+            </div>
+            """, unsafe_allow_html=True)
+
         return   # stoppe le dashboard le temps que le client choisit
 
     with st.sidebar:
