@@ -9027,23 +9027,60 @@ def show_arsene_ia_page():
         animation: goldShimmer 3s linear infinite;
     }
     .arsene-bot-icon {
-        font-size: 4.5rem;
-        display: block;
-        margin-bottom: 12px;
-        animation: floatBot 3s ease-in-out infinite;
-        filter: drop-shadow(0 0 12px rgba(255,215,0,0.6));
+        display: none;  /* supprimé — remplacé par le nom en grand */
     }
-    .arsene-title-gold {
-        background: linear-gradient(135deg, #FFD700 0%, #FFA500 40%, #FFD700 70%, #FFFACD 100%);
-        background-size: 200% auto;
+    @keyframes arsene-name-glow {
+        0%,100% { filter: drop-shadow(0 0 14px rgba(255,215,0,0.5)); }
+        50%      { filter: drop-shadow(0 0 32px rgba(255,215,0,0.95)); }
+    }
+    @keyframes arsene-cursor-blink {
+        0%,100% { opacity:1; }
+        50%      { opacity:0; }
+    }
+    @keyframes arsene-slogan-in {
+        0%   { opacity:0; transform:translateX(-16px); }
+        100% { opacity:1; transform:translateX(0); }
+    }
+    .arsene-ia-name {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 30%, #FFD700 55%, #FFFACD 70%, #FFD700 100%);
+        background-size: 250% auto;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        font-size: 2rem;
+        font-size: 3.6rem;
         font-weight: 900;
-        letter-spacing: 1px;
+        letter-spacing: 6px;
+        text-transform: uppercase;
         display: block;
-        animation: goldPulseText 2.5s ease-in-out infinite, goldShimmer 4s linear infinite;
+        line-height: 1.1;
+        animation: goldShimmer 3s linear infinite, arsene-name-glow 2.5s ease-in-out infinite;
+    }
+    .arsene-ia-cursor {
+        display: inline-block;
+        width: 3px; height: 3.4rem;
+        background: #FFD700;
+        vertical-align: middle;
+        margin-left: 4px;
+        border-radius: 2px;
+        animation: arsene-cursor-blink 1s step-end infinite;
+        box-shadow: 0 0 10px rgba(255,215,0,0.8);
+    }
+    .arsene-ia-slogan {
+        display: block;
+        margin-top: 14px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: rgba(255,240,180,0.82);
+        letter-spacing: 0.5px;
+        animation: arsene-slogan-in 1s ease-out 0.4s both;
+    }
+    .arsene-ia-slogan em {
+        color: #FFD700;
+        font-style: normal;
+        font-weight: 700;
+    }
+    .arsene-title-gold {
+        display: none;  /* remplacé par arsene-ia-name */
     }
     .arsene-badge {
         display: inline-block;
@@ -9094,16 +9131,13 @@ def show_arsene_ia_page():
     </style>
 
     <div class="arsene-header-gold">
-        <span class="arsene-bot-icon">🤖</span>
-        <span class="arsene-title-gold">✦ Assistant Nova 24/7 ✦</span>
-        <div style="margin-top:10px;">
+        <span class="arsene-ia-name">NOVA IA<span class="arsene-ia-cursor"></span></span>
+        <span class="arsene-ia-slogan">Votre IA qui génère des <em>Word</em>, <em>Excel</em> &amp; <em>PDF</em> par vos mots</span>
+        <div style="margin-top:14px;">
             <span class="arsene-badge">
                 <span class="online-dot"></span>En ligne · Propulsé par Nova Platform
             </span>
         </div>
-        <span style="color:rgba(255,215,0,0.45);font-size:0.8rem;display:block;margin-top:10px;">
-            ⭐ Je connais tous les services Nova · Je réponds instantanément ⭐
-        </span>
     </div>
     <hr class="arsene-divider">
     """, unsafe_allow_html=True)
@@ -9301,7 +9335,7 @@ def show_nova_ia_page():
     .nova-ia-header{
         background:linear-gradient(135deg,rgba(0,180,255,.13) 0%,rgba(0,100,200,.08) 50%,rgba(0,180,255,.07) 100%);
         border:2px solid rgba(0,200,255,.4);
-        border-radius:22px;padding:32px 24px 24px;text-align:center;
+        border-radius:22px;padding:36px 24px 28px;text-align:center;
         animation:novaGlow 2.8s ease-in-out infinite;margin-bottom:20px;
         position:relative;overflow:hidden;
     }
@@ -9310,21 +9344,62 @@ def show_nova_ia_page():
         background:linear-gradient(90deg,transparent,rgba(0,200,255,.08),rgba(255,255,255,.1),rgba(0,200,255,.08),transparent);
         background-size:200% 100%;animation:novaShimmer 3.5s linear infinite;
     }
-    .nova-bot-icon{font-size:4.2rem;display:block;margin-bottom:10px;
-        animation:floatBot 3s ease-in-out infinite;
-        filter:drop-shadow(0 0 14px rgba(0,220,255,.7));}
-    .nova-ia-title{
-        background:linear-gradient(135deg,#00d2ff 0%,#7df9ff 40%,#00aaff 70%,#e0f7ff 100%);
-        background-size:200% auto;-webkit-background-clip:text;
-        -webkit-text-fill-color:transparent;background-clip:text;
-        font-size:2rem;font-weight:900;letter-spacing:1px;display:block;
-        animation:novaShimmer 4s linear infinite;
+    @keyframes nova-name-appear {
+        0%   { opacity:0; transform:translateY(12px) scale(.96); }
+        100% { opacity:1; transform:translateY(0) scale(1); }
+    }
+    @keyframes nova-slogan-slide {
+        0%   { opacity:0; transform:translateX(-18px); }
+        100% { opacity:1; transform:translateX(0); }
+    }
+    @keyframes nova-cursor-blink {
+        0%,100% { opacity:1; }
+        50%      { opacity:0; }
+    }
+    .nova-ia-name {
+        background: linear-gradient(90deg, #00c6ff 0%, #7df9ff 30%, #ffffff 50%, #7df9ff 70%, #00c6ff 100%);
+        background-size: 250% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-size: 3.6rem;
+        font-weight: 900;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        display: block;
+        line-height: 1.1;
+        animation: novaShimmer 3s linear infinite, nova-name-appear 0.8s ease-out both;
+        filter: drop-shadow(0 0 22px rgba(0,220,255,0.55));
+    }
+    .nova-ia-cursor {
+        display: inline-block;
+        width: 3px; height: 3.4rem;
+        background: #00d2ff;
+        vertical-align: middle;
+        margin-left: 4px;
+        border-radius: 2px;
+        animation: nova-cursor-blink 1s step-end infinite;
+        box-shadow: 0 0 10px rgba(0,210,255,0.8);
+    }
+    .nova-ia-slogan {
+        display: block;
+        margin-top: 14px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: rgba(200,240,255,0.82);
+        letter-spacing: 0.5px;
+        animation: nova-slogan-slide 1s ease-out 0.4s both;
+    }
+    .nova-ia-slogan em {
+        color: #7df9ff;
+        font-style: normal;
+        font-weight: 700;
     }
     .nova-badge{
         display:inline-block;
         background:linear-gradient(135deg,rgba(0,200,255,.18),rgba(0,120,200,.12));
         border:1px solid rgba(0,200,255,.5);border-radius:30px;
-        padding:5px 16px;margin-top:10px;font-size:.82rem;
+        padding:5px 16px;margin-top:14px;font-size:.82rem;
         color:#00d2ff;font-weight:700;letter-spacing:.5px;
     }
     .online-dot-nova{
@@ -9366,16 +9441,13 @@ def show_nova_ia_page():
     statut_label = "⭐ Membre Premium" if premium_actif else "👤 Compte Gratuit"
     st.markdown(f"""
     <div class="nova-ia-header">
-        <span class="nova-bot-icon">🤖</span>
-        <span class="nova-ia-title">✦ Nova IA ✦</span>
-        <div style="margin-top:10px;">
+        <span class="nova-ia-name">NOVA IA<span class="nova-ia-cursor"></span></span>
+        <span class="nova-ia-slogan">Votre IA qui génère des <em>Word</em>, <em>Excel</em> &amp; <em>PDF</em> par vos mots</span>
+        <div style="margin-top:14px;">
             <span class="nova-badge">
                 <span class="online-dot-nova"></span>En ligne · {statut_label}
             </span>
         </div>
-        <span style="color:rgba(0,200,255,.5);font-size:.8rem;display:block;margin-top:10px;">
-            Dis-moi ce dont tu as besoin · Je génère ou soumets ta demande automatiquement ✨
-        </span>
     </div>
     <hr class="nova-divider">
     """, unsafe_allow_html=True)
