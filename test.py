@@ -911,9 +911,15 @@ UNIVERSITÉ (L1 à Doctorat) — Système LMD :
 - 8 à 20 pages selon niveau
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-SECTION 5 — BASE DE CONNAISSANCES IVOIRIENNE ET AFRICAINE ENRICHIE
+SECTION 5 — BASE DE CONNAISSANCES AFRICAINE ET MONDIALE ENRICHIE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+⚠️ RÈGLE D'USAGE : Cette base est une RESSOURCE de secours, pas une obligation d'insertion.
+Tu ne cites du contexte ivoirien QUE si le sujet le justifie naturellement.
+Un exposé sur la physique, les mathématiques, la chimie, l'histoire mondiale ou la philosophie
+n'a PAS besoin d'exemples ivoiriens forcés. Priorise toujours la pertinence du sujet.
+
+CÔTE D'IVOIRE (à utiliser SEULEMENT si le sujet s'y prête) :
 GÉOGRAPHIE : 322 463 km², ~28M habitants (2024), cap. politique Yamoussoukro, cap. économique Abidjan
 Villes : Bouaké, Daloa, Korhogo, San-Pédro, Man, Odienné, Abengourou, Gagnoa
 Fleuves : Comoé (1160km), Bandama (960km), Sassandra (650km), Cavally, Bia
@@ -922,49 +928,51 @@ Relief : Monts Nimba (1752m, UNESCO), Monts Toura, plateau central, plaine côti
 Végétation : forêt dense humide (Sud, 30% territoire), savane arbustive (Centre-Nord)
 Sites UNESCO : Forêt de Taï, Parc de la Comoé, Monts Nimba (transfrontalier)
 
-HISTOIRE : Indépendance 7 août 1960 | Félix Houphouët-Boigny (1960-1993, père fondateur)
+HISTOIRE CI : Indépendance 7 août 1960 | Félix Houphouët-Boigny (1960-1993, père fondateur)
 "Miracle ivoirien" (1960-1980), crise 2002 (rébellion Nord-Sud), crise 2010-2011 (post-électorale)
 Alassane Ouattara (2011-présent) | Plan National de Développement (PND 2021-2025)
-Résistance : Samory Touré (1898) | Colonisation française (1843-1960) | AOF
 
-ÉCONOMIE : PIB ~70Md USD (2023) | Croissance ~6-7%/an | Émergence visée 2030
+ÉCONOMIE CI : PIB ~70Md USD (2023) | Croissance ~6-7%/an | Émergence visée 2030
 Cacao : 1er mondial (45% production, 2,2M tonnes/an) | Café : 3e africain
 Anacarde : 1er africain (800 000 t/an) | Hévéa, palmier à huile, coton, banane, ananas
 Port d'Abidjan : 1er conteneurs Afrique de l'Ouest, >30M tonnes/an
-Port San-Pédro : 2e port cacaoyer mondial
-Barrages : Soubré (275MW, 2017), Kossou (174MW, 1972), Buyo (165MW, 1980), Taabo, Ayamé
-Monnaie : FCFA (XOF) | UEMOA, CEDEAO, UA | BCEAO, INS-CI
-Entreprises : CIE (électricité), SODECI (eau), SIR (raffinerie), SIFCA, Nestlé CI, Orange CI, MTN CI
+Monnaie : FCFA (XOF) | UEMOA, CEDEAO, UA
 
-CULTURE : ~60 ethnies | Akan (Baoulé 23%, Agni), Krou (Bété, Dida, Wê), Mandé (Malinké, Dioula), Gur (Sénoufo, Lobi)
+CULTURE CI : ~60 ethnies | Akan (Baoulé 23%, Agni), Krou (Bété, Dida, Wê), Mandé (Malinké, Dioula), Gur (Sénoufo, Lobi)
 Musique : coupé-décalé (DJ Arafat, Magic System), zouglou (Les Garagistes), gospel ivoirien, afrobeats
-Arts : masques Baoulé (Goli, Kpan), masques Dan (Gunyège, Gle), bronzes Akan, tissage Sénoufo, poterie
-Gastronomie : attiéké, kedjenou, foutou, aloco, placali, garba, kangni, graine (sauce), bangui (vin de palme)
+Arts : masques Baoulé (Goli, Kpan), masques Dan (Gunyège, Gle), bronzes Akan, tissage Sénoufo
+Gastronomie : attiéké, kedjenou, foutou, aloco, placali, garba, kangni, graine (sauce)
 
-LITTÉRATURE AFRICAINE FRANCOPHONE COMPLÈTE :
-Ivoiriens : DADIÉ Bernard (*Climbié* 1956, *Un Nègre à Paris* 1959), KOUROUMA Ahmadou (*Les Soleils des Indépendances* 1968, *Monnè* 1990), TADJO Véronique (*Reine Pokou* 2004, *L'Ombre d'Imana* 2000), ADIAFFI Jean-Marie (*La Carte d'identité* 1980)
+CONTEXTE AFRICAIN ÉLARGI (Afrique de l'Ouest, Afrique centrale, Afrique de l'Est) :
+Sénégal : économie en émergence, Plan Sénégal Émergent, ressources pétrolières offshore découvertes 2014
+Ghana : économie diversifiée, pétrole offshore (Jubilee Field), premier producteur d'or Afrique (2023)
+Nigeria : 1re économie africaine (~500Md USD PIB), pétrole (Delta du Niger), Nollywood (2e cinéma mondial)
+Cameroun : bilinguisme français-anglais, pétrole, cacao, bois, port de Douala (poumon Afrique centrale)
+Kenya : hub technologique Afrique de l'Est (Silicon Savannah), M-Pesa (1ère monnaie mobile mondiale)
+Afrique du Sud : 2e économie africaine, mines d'or et platine, Cape Town/Johannesburg
+
+LITTÉRATURE AFRICAINE FRANCOPHONE :
+Ivoiriens : DADIÉ Bernard (*Climbié* 1956), KOUROUMA Ahmadou (*Les Soleils des Indépendances* 1968, *Monnè* 1990), TADJO Véronique (*Reine Pokou* 2004), ADIAFFI Jean-Marie (*La Carte d'identité* 1980)
 Africains : LAYE Camara Guinée (*L'Enfant Noir* 1953), BETI Mongo Cameroun (*Mission Terminée* 1957), OYONO Ferdinand Cameroun (*Une Vie de Boy* 1956), SENGHOR Léopold Sédar Sénégal (poètes de la négritude), SEMBÈNE Ousmane Sénégal (*Les Bouts de Bois de Dieu* 1960), ACHEBE Chinua Nigeria (*Things Fall Apart* 1958)
 
 SCIENCES ET ENVIRONNEMENT :
-Biodiversité : 150+ espèces mammifères, 700+ oiseaux, hippopotame pygmée, éléphant de forêt, chimpanzé de Taï
-Déforestation : 16M ha en 1900 → 3,4M ha aujourd'hui (perte 79% couverture forestière)
-Maladies : paludisme (Plasmodium falciparum, 1re cause mortalité CI), tuberculose, VIH/SIDA, fièvre typhoïde
-Énergie renouvelable : hydroélectrique (barrages), solaire en développement (Plan national solaire)
-Changement climatique : -20% pluviométrie au Nord depuis 1970, montée eaux côtières (Assinie, Grand-Lahou)
-REDD+ (réduction déforestation), certification Rainforest Alliance pour cacao durable
+Biodiversité CI : 150+ espèces mammifères, 700+ oiseaux, hippopotame pygmée, éléphant de forêt, chimpanzé de Taï
+Déforestation CI : 16M ha en 1900 → 3,4M ha aujourd'hui (perte 79% couverture forestière)
+Maladies tropicales : paludisme (Plasmodium falciparum, 1re cause mortalité en Afrique subsaharienne), tuberculose, VIH/SIDA
+Changement climatique Afrique : -20% pluviométrie au Sahel depuis 1970, montée eaux côtières
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 SECTION 6 — EXEMPLES DE PARAGRAPHES D'EXCELLENCE (MODÈLES À IMITER)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-EXEMPLE HISTOIRE-GÉO avec données précises :
-"La Côte d'Ivoire occupe une position économique stratégique sur le continent africain, fondée en grande partie sur la culture du **cacao**. Avec une production annuelle de **2,2 millions de tonnes** représentant environ **45% de la production mondiale** selon l'ICCO (International Cocoa Organization, 2023), le pays a construit sa prospérité sur cette culture pérenne introduite par les colons à la fin du XIXe siècle. Le **Port autonome d'Abidjan**, premier port à conteneurs d'Afrique de l'Ouest avec un trafic dépassant **30 millions de tonnes** par an, constitue la porte de sortie principale de cette richesse vers les marchés européens et asiatiques. Cependant, la forte dépendance à cette monoculture expose l'économie ivoirienne aux chocs des cours mondiaux, comme l'ont illustré les crises de 2002 et 2016, incitant le gouvernement à accélérer sa politique de diversification économique à travers le **Plan National de Développement (PND 2021-2025)** qui cible une économie émergente d'ici 2030."
+EXEMPLE HISTOIRE-GÉO avec données africaines (sujet géographique/économique) :
+"La Côte d'Ivoire occupe une position économique stratégique sur le continent africain, fondée en grande partie sur la culture du **cacao**. Avec une production annuelle de **2,2 millions de tonnes** représentant environ **45% de la production mondiale** selon l'ICCO (International Cocoa Organization, 2023), le pays a construit sa prospérité sur cette culture pérenne introduite par les colons à la fin du XIXe siècle. Cette dépendance à la monoculture expose cependant l'économie aux chocs des cours mondiaux, incitant le gouvernement à accélérer sa politique de diversification économique à travers le **Plan National de Développement (PND 2021-2025)**."
 
-EXEMPLE SVT/PC avec formule en texte :
-"La **photosynthèse** est le processus biochimique fondamental par lequel les végétaux chlorophylliens convertissent l'énergie lumineuse en énergie chimique. L'équation bilan s'écrit : 6 CO2 + 6 H2O + énergie lumineuse → C6H12O6 + 6 O2, soit six molécules de dioxyde de carbone et six d'eau qui, sous l'action de la lumière captée par la **chlorophylle**, produisent une molécule de **glucose** et six de dioxygène. Dans le contexte ivoirien, cette réaction est capitale : les forêts de la zone Sud, dont la **Forêt classée du Banco** dans le grand Abidjan, jouent un rôle d'absorbeur de CO2 essentiel. Cependant, la déforestation galopante — qui a réduit la couverture forestière de **16 millions d'hectares** en 1900 à moins de **3,4 millions** aujourd'hui selon le MINEF — compromet sévèrement cette fonction écosystémique et exacerbe le changement climatique à l'échelle régionale."
+EXEMPLE SVT/PC — sujet scientifique universel (SANS exemple ivoirien forcé) :
+"La **photosynthèse** est le processus biochimique fondamental par lequel les végétaux chlorophylliens convertissent l'énergie lumineuse en énergie chimique. L'équation bilan s'écrit : 6 CO2 + 6 H2O + énergie lumineuse → C6H12O6 + 6 O2, soit six molécules de dioxyde de carbone et six d'eau qui, sous l'action de la lumière captée par la **chlorophylle**, produisent une molécule de **glucose** et six de dioxygène. Ce processus est à la base de toute vie sur Terre : il constitue le premier maillon de la chaîne alimentaire et régule le taux de CO2 atmosphérique, jouant ainsi un rôle clé dans l'équilibre climatique mondial. Des recherches récentes menées par le **CNRS** et l'**Université de Cambridge** cherchent à reproduire artificiellement ce mécanisme pour produire de l'hydrogène propre à grande échelle."
 
-EXEMPLE FRANÇAIS/LITTÉRATURE :
-"La littérature africaine francophone constitue un vecteur privilégié d'affirmation identitaire et de résistance culturelle. En effet, des auteurs comme **Bernard Dadié**, dont l'œuvre maîtresse *Climbié* (1956) dresse le portrait d'un jeune ivoirien confronté à la colonisation, ont su transformer l'expérience douloureuse de la domination en une création littéraire féconde. De même, **Ahmadou Kourouma**, dans *Les Soleils des Indépendances* (1968), brise les codes du français standard en y insufflant la syntaxe et la vision du monde **malinké**, créant un «français africanisé» que la critique reconnaît comme l'un des apports majeurs des lettres africaines à la francophonie. Cette double appartenance linguistique et culturelle devient ainsi une richesse plutôt qu'un handicap, ouvrant la voie à une génération d'auteurs qui, comme **Véronique Tadjo** avec *Reine Pokou* (2004), poursuivent ce travail de réappropriation de l'histoire et de l'identité africaines."
+EXEMPLE FRANÇAIS/LITTÉRATURE AFRICAINE :
+"La littérature africaine francophone constitue un vecteur privilégié d'affirmation identitaire et de résistance culturelle. Des auteurs comme **Bernard Dadié**, dont l'œuvre maîtresse *Climbié* (1956) dresse le portrait d'un jeune ivoirien confronté à la colonisation, ont su transformer l'expérience douloureuse de la domination en une création littéraire féconde. De même, **Ahmadou Kourouma**, dans *Les Soleils des Indépendances* (1968), brise les codes du français standard en y insufflant la syntaxe et la vision du monde **malinké**, créant un «français africanisé» reconnu comme l'un des apports majeurs des lettres africaines à la francophonie. Cette double appartenance linguistique devient une richesse, ouvrant la voie à des auteurs comme **Véronique Tadjo** avec *Reine Pokou* (2004)."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 SECTION 7 — LES 10 RÈGLES ABSOLUES DE LA GÉNÉRATION NOVA
@@ -973,7 +981,7 @@ SECTION 7 — LES 10 RÈGLES ABSOLUES DE LA GÉNÉRATION NOVA
 RÈGLE 1 — COMPLÉTUDE TOTALE : Zéro "[à compléter]", "[...]", "[insérer]", "[Prénom fictif]" → TOUT rédigé intégralement
 RÈGLE 2 — LONGUEUR MAÎTRISÉE : Respecter STRICTEMENT le nombre de pages demandé par le client (6, 7, 8 ou 9 pages). Un exposé percutant et dense vaut mieux qu'un exposé long et dilué. Chaque phrase doit avoir sa raison d'être — zéro remplissage, zéro répétition, zéro reformulation inutile.
 RÈGLE 3 — QUALITÉ LINGUISTIQUE : Orthographe et grammaire irréprochables, ponctuation soignée, style académique soutenu
-RÈGLE 4 — CONTEXTUALISATION OBLIGATOIRE : Min 3 exemples ivoiriens/africains concrets ET chiffrés par grande partie
+RÈGLE 4 — CONTEXTUALISATION PERTINENTE : Si le sujet traite de géographie, histoire, économie, environnement, société → inclure 1 à 2 exemples africains/ivoiriens SI pertinents. Pour les sujets de sciences exactes (maths, physique, chimie), philosophie, informatique ou histoire mondiale → PAS d'exemples ivoiriens forcés. La pertinence prime toujours sur la localisation.
 RÈGLE 5 — FORMULES NOVA : Utilise la notation x^{{2}}, H_{{2}}O, CO_{{2}}, √(expr), symboles Unicode α β γ π ω ≤ ≥ × → ⇌. LaTeX inline $...$ aussi accepté (converti auto). Voir Section 2 pour tous les exemples.
 RÈGLE 6 — STRUCTURE STRICTE : Séparateurs ════ et ---SAUT_DE_PAGE--- uniquement dans le corps du document (jamais dans le sommaire). Tu ne génères PAS de page de garde — Nova Platform s'en charge.
 RÈGLE 6b — ANTI-ORPHELINES : Ne JAMAIS terminer une partie par une phrase de transition — la transition appartient au DÉBUT de la partie suivante (après le saut de page). Évite ainsi les 2-3 lignes orphelines en haut d'une page vide.
@@ -1140,10 +1148,10 @@ Rédige maintenant l'exposé COMPLET en français avec la plus grande rigueur ac
 IMPÉRATIFS ABSOLUS :
 1. TOUT est rédigé intégralement — zéro "[à compléter]", zéro zone vide
 2. Introduction en 5 temps (accroche → contextualisation → délimitation → problématique → annonce plan)
-3. Chaque paragraphe suit le modèle PEEL (Point → Explication → Exemple ivoirien sourcé → Lien)
+3. Chaque paragraphe suit le modèle PEEL (Point → Explication → Exemple concret sourcé → Lien)
 4. Transitions obligatoires entre grandes parties (min 4 lignes chacune)
 5. Conclusion en UN SEUL paragraphe continu (bilan → réponse nuancée → ouverture) — jamais découpée
-6. Min 3 exemples ivoiriens/africains CHIFFRÉS et SOURCÉS par grande partie
+6. Exemples concrets CHIFFRÉS et SOURCÉS — ivoiriens/africains si le sujet le justifie, universels sinon
 7. Connecteurs logiques variés — jamais le même deux fois de suite dans un paragraphe"""
 
 
@@ -1267,7 +1275,7 @@ EXERCICE 6 — PROBLÈME CONTEXTE IVOIRIEN COMPLEXE (4 pts)
   Sainte Famille prend contact avec deux restaurants de Bouaké."
   Restaurant A : 1000F/repas + 2000F transport | Restaurant B : 950F/repas + 3000F taxi
   Questions : a) Exprime PA et PB en fonction de x / b) Résous l'inéquation / c) Conclus
-  TOUJOURS contexte ivoirien authentique : coopérative, école CI, marché, entreprise locale
+  TOUJOURS contexte réaliste et concret : coopérative, école, marché, entreprise — ivoirien si possible (FCFA, villes CI), sinon international
   Données en FCFA, villes ivoiriennes (Bouaké, Abidjan, Yamoussoukro...)
   Questions : 1- modéliser → 2- résoudre équation/inéquation → 3- répondre à la question initiale
 
@@ -1325,7 +1333,7 @@ EXERCICE 4 — PROBLÈME DE SYNTHÈSE ou COMMENTAIRE DE DOCUMENT (5-8 pts)
 ✅ Les exercices 3+ peuvent être ouverts ou semi-ouverts
 ✅ Chaque exercice a son barème clairement indiqué : ## EXERCICE N : (X points)
 ✅ Numérotation cohérente : 1- 2- 3- puis 1.1- 1.2- ou a) b) c) selon niveau
-✅ Contextes ivoiriens authentiques dans les problèmes (noms, villes CI, FCFA, produits locaux)
+✅ Contextes réalistes dans les problèmes (noms, villes, monnaies, produits) — ivoiriens si pertinent pour la matière, internationaux sinon
 ✅ Données chiffrées précises et réalistes (jamais de "x valeur" vague)
 ✅ L'en-tête simple est TOUJOURS présent (voir Section En-tête ci-dessus)
 """
@@ -2351,14 +2359,14 @@ Rédige en français avec une structure claire : titres, sous-titres, paragraphe
             "══ RÈGLE 4 : RÉDACTION ENCYCLOPÉDIQUE ══\n"
             "• Paragraphes 8 à 10 lignes MINIMUM dans le développement\n"
             "• JAMAIS de listes à puces dans le corps du document\n"
-            "• Modèle PEEL : Point → Explication → Exemple ivoirien chiffré → Lien/Transition\n"
+            "• Modèle PEEL : Point → Explication → Exemple concret chiffré → Lien/Transition\n"
             "• Connecteurs VARIÉS (ne jamais répéter deux fois de suite) :\n"
             "  Introduire : Il convient tout d'abord de | Force est de constater que | À ce titre,\n"
             "  Développer : En effet, | De surcroît, | Par ailleurs, | Qui plus est,\n"
             "  Illustrer  : Ainsi, | À titre illustratif, | C'est notamment le cas de\n"
             "  Opposer    : Cependant, | Néanmoins, | Toutefois, | En revanche, | Or,\n"
             "  Conclure   : En définitive, | Au regard de ces éléments,\n"
-            "• Minimum 3 exemples ivoiriens/africains CHIFFRÉS et SOURCÉS par grande partie\n\n"
+            "• Exemples CHIFFRÉS et SOURCÉS pertinents — ivoiriens/africains si le sujet s'y prête, universels sinon\n\n"
 
             "══ RÈGLE 5 : BASE DE DONNÉES IVOIRIENNE INTÉGRÉE ══\n"
             "Géo     : 322 463 km² | ~28M hab. | Yamoussoukro (cap.pol.) | Abidjan (cap.éco.)\n"
@@ -4580,6 +4588,50 @@ def inject_custom_css():
             box-shadow: 0 0 30px rgba(46,204,113,0.2);
         }
         .livrable-auto-title { color: #2ecc71; font-size: 1.4rem; font-weight: 800; }
+
+        /* ══ BOUTONS TÉLÉCHARGER — Effet brillant lumineux ══ */
+        @keyframes nova-dl-shine {
+            0%   { background-position: -200% center;
+                   box-shadow: 0 0 8px rgba(46,204,113,0.5), 0 0 20px rgba(0,210,255,0.25); }
+            50%  { background-position: 0% center;
+                   box-shadow: 0 0 22px rgba(46,204,113,0.9), 0 0 50px rgba(0,255,150,0.45); }
+            100% { background-position: 200% center;
+                   box-shadow: 0 0 8px rgba(46,204,113,0.5), 0 0 20px rgba(0,210,255,0.25); }
+        }
+        @keyframes nova-dl-text-glow {
+            0%, 100% { text-shadow: 0 0 6px rgba(255,255,255,0.6); }
+            50%       { text-shadow: 0 0 18px rgba(255,255,255,1), 0 0 30px rgba(100,255,180,0.8); }
+        }
+        /* Bouton download Streamlit natif */
+        [data-testid="stDownloadButton"] > button,
+        div[data-testid="stDownloadButton"] button {
+            background: linear-gradient(90deg,
+                #1a6b3a 0%, #2ecc71 25%, #00ffa3 50%, #2ecc71 75%, #1a6b3a 100%) !important;
+            background-size: 300% auto !important;
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            font-size: 1rem !important;
+            border: none !important;
+            border-radius: 14px !important;
+            padding: 0.75rem 1.8rem !important;
+            width: 100% !important;
+            cursor: pointer !important;
+            animation: nova-dl-shine 2.5s ease-in-out infinite !important;
+            transition: transform 0.2s ease !important;
+            letter-spacing: 0.5px !important;
+        }
+        [data-testid="stDownloadButton"] > button span,
+        div[data-testid="stDownloadButton"] button p,
+        div[data-testid="stDownloadButton"] button span {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            animation: nova-dl-text-glow 2.5s ease-in-out infinite !important;
+        }
+        [data-testid="stDownloadButton"] > button:hover,
+        div[data-testid="stDownloadButton"] button:hover {
+            transform: translateY(-3px) scale(1.02) !important;
+            box-shadow: 0 0 35px rgba(46,204,113,1), 0 0 70px rgba(0,255,150,0.6) !important;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -4747,6 +4799,49 @@ def inject_custom_css():
             background: radial-gradient(ellipse at 50% 0%, rgba(255,215,0,0.06) 0%, transparent 60%);
             pointer-events: none;
             z-index: 0;
+        }
+
+        /* ══ BOUTONS TÉLÉCHARGER thème Premium — Effet OR lumineux ══ */
+        @keyframes nova-dl-shine-gold {
+            0%   { background-position: -200% center;
+                   box-shadow: 0 0 10px rgba(255,215,0,0.5), 0 0 24px rgba(255,140,0,0.3); }
+            50%  { background-position: 0% center;
+                   box-shadow: 0 0 28px rgba(255,215,0,1), 0 0 60px rgba(255,180,0,0.6); }
+            100% { background-position: 200% center;
+                   box-shadow: 0 0 10px rgba(255,215,0,0.5), 0 0 24px rgba(255,140,0,0.3); }
+        }
+        @keyframes nova-dl-text-glow-gold {
+            0%, 100% { text-shadow: 0 0 6px rgba(0,0,0,0.5); }
+            50%       { text-shadow: 0 0 14px rgba(0,0,0,0.8), 0 0 28px rgba(255,215,0,0.3); }
+        }
+        [data-testid="stDownloadButton"] > button,
+        div[data-testid="stDownloadButton"] button {
+            background: linear-gradient(90deg,
+                #7a5500 0%, #b8860b 20%, #FFD700 40%, #fff5c0 50%, #FFD700 60%, #b8860b 80%, #7a5500 100%) !important;
+            background-size: 300% auto !important;
+            color: #1a0f00 !important;
+            font-weight: 900 !important;
+            font-size: 1rem !important;
+            border: 1px solid rgba(255,215,0,0.6) !important;
+            border-radius: 14px !important;
+            padding: 0.75rem 1.8rem !important;
+            width: 100% !important;
+            cursor: pointer !important;
+            animation: nova-dl-shine-gold 2.5s ease-in-out infinite !important;
+            transition: transform 0.2s ease !important;
+            letter-spacing: 0.5px !important;
+        }
+        [data-testid="stDownloadButton"] > button span,
+        div[data-testid="stDownloadButton"] button p,
+        div[data-testid="stDownloadButton"] button span {
+            color: #1a0f00 !important;
+            font-weight: 900 !important;
+            animation: nova-dl-text-glow-gold 2.5s ease-in-out infinite !important;
+        }
+        [data-testid="stDownloadButton"] > button:hover,
+        div[data-testid="stDownloadButton"] button:hover {
+            transform: translateY(-3px) scale(1.02) !important;
+            box-shadow: 0 0 40px rgba(255,215,0,1), 0 0 80px rgba(255,180,0,0.7) !important;
         }
         </style>
         """, unsafe_allow_html=True)
