@@ -64,7 +64,8 @@ st.set_page_config(
 )
 
 DATA_FILE = "data_nova_v3.json"
-ADMIN_CODE = st.secrets.get("ADMIN_CODE", "02110240")
+ADMIN_CODE  = st.secrets.get("ADMIN_CODE", "02110240")
+COLLAB_CODE = "2026"   # Collaborateur — accès missions uniquement
 
 SUPABASE_URL = st.secrets["SUPABASE_URL"]
 SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
@@ -630,6 +631,101 @@ def desactiver_premium(uid):
         st.session_state["db"]["users"][uid].update({
             "premium": False, "premium_plan": None, "premium_expiry": None,
         })
+
+def delete_user(uid):
+    """Supprime complètement un membre (users + demandes + liens)."""
+    try:
+        supabase.table("liens").delete().eq("uid", uid).execute()
+    except:
+        pass
+    try:
+        supabase.table("demandes").delete().eq("user", uid).execute()
+    except:
+        pass
+    try:
+        supabase.table("users").delete().eq("uid", uid).execute()
+    except:
+        pass
+    # Nettoyer session_state
+    if "db" in st.session_state:
+        st.session_state["db"]["users"].pop(uid, None)
+
+def donner_bonus_gen(uid, nb_bonus):
+    """
+    Donne nb_bonus générations gratuites valables aujourd'hui à un utilisateur.
+    Crée un mini-plan bonus d'1 jour sans toucher au statut premium existant.
+    Stocke via la colonne gen_used en négatif (crédit) + gen_date = today.
+    Logique : quota_restant = quota_max - gen_used.
+    Pour un gratuit (quota_max=0), on stocke bonus_gen dans la table config.
+    """
+    try:
+        today = datetime.now().strftime("%Y-%m-%d")
+        # Lire l'état actuel
+        row = supabase.table("users").select("gen_used,gen_date,premium,premium_plan,premium_expiry").eq("uid", uid).execute().data
+        if not row:
+            return False
+        d = row[0]
+        is_prem = d.get("premium") and d.get("premium_expiry") and datetime.now() < datetime.fromisoformat(d["premium_expiry"])
+
+        if is_prem:
+            # Utilisateur premium : on réduit gen_used du bonus (donne plus de quota)
+            gen_used = d.get("gen_used", 0) if d.get("gen_date") == today else 0
+            new_used = max(0, gen_used - nb_bonus)
+            supabase.table("users").update({"gen_used": new_used, "gen_date": today}).eq("uid", uid).execute()
+        else:
+            # Utilisateur gratuit : on stocke le bonus dans la table config
+            key_bonus = f"bonus_gen_{uid}"
+            existing = supabase.table("config").select("value").eq("key", key_bonus).execute().data
+            if existing:
+                try:
+                    old = json.loads(existing[0]["value"])
+                    # Si date différente d'aujourd'hui, on réinitialise
+                    if old.get("date") != today:
+                        new_val = {"date": today, "quota": nb_bonus, "used": 0}
+                    else:
+                        new_val = {"date": today, "quota": old.get("quota", 0) + nb_bonus, "used": old.get("used", 0)}
+                except:
+                    new_val = {"date": today, "quota": nb_bonus, "used": 0}
+                supabase.table("config").update({"value": json.dumps(new_val)}).eq("key", key_bonus).execute()
+            else:
+                supabase.table("config").insert({"key": key_bonus, "value": json.dumps({"date": today, "quota": nb_bonus, "used": 0})}).execute()
+        return True
+    except Exception as e:
+        return False
+
+def get_bonus_gen_gratuit(uid):
+    """Retourne (quota_bonus, used_bonus) pour un utilisateur gratuit."""
+    try:
+        today = datetime.now().strftime("%Y-%m-%d")
+        key_bonus = f"bonus_gen_{uid}"
+        row = supabase.table("config").select("value").eq("key", key_bonus).execute().data
+        if not row:
+            return 0, 0
+        d = json.loads(row[0]["value"])
+        if d.get("date") != today:
+            return 0, 0
+        return d.get("quota", 0), d.get("used", 0)
+    except:
+        return 0, 0
+
+def consommer_bonus_gen_gratuit(uid):
+    """Décrémente le bonus gratuit d'un cran. Retourne True si OK."""
+    try:
+        today = datetime.now().strftime("%Y-%m-%d")
+        key_bonus = f"bonus_gen_{uid}"
+        row = supabase.table("config").select("value").eq("key", key_bonus).execute().data
+        if not row:
+            return False
+        d = json.loads(row[0]["value"])
+        if d.get("date") != today:
+            return False
+        if d.get("used", 0) >= d.get("quota", 0):
+            return False
+        d["used"] = d.get("used", 0) + 1
+        supabase.table("config").update({"value": json.dumps(d)}).eq("key", key_bonus).execute()
+        return True
+    except:
+        return False
 
 def get_modeles_disponibles(api_key):
     import urllib.request as _ur
@@ -8283,10 +8379,30 @@ Action requise si le problème n'est pas résolu.
             st.rerun()
 
     with st.expander("🛠 Console Admin Nova"):
-        if st.text_input("Master Key", type="password") == ADMIN_CODE:
+        _saisie_key = st.text_input("Clé d'accès", type="password", key="console_key_input")
+        _est_admin  = (_saisie_key == ADMIN_CODE)
+        _est_collab = (_saisie_key == COLLAB_CODE)
 
+        if not _est_admin and not _est_collab and _saisie_key:
+            st.error("❌ Clé incorrecte.")
+
+        if _est_admin or _est_collab:
             current_db = st.session_state["db"]
-            admin_tab1, admin_tab2, admin_tab3, admin_tab4 = st.tabs(["📋 MISSIONS", "👑 GESTION PREMIUM", "🗑️ STORAGE", "🔧 MIGRATION UIDs"])
+
+            # ── Onglets selon le rôle ─────────────────────────────────
+            if _est_admin:
+                admin_tab1, admin_tab2, admin_tab3, admin_tab4 = st.tabs([
+                    "📋 MISSIONS", "👑 GESTION MEMBRES", "🗑️ STORAGE", "🔧 MIGRATION UIDs"
+                ])
+            else:
+                # Collaborateur : missions uniquement
+                st.markdown("""
+                <div style="background:rgba(0,210,255,0.08);border:1px solid rgba(0,210,255,0.3);
+                border-radius:10px;padding:10px 16px;margin-bottom:12px;">
+                <span style="color:#00d2ff;font-weight:700;">👷 Accès Collaborateur — Vue Missions uniquement</span>
+                </div>""", unsafe_allow_html=True)
+                admin_tab1 = st.container()
+                admin_tab2 = admin_tab3 = admin_tab4 = None
 
             with admin_tab1:
                 st.markdown("### 🛡️ Panneau de contrôle Nova")
@@ -8556,8 +8672,9 @@ Action requise si le problème n'est pas résolu.
                             st.success(f"✅ Mission livrée à {client_nom} !")
                             st.rerun()
 
-            with admin_tab2:
-                st.markdown("### 👑 Gestion des membres Premium")
+            if admin_tab2 is not None:
+             with admin_tab2:
+                st.markdown("### 👑 Gestion des membres")
                 total  = len(current_db["users"])
                 prems  = [u for u, d in current_db["users"].items() if is_premium_actif(d)]
                 c1, c2, c3 = st.columns(3)
@@ -8566,8 +8683,8 @@ Action requise si le problème n'est pas résolu.
                 c3.metric("🔓 Gratuits", total - len(prems))
                 st.divider()
 
+                # ══ SECTION 1 : ACTIVER PREMIUM ══════════════════════════
                 st.markdown("#### ➕ Activer un Premium")
-                # ── Recherche par numéro WhatsApp ──────────────────────
                 recherche = st.text_input(
                     "🔍 Rechercher un membre par numéro WhatsApp",
                     placeholder="Ex: 2250707...  ou  0707...",
@@ -8616,6 +8733,44 @@ Action requise si le problème n'est pas résolu.
                             st.rerun()
 
                 st.divider()
+
+                # ══ SECTION 2 : BONUS DE GÉNÉRATIONS GRATUITES ═══════════
+                st.markdown("#### 🎁 Bonus de générations gratuites")
+                st.caption("Donne des générations gratuites valables aujourd'hui (1 jour) à n'importe quel membre.")
+                if users_filtres:
+                    bon1, bon2, bon3 = st.columns([3, 1, 1])
+                    with bon1:
+                        uid_bonus = st.selectbox(
+                            "Membre à créditer",
+                            options=list(tous_users.keys()),
+                            format_func=lambda u: (
+                                f"{'⭐' if is_premium_actif(tous_users[u]) else '🔓'}  "
+                                f"📱 {tous_users[u].get('whatsapp', u)}"
+                            ),
+                            key="admin_select_bonus"
+                        )
+                    with bon2:
+                        nb_bonus = st.selectbox(
+                            "Nb générations",
+                            options=[1, 2, 3, 4, 5, 6, 7, 8, 10],
+                            index=1,
+                            key="admin_nb_bonus"
+                        )
+                    with bon3:
+                        st.markdown("<br>", unsafe_allow_html=True)
+                        if st.button("🎁 DONNER", key="btn_donner_bonus"):
+                            ok = donner_bonus_gen(uid_bonus, nb_bonus)
+                            wa_b = tous_users[uid_bonus].get("whatsapp", uid_bonus)
+                            if ok:
+                                st.session_state["db"] = load_db()
+                                st.success(f"✅ **{nb_bonus}** génération(s) bonus données à 📱 **{wa_b}** — valables aujourd'hui !")
+                            else:
+                                st.error("❌ Erreur lors de l'attribution du bonus.")
+
+                st.divider()
+
+                # ══ SECTION 3 : LISTE DES MEMBRES ════════════════════════
+                st.markdown("#### 👥 Liste des membres")
                 filtre = st.radio("Afficher", ["Tous", "Premium uniquement", "Gratuits uniquement"], horizontal=True)
 
                 for uid_m, udata in current_db["users"].items():
@@ -8625,6 +8780,11 @@ Action requise si le problème n'est pas résolu.
                     if filtre == "Gratuits uniquement" and p_actif:    continue
 
                     wa_affiche = udata.get("whatsapp", uid_m)
+                    # Afficher le bonus gratuit si applicable
+                    bonus_q, bonus_u = get_bonus_gen_gratuit(uid_m)
+                    bonus_txt = (f"<br><small style='color:#2ecc71;'>🎁 Bonus aujourd'hui : "
+                                 f"{bonus_q - bonus_u}/{bonus_q} restant(s)</small>") if bonus_q > 0 else ""
+
                     col_m, col_a = st.columns([3, 2])
                     with col_m:
                         badge = f'<span class="badge-premium">⭐ {udata.get("premium_plan","—")}</span>' if p_actif else '<span class="badge-free">🔓 Gratuit</span>'
@@ -8633,13 +8793,13 @@ Action requise si le problème n'est pas résolu.
                             <div>
                                 <div class="admin-user-name">📱 {wa_affiche}</div>
                                 <div class="admin-user-meta">Inscrit le {str(udata.get('joined',''))[:10]}</div>
-                                {exp_txt}
+                                {exp_txt}{bonus_txt}
                             </div>
                             <div>{badge}</div>
                         </div>""", unsafe_allow_html=True)
                     with col_a:
                         if p_actif:
-                            cp1, cp2 = st.columns(2)
+                            cp1, cp2, cp3 = st.columns(3)
                             with cp1:
                                 ext_p = st.selectbox("", list(PLANS_PREMIUM.keys()), key=f"ext_{uid_m}",
                                     format_func=lambda p: f"{PLANS_PREMIUM[p]['emoji']} {p}")
@@ -8652,21 +8812,48 @@ Action requise si le problème n'est pas résolu.
                                     st.rerun()
                             with cp2:
                                 st.markdown("<br>", unsafe_allow_html=True)
-                                if st.button("🗑️ Révoquer", key=f"rev_{uid_m}"):
+                                if st.button("🚫 Révoquer", key=f"rev_{uid_m}"):
                                     desactiver_premium(uid_m)
                                     st.session_state["db"] = load_db()
                                     st.warning(f"Premium révoqué pour 📱 {wa_affiche}.")
                                     st.rerun()
+                            with cp3:
+                                st.markdown("<br>", unsafe_allow_html=True)
+                                if st.button("🗑️ Suppr.", key=f"del_{uid_m}"):
+                                    st.session_state[f"confirm_del_{uid_m}"] = True
                         else:
-                            ap = st.selectbox("", list(PLANS_PREMIUM.keys()), key=f"act_{uid_m}",
-                                format_func=lambda p: f"{PLANS_PREMIUM[p]['emoji']} {p}")
-                            if st.button("⚡ Activer", key=f"actbtn_{uid_m}"):
-                                activer_premium(uid_m, ap)
-                                st.session_state["db"] = load_db()
-                                st.success(f"✅ Premium activé pour 📱 {wa_affiche} !")
-                                st.rerun()
+                            cp1, cp2 = st.columns(2)
+                            with cp1:
+                                ap = st.selectbox("", list(PLANS_PREMIUM.keys()), key=f"act_{uid_m}",
+                                    format_func=lambda p: f"{PLANS_PREMIUM[p]['emoji']} {p}")
+                                if st.button("⚡ Activer", key=f"actbtn_{uid_m}"):
+                                    activer_premium(uid_m, ap)
+                                    st.session_state["db"] = load_db()
+                                    st.success(f"✅ Premium activé pour 📱 {wa_affiche} !")
+                                    st.rerun()
+                            with cp2:
+                                st.markdown("<br>", unsafe_allow_html=True)
+                                if st.button("🗑️ Supprimer", key=f"del_{uid_m}"):
+                                    st.session_state[f"confirm_del_{uid_m}"] = True
 
-            with admin_tab3:
+                        # ── Confirmation suppression ──────────────────
+                        if st.session_state.get(f"confirm_del_{uid_m}"):
+                            st.error(f"⚠️ Supprimer définitivement **📱 {wa_affiche}** ? (données + livrables + historique)")
+                            cc1, cc2 = st.columns(2)
+                            with cc1:
+                                if st.button("✅ OUI, supprimer", key=f"confirm_yes_{uid_m}", type="primary"):
+                                    delete_user(uid_m)
+                                    st.session_state.pop(f"confirm_del_{uid_m}", None)
+                                    st.session_state["db"] = load_db()
+                                    st.success(f"✅ Membre 📱 {wa_affiche} supprimé définitivement.")
+                                    st.rerun()
+                            with cc2:
+                                if st.button("❌ Annuler", key=f"confirm_no_{uid_m}"):
+                                    st.session_state.pop(f"confirm_del_{uid_m}", None)
+                                    st.rerun()
+
+            if admin_tab3 is not None:
+             with admin_tab3:
                 st.markdown("### 🗑️ Nettoyage Storage — Fichiers +20 jours")
                 st.info("Supprime du Storage Supabase et de la table `liens` tous les fichiers livrés depuis plus de 20 jours.")
 
@@ -8702,7 +8889,8 @@ Action requise si le problème n'est pas résolu.
                         st.session_state["db"] = load_db()
 
 
-            with admin_tab4:
+            if admin_tab4 is not None:
+             with admin_tab4:
                 st.markdown("### 🔧 Migration — Corriger les anciens UIDs")
                 st.info(
                     "Certains anciens comptes ont un uid aléatoire (ex: `8a387850d656f49f`) au lieu "
