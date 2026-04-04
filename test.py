@@ -9125,6 +9125,9 @@ def show_nova_ia_page():
     if "nova_ia_prompt_final" not in st.session_state:
         st.session_state["nova_ia_prompt_final"] = ""
 
+    if "nova_ia_livrable" not in st.session_state:
+        st.session_state["nova_ia_livrable"] = None
+
     # ── AFFICHAGE HISTORIQUE ──────────────────────────────────────
     for msg in st.session_state["nova_ia_chat"]:
         align = "flex-end" if msg["role"] == "user" else "flex-start"
@@ -9316,16 +9319,36 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
                     st.session_state["nova_ia_phase"] = "dialogue"
                     st.rerun()
                 else:
-                    # Sauvegarder comme livrable dans Supabase
-                    nom_fichier = f"Nova_IA_{service_final.replace(' ', '_')[:30]}_{datetime.now().strftime('%d%m%Y_%H%M')}.txt"
+                    # ── Générer le vrai fichier .docx ─────────────────────
+                    import uuid as _uuid_chat
+                    _req_id_chat = str(_uuid_chat.uuid4())[:8]
+                    _nom_fichier = f"Nova_IA_{service_final.replace(' ', '_')[:30]}_{datetime.now().strftime('%d%m%Y_%H%M')}.docx"
+                    _buf_chat = creer_docx(resultat, service_final, user)
+
+                    # ── Upload vers Supabase Storage ──────────────────────
+                    _url_chat = upload_fichier_client(user, _req_id_chat, _buf_chat, _nom_fichier)
+
+                    # ── Incrémenter quota + notifier ──────────────────────
                     incrementer_gen(user)
-                    save_lien(user, f"✨ {service_final}", f"__nova_ia__{resultat[:2000]}", datetime.now().strftime("%d/%m/%Y"))
-                    notifier_livraison_gemini(user, wa_user, user_data.get("email", "Non renseigné"), service_final, nom_fichier, demande_complete=desc_finale)
+                    if _url_chat and not _url_chat.startswith("ERREUR"):
+                        save_lien(user, f"✨ {service_final}", _url_chat, datetime.now().strftime("%d/%m/%Y"))
+                    else:
+                        save_lien(user, f"✨ {service_final}", f"__nova_ia__{resultat[:2000]}", datetime.now().strftime("%d/%m/%Y"))
+                    notifier_livraison_gemini(user, wa_user, user_data.get("email", "Non renseigné"), service_final, _nom_fichier, demande_complete=desc_finale)
+
+                    # ── Stocker le buf pour le bouton download dans le chat ──
+                    _buf_chat.seek(0)
+                    st.session_state["nova_ia_livrable"] = {
+                        "buf": _buf_chat.read(),
+                        "nom": _nom_fichier,
+                        "service": service_final,
+                        "url": _url_chat if (_url_chat and not _url_chat.startswith("ERREUR")) else None,
+                    }
 
                     msg_ok = (
-                        f"✅ Ton document **{service_final}** a été généré avec succès ! "
-                        f"Tu peux le retrouver dans l'onglet **Mes Livrables** de ton tableau de bord. "
-                        f"Tu as encore **{quota_restant(db['users'].get(user, {})) - 1}** génération(s) disponible(s) aujourd'hui."
+                        f"✅ Ton document **{service_final}** est prêt ! "
+                        f"Tu peux le télécharger directement ici ou le retrouver dans **Mes Livrables**. "
+                        f"Il te reste **{quota_restant(db['users'].get(user, {})) - 1}** génération(s) aujourd'hui."
                     )
                     st.session_state["nova_ia_chat"].append({"role": "assistant", "content": msg_ok})
                     st.session_state["nova_ia_phase"] = "termine"
@@ -9363,7 +9386,19 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
     # ── PHASE : TERMINÉ ───────────────────────────────────────────
     elif st.session_state["nova_ia_phase"] == "termine":
         if premium_actif:
-            st.markdown('<div class="nova-livraison-badge">✅ Livraison instantanée effectuée · Retrouve ton document dans <strong>Mes Livrables</strong></div>', unsafe_allow_html=True)
+            st.markdown('<div class="nova-livraison-badge">✅ Livraison instantanée effectuée</div>', unsafe_allow_html=True)
+            # ── Bouton de téléchargement direct dans le chat ──────
+            lv_chat = st.session_state.get("nova_ia_livrable")
+            if lv_chat:
+                st.download_button(
+                    label=f"📥 TÉLÉCHARGER — {lv_chat['nom']}",
+                    data=lv_chat["buf"],
+                    file_name=lv_chat["nom"],
+                    mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    use_container_width=True,
+                    key="dl_nova_ia_chat"
+                )
+                st.info("💡 Ce document est aussi disponible dans **📂 Mes Livrables** de ton tableau de bord.")
         else:
             st.markdown('<div class="nova-attente-badge">📋 Demande soumise · L\'équipe Nova traite ta demande · Livraison par WhatsApp</div>', unsafe_allow_html=True)
 
@@ -9374,6 +9409,7 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
                 st.session_state.pop("nova_ia_phase", None)
                 st.session_state.pop("nova_ia_service_detecte", None)
                 st.session_state.pop("nova_ia_prompt_final", None)
+                st.session_state.pop("nova_ia_livrable", None)
                 st.rerun()
         with col_dash:
             if st.button("🏠 Tableau de bord", key="nova_ia_dash", use_container_width=True):
