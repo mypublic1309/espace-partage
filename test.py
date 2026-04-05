@@ -144,7 +144,7 @@ def envoyer_email_auto_gratuit(client_nom, client_wa, service, nom_fichier, dema
         resend.api_key = st.secrets["RESEND_API_KEY"]
         _modele_info = st.session_state.get("_last_modele_gemini", "inconnu")
         corps = f"""
-🤖 ARSÈNE AI — RÉPONSE AUTOMATIQUE PLAN GRATUIT (2H)
+🤖 NOVA IA — RÉPONSE AUTOMATIQUE PLAN GRATUIT (2H)
 
 👤 Client      : {client_nom}
 📱 WhatsApp    : {client_wa}
@@ -440,7 +440,7 @@ def envoyer_notification_gemini_ok(client_nom, client_wa, service, nom_fichier, 
 {demande_complete.strip()}
 """ if demande_complete.strip() else ""
         corps_admin = f"""
-✅ ARSÈNE AI A DÉJÀ RÉPONDU — AUCUNE ACTION REQUISE
+✅ NOVA IA A DÉJÀ RÉPONDU — AUCUNE ACTION REQUISE
 
 👤 Client      : {client_nom}
 📱 WhatsApp    : {client_wa}
@@ -2728,7 +2728,7 @@ def envoyer_escalade_support(client_nom, whatsapp_client, historique_msgs, sourc
         resend.api_key = st.secrets["RESEND_API_KEY"]
         # Résumé du problème via Gemini
         hist_txt = "\n".join([
-            f"{'Client' if m['role']=='user' else 'Arsène IA'}: {m['content']}"
+            f"{'Client' if m['role']=='user' else 'Nova IA'}: {m['content']}"
             for m in historique_msgs if m["role"] == "user"
         ])
         prompt_resume = f"""Voici les messages d'un client Nova Platform qui a un problème grave.
@@ -5557,7 +5557,7 @@ def show_auth_page():
     </div>
     """, unsafe_allow_html=True)
 
-    # ── ARSÈNE IA SUPPORT SUR LA PAGE DE CONNEXION ────────────────────
+    # ── NOVA IA SUPPORT SUR LA PAGE DE CONNEXION ────────────────────
     st.markdown("""
     <style>
     @keyframes authGoldGlow {
@@ -5620,7 +5620,7 @@ def show_auth_page():
     if "auth_chat" not in st.session_state:
         st.session_state["auth_chat"] = [{
             "role": "assistant",
-            "content": "Salut ! Moi c'est Arsène IA 👋 Tu as un problème pour te connecter ou créer ton compte ? Dis-moi tout, je suis là pour t'aider !"
+            "content": "Salut ! Moi c'est Nova IA 👋 Tu as un problème pour te connecter ou créer ton compte ? Dis-moi tout, je suis là pour t'aider !"
         }]
     if "auth_chat_open" not in st.session_state:
         st.session_state["auth_chat_open"] = False
@@ -5643,7 +5643,7 @@ def show_auth_page():
             border_l = "" if msg["role"] == "user" else "border-left: 3px solid #FFD700;"
             color_label = "rgba(255,255,255,0.5)" if msg["role"] == "user" else "#FFD700"
             icon = "🧑" if msg["role"] == "user" else "🤖"
-            label_msg = "Vous" if msg["role"] == "user" else "Arsène IA"
+            label_msg = "Vous" if msg["role"] == "user" else "Nova IA"
             st.markdown(f"""
             <div style="display:flex;justify-content:{align};margin:6px 0;">
                 <div style="background:{bg};border:{border};{border_l}border-radius:12px;
@@ -5669,10 +5669,10 @@ def show_auth_page():
             if send_auth and msg_auth.strip():
                 st.session_state["auth_chat"].append({"role": "user", "content": msg_auth.strip()})
                 historique_auth = "\n".join([
-                    f"{'Client' if m['role']=='user' else 'Arsène IA'}: {m['content']}"
+                    f"{'Client' if m['role']=='user' else 'Nova IA'}: {m['content']}"
                     for m in st.session_state["auth_chat"]
                 ])
-                prompt_auth = f"""Tu es ARSÈNE IA, l'assistant support de Nova Platform (Côte d'Ivoire).
+                prompt_auth = f"""Tu es NOVA IA, l'assistant support de Nova Platform (Côte d'Ivoire).
 Tu aides les visiteurs sur la PAGE DE CONNEXION — ils ne sont pas encore connectés.
 Réponds en français, avec bienveillance et concision.
 
@@ -7775,8 +7775,8 @@ NOTE : fichier original joint via lien ci-dessous.
                 st.rerun()
 
             elif champs_manquants and "Cahier des charges" in champs_manquants:
-                # Description vide → rediriger vers Arsène IA service client
-                st.session_state["view"] = "arsene_ia"
+                # Description vide → rediriger vers Nova IA support client
+                st.session_state["view"] = "nova_support_ia"
                 st.rerun()
 
             elif premium_actif and service in SERVICES_GEMINI and not champs_manquants:
@@ -8271,7 +8271,7 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
             if "support_chat" not in st.session_state:
                 st.session_state["support_chat"] = [{
                     "role": "assistant",
-                    "content": f"Salut, moi c'est Arsène IA, ton assistant Nova ! 👋 Comment puis-je t'aider aujourd'hui, {user} ?"
+                    "content": f"Salut, moi c'est Nova IA, ton assistant Nova ! 👋 Comment puis-je t'aider aujourd'hui, {user} ?"
                 }]
             if "support_resolu" not in st.session_state:
                 st.session_state["support_resolu"] = False
@@ -8314,8 +8314,8 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                         for m in st.session_state["support_chat"]
                     ])
 
-                    prompt_support = f"""Tu es ARSÈNE IA, l'assistant support officiel de Nova Platform.
-Tu t'appelles Arsène IA. Tu ne t'appelles pas Gemini, pas ChatGPT, pas Claude. Tu es Arsène IA.
+                    prompt_support = f"""Tu es NOVA IA, l'assistant support officiel de Nova Platform.
+Tu t'appelles Nova IA. Tu ne t'appelles pas Gemini, pas ChatGPT, pas Claude. Tu es Nova IA.
 Tu parles toujours en français, avec bienveillance, de façon claire et directe.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -8378,7 +8378,7 @@ Premium actif : {"OUI" if premium_actif else "NON — compte gratuit"}
 Historique de la conversation :
 {historique_txt}
 
-Réponds UNIQUEMENT au dernier message du client. Sois concis (3-5 phrases max). Tu es Arsène IA, pas Gemini.
+Réponds UNIQUEMENT au dernier message du client. Sois concis (3-5 phrases max). Tu es Nova IA, pas Gemini.
 RÈGLE ESCALADE OBLIGATOIRE :
 Si le client exprime un problème grave (paiement, fichier perdu, compte bloqué, bug critique, plainte urgente), tu DOIS lui proposer cette phrase exacte à la fin de ta réponse :
 "👉 Veux-tu que je transmette ton problème directement au service client Nova ? Réponds juste OUI et je m'en occupe immédiatement."
@@ -8446,8 +8446,8 @@ Action requise si le problème n'est pas résolu.
                 wa_relance = f"https://wa.me/{WHATSAPP_NUMBER}?text={relance_msg.replace(' ', '%20')}"
                 st.markdown(f'<a href="{wa_relance}" target="_blank" class="support-btn" style="border-color:#f1c40f; color:#f1c40f !important;">🔔 Relancer Nova</a>', unsafe_allow_html=True)
             with col_sup:
-                if st.button("🙋 Nova Platform", key="btn_arsene_page", use_container_width=True):
-                    st.session_state["view"] = "arsene_ia"
+                if st.button("🙋 Nova Platform", key="btn_nova_support_page", use_container_width=True):
+                    st.session_state["view"] = "nova_support_ia"
                     st.rerun()
 
         st.divider()
@@ -8659,7 +8659,22 @@ Action requise si le problème n'est pas résolu.
                     with col_succes:
                         st.markdown(f'<a href="{wa_url(client_wa, msg_succes)}" target="_blank" style="display:block; text-align:center; padding:10px; border-radius:10px; background:rgba(46,204,113,0.15); border:1px solid rgba(46,204,113,0.5); color:#2ecc71; font-weight:700; text-decoration:none;">✅ Succès</a>', unsafe_allow_html=True)
 
-                    if service in SERVICES_GEMINI:
+                    # ── Vérifie si le service est éligible à la génération Gemini ──
+                    # (compatible avec les noms avec ou sans emoji — ex. demandes du chat Nova IA)
+                    import re as _re
+                    def _strip_emoji(s):
+                        return _re.sub(r'[^\w\s\-&/]', '', s).strip().lower()
+                    _svc_norm = _strip_emoji(service)
+                    _gemini_eligible = service in SERVICES_GEMINI or any(
+                        _svc_norm in _strip_emoji(s) or _strip_emoji(s) in _svc_norm
+                        for s in SERVICES_GEMINI
+                    ) or (
+                        # Demandes du chat Nova IA : service détecté libre mais description riche
+                        bool(description.strip()) and len(description.strip()) > 30
+                        and service not in ("—", "", "Demande Nova IA")
+                    )
+
+                    if _gemini_eligible:
                         st.markdown("<br>", unsafe_allow_html=True)
                         st.markdown(f"""
                         <div class="gemini-card">
@@ -8678,7 +8693,7 @@ Action requise si le problème n'est pas résolu.
                             else:
                                 st.error("❌ Aucun modèle disponible — vérifiez votre clé API.")
 
-                        if st.button(f"⚡ APPROUVER & GÉNÉRER AVEC ARSÈNE AI", key=f"gemini_{req_id}", use_container_width=True):
+                        if st.button(f"⚡ APPROUVER & GÉNÉRER AVEC NOVA IA", key=f"gemini_{req_id}", use_container_width=True):
                             with st.spinner("🔍 Détection automatique du meilleur modèle disponible..."):
                                 modeles_dispo = get_modeles_disponibles(st.secrets["GEMINI_API_KEY"])
                                 if modeles_dispo:
@@ -9048,7 +9063,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-def show_arsene_ia_page():
+def show_nova_support_ia_page():
     user = st.session_state.get("current_user", "")
     st.markdown("""
     <style>
@@ -9223,23 +9238,23 @@ def show_arsene_ia_page():
     <hr class="arsene-divider">
     """, unsafe_allow_html=True)
 
-    if st.button("← Retour au dashboard", key="retour_arsene"):
+    if st.button("← Retour au dashboard", key="retour_nova_support"):
         st.session_state["view"] = "home"
         st.rerun()
 
     st.markdown('<hr class="arsene-divider">', unsafe_allow_html=True)
 
     # Initialiser chat
-    if "arsene_chat" not in st.session_state:
-        st.session_state["arsene_chat"] = [{
+    if "nova_support_chat" not in st.session_state:
+        st.session_state["nova_support_chat"] = [{
             "role": "assistant",
-            "content": f"Salut, moi c'est Arsène IA, ton assistant Nova 24/7 ! ✨ Je connais tous les services, les abonnements et je suis là pour toi. Comment puis-je t'aider aujourd'hui{', ' + user if user else ''} ?"
+            "content": f"Salut, moi c'est Nova IA, ton assistant Nova 24/7 ! ✨ Je connais tous les services, les abonnements et je suis là pour toi. Comment puis-je t'aider aujourd'hui{', ' + user if user else ''} ?"
         }]
-    if "arsene_resolu" not in st.session_state:
-        st.session_state["arsene_resolu"] = False
+    if "nova_support_resolu" not in st.session_state:
+        st.session_state["nova_support_resolu"] = False
 
     # Afficher historique
-    for msg in st.session_state["arsene_chat"]:
+    for msg in st.session_state["nova_support_chat"]:
         align = "flex-end" if msg["role"] == "user" else "flex-start"
         css_class = "msg-user-gold" if msg["role"] == "user" else "msg-assistant-gold"
         color = "rgba(255,255,255,0.85)" if msg["role"] == "user" else "#FFD700"
@@ -9253,8 +9268,8 @@ def show_arsene_ia_page():
             </div>
         </div>""", unsafe_allow_html=True)
 
-    if not st.session_state["arsene_resolu"]:
-        with st.form("arsene_form", clear_on_submit=True):
+    if not st.session_state["nova_support_resolu"]:
+        with st.form("nova_support_form", clear_on_submit=True):
             msg_user = st.text_input(
                 "Message",
                 placeholder="Pose ta question à Nova Platform...",
@@ -9267,16 +9282,16 @@ def show_arsene_ia_page():
                 terminer = st.form_submit_button("✅ Fin", use_container_width=True)
 
         if envoyer and msg_user.strip():
-            st.session_state["arsene_chat"].append({"role": "user", "content": msg_user.strip()})
+            st.session_state["nova_support_chat"].append({"role": "user", "content": msg_user.strip()})
             db = st.session_state["db"]
             user_data = db["users"].get(user, {}) if user else {}
             premium_actif = is_premium_actif(user_data)
             historique_txt = "\n".join([
-                f"{'Client' if m['role']=='user' else 'Arsène IA'}: {m['content']}"
-                for m in st.session_state["arsene_chat"]
+                f"{'Client' if m['role']=='user' else 'Nova IA'}: {m['content']}"
+                for m in st.session_state["nova_support_chat"]
             ])
-            prompt_arsene = f"""Tu es ARSÈNE IA, l'assistant officiel de Nova Platform.
-Tu t'appelles Arsène IA — jamais Gemini, jamais ChatGPT, jamais Claude.
+            prompt_nova_support = f"""Tu es NOVA IA, l'assistant officiel de Nova Platform.
+Tu t'appelles Nova IA — jamais Gemini, jamais ChatGPT, jamais Claude.
 Tu parles toujours en français, avec bienveillance et clarté.
 
 TOUT CE QUE TU SAIS SUR NOVA PLATFORM :
@@ -9318,7 +9333,7 @@ CLIENT : {user if user else "visiteur"} | Premium : {"OUI" if premium_actif else
 Historique :
 {historique_txt}
 
-Réponds UNIQUEMENT au dernier message. 3-5 phrases max. Tu es Arsène IA.
+Réponds UNIQUEMENT au dernier message. 3-5 phrases max. Tu es Nova IA.
 RÈGLE IMPORTANTE : Ne commence JAMAIS tes réponses par "Bonjour [nom]" ou en te présentant à nouveau. Tu l'as déjà fait au début. Reste naturel, direct, comme dans une vraie conversation. Réponds directement à ce que le client dit.
 RÈGLE ESCALADE OBLIGATOIRE :
 Si le client exprime un problème grave (paiement, fichier perdu, compte bloqué, bug critique, plainte urgente), tu DOIS lui proposer cette phrase exacte à la fin de ta réponse :
@@ -9327,35 +9342,35 @@ Si dans l'historique le client répond OUI ou "oui" ou "ok" ou "ouais" à cette 
 __ESCALADE_CONFIRMEE__"""
 
             with st.spinner("🤖 Nova Platform réfléchit..."):
-                reponse = generer_avec_gemini("Support Arsène IA", prompt_arsene, user or "visiteur")
+                reponse = generer_avec_gemini("Support Nova IA", prompt_nova_support, user or "visiteur")
             if reponse.startswith("❌"):
                 reponse = f"Désolé, je rencontre une difficulté. Contacte Nova directement sur WhatsApp : {WHATSAPP_NUMBER}"
             if "__ESCALADE_CONFIRMEE__" in reponse:
                 _db_ars = st.session_state["db"]
                 _wa_ars = _db_ars["users"].get(user, {}).get("whatsapp", "—") if user else "—"
-                ok = envoyer_escalade_support(user or "visiteur", _wa_ars, st.session_state["arsene_chat"], "Assistant Nova 24/7")
+                ok = envoyer_escalade_support(user or "visiteur", _wa_ars, st.session_state["nova_support_chat"], "Assistant Nova 24/7")
                 if ok:
                     reponse = "✅ C'est fait ! Ton problème a été transmis au service client Nova. Nous te recontactons très bientôt. 🙏"
-                    st.session_state["arsene_resolu"] = True
+                    st.session_state["nova_support_resolu"] = True
                 else:
                     reponse = f"Désolé, l'envoi a échoué. Contacte Nova directement : {WHATSAPP_NUMBER} 📲"
-            st.session_state["arsene_chat"].append({"role": "assistant", "content": reponse})
+            st.session_state["nova_support_chat"].append({"role": "assistant", "content": reponse})
             st.rerun()
 
-        if terminer and len(st.session_state["arsene_chat"]) > 1:
+        if terminer and len(st.session_state["nova_support_chat"]) > 1:
             try:
                 import resend
                 resend.api_key = st.secrets["RESEND_API_KEY"]
                 db = st.session_state["db"]
                 historique_email = "\n".join([
                     f"{'🧑 Client' if m['role']=='user' else '🤖 Nova Platform'} : {m['content']}"
-                    for m in st.session_state["arsene_chat"]
+                    for m in st.session_state["nova_support_chat"]
                 ])
                 resend.Emails.send({
                     "from": "Nova Platform <onboarding@resend.dev>",
                     "to": [st.secrets["EMAIL_RECEIVER"]],
                     "subject": f"🤖 Nova Platform — Conversation {user or 'visiteur'}",
-                    "text": f"""RÉSUMÉ CONVERSATION ARSÈNE IA
+                    "text": f"""RÉSUMÉ CONVERSATION NOVA IA
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 👤 Client   : {user or "visiteur"}
 📱 WhatsApp : {db["users"].get(user, {}).get("whatsapp", "—") if user else "—"}
@@ -9368,19 +9383,19 @@ __ESCALADE_CONFIRMEE__"""
 Intervenir si problème non résolu.
 """
                 })
-                st.session_state["arsene_resolu"] = True
+                st.session_state["nova_support_resolu"] = True
                 st.success("✅ Conversation envoyée à Nova. Nous revenons vers toi rapidement !")
                 st.rerun()
             except Exception as e:
                 st.error(f"Erreur envoi : {e}")
     else:
         st.success("✅ Ta demande a été transmise à Nova. Nous te répondrons bientôt.")
-        if st.button("🔄 Nouvelle conversation", key="reset_arsene"):
-            st.session_state["arsene_chat"] = [{
+        if st.button("🔄 Nouvelle conversation", key="reset_nova_support"):
+            st.session_state["nova_support_chat"] = [{
                 "role": "assistant",
-                "content": f"Salut, moi c'est Arsène IA ! 👋 Comment puis-je t'aider ?"
+                "content": f"Salut, moi c'est Nova IA ! 👋 Comment puis-je t'aider ?"
             }]
-            st.session_state["arsene_resolu"] = False
+            st.session_state["nova_support_resolu"] = False
             st.rerun()
 
 
@@ -9613,7 +9628,7 @@ def show_nova_ia_page():
             ])
 
             prompt_nova = f"""Tu es NOVA IA, l'assistante intelligente de Nova Platform (Côte d'Ivoire).
-Tu t'appelles Nova IA — jamais Gemini, jamais ChatGPT, jamais Claude, jamais Arsène IA.
+Tu t'appelles Nova IA — jamais Gemini, jamais ChatGPT, jamais Claude, jamais le support IA.
 Tu parles toujours en français, avec bienveillance et précision.
 TON RÔLE : comprendre ce que le client veut créer, collecter les informations nécessaires, puis confirmer.
 
@@ -9722,6 +9737,26 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
         service_final = st.session_state.get("nova_ia_service_detecte", "Demande Nova IA")
         desc_finale   = st.session_state.get("nova_ia_prompt_final", "")
 
+        # ── Normalisation du service pour matcher la console admin ──
+        _NOVA_SERVICE_MAP = [
+            (["exposé", "expose", "exposi"],        "📝 Exposé scolaire complet IA"),
+            (["fiche", "cours", "professeur"],       "📖 Fiche de Cours Professeur IA"),
+            (["sujet", "examen", "qcm", "évaluat"],  "📝 Création de Sujets & Examens"),
+            (["rapport", "stage"],                   "📋 Rapport de Stage IA"),
+            (["cv", "lettre", "motivation", "curriculum"], "👔 CV & Lettre de Motivation"),
+            (["word", "document", "rédact", "contrat", "rapport profess"], "📄 Création Word (depuis zéro)"),
+            (["data", "excel", "tableau", "analyt", "graphique"], "📊 Data & Excel Analytics"),
+            (["modif", "correc", "retouche"],        "📎 Modifier mon Fichier (Word / Excel / PPT)"),
+            (["conver", "pdf", "format"],            "📄 Conversion & Fichier PDF"),
+            (["ocr", "numér", "scan"],               "🔍 OCR — Numérisation de Document"),
+        ]
+        _svc_low = service_final.lower()
+        for _keywords, _canonical in _NOVA_SERVICE_MAP:
+            if any(k in _svc_low for k in _keywords):
+                service_final = _canonical
+                st.session_state["nova_ia_service_detecte"] = _canonical
+                break
+
         if premium_actif:
             # ── CAS PREMIUM : génération Gemini immédiate ────────
             user_data_frais = db["users"].get(user, {})
@@ -9770,7 +9805,7 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
                         save_lien(user, f"✨ {service_final}", _url_chat, datetime.now().strftime("%d/%m/%Y"))
                     else:
                         save_lien(user, f"✨ {service_final}", f"__nova_ia__{resultat[:2000]}", datetime.now().strftime("%d/%m/%Y"))
-                    notifier_livraison_gemini(user, wa_user, user_data.get("email", "Non renseigné"), service_final, _nom_fichier, demande_complete=desc_finale)
+                    envoyer_notification_gemini_ok(user, wa_user, service_final, _nom_fichier, demande_complete=desc_finale)
 
                     # ── Stocker le buf pour le bouton download dans le chat ──
                     _buf_chat.seek(0)
@@ -9808,6 +9843,17 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
             save_demande(nouvelle_demande)
             db["demandes"].append(nouvelle_demande)
             st.session_state["db"] = db
+
+            # ── Notifier l'admin par email (comme le mode standard) ──
+            try:
+                envoyer_notification(
+                    user or "visiteur",
+                    wa_user,
+                    f"[Nova IA Chat] {service_final}",
+                    f"Réf : {req_id}\n\n{desc_finale}"
+                )
+            except Exception:
+                pass
 
             msg_attente = (
                 f"📋 Ta demande **{service_final}** a bien été soumise à l'équipe Nova ! "
@@ -9855,8 +9901,8 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
 
 if st.session_state["view"] == "auth" and st.session_state["current_user"] is None:
     show_auth_page()
-elif st.session_state["view"] == "arsene_ia":
-    show_arsene_ia_page()
+elif st.session_state["view"] == "nova_support_ia":
+    show_nova_support_ia_page()
 elif st.session_state["view"] == "nova_ia":
     show_nova_ia_page()
 else:
