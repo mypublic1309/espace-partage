@@ -20,7 +20,7 @@ _SPLASH_CONFIG = {
     "Modifier": {"icon":"✏️","bg":"#050a0d","glow":"rgba(0,210,255,0.22)","color":"#00d2ff","titre":"MODIFICATION<br><span style='color:#00d2ff;'>DE TON FICHIER</span>","sub":"Word · Excel · PDF · PowerPoint · sur mesure","badge":"📎 IMPORTE TON FICHIER","prix":"TRAITEMENT RAPIDE"},
     "Conversion": {"icon":"🔄","bg":"#050d08","glow":"rgba(46,204,113,0.22)","color":"#2ecc71","titre":"CONVERSION<br><span style='color:#2ecc71;'>INSTANTANÉE</span>","sub":"PDF · Word · Excel · Images · 100% automatique","badge":"⚡ RÉSULTAT EN QUELQUES SEC","prix":"CONVERSION GRATUITE"},
     "OCR": {"icon":"🔍","bg":"#08050d","glow":"rgba(180,100,255,0.25)","color":"#b464ff","titre":"NUMÉRISATION OCR<br><span style='color:#b464ff;'>TEXTE EXTRACTIBLE</span>","sub":"PDF · Image · Word · Excel scannés → .docx éditable","badge":"📄 FICHIER WORD ÉDITABLE EN SORTIE","prix":"TRAITEMENT AUTOMATIQUE"},
-    "Design": {"icon":"🎨","bg":"#0d050a","glow":"rgba(255,80,180,0.22)","color":"#ff50b4","titre":"TON DESIGN<br><span style='color:#ff50b4;'>CRÉÉ PAR L'IA</span>","sub":"Affiches · Reçus · Visuels · Prêts à imprimer","badge":"⚡ LIVRÉ EN 60 SECONDES","prix":"1 GÉNÉRATION · 600 FC"},
+    "RapportStage": {"icon":"🏢","bg":"#080d05","glow":"rgba(80,220,120,0.25)","color":"#50dc78","titre":"TON RAPPORT DE STAGE<br><span style='color:#50dc78;'>RÉDIGÉ PAR L'IA</span>","sub":"Introduction · Missions · Analyse · Conclusion · Annexes","badge":"⚡ LIVRÉ EN 60 SECONDES","prix":"1 GÉNÉRATION · 600 FC"},
 }
 
 def _show_splash(service_key: str, duree: float = 1.2):
@@ -2323,6 +2323,84 @@ REGLES ABSOLUES :
 - Minimum 4-6 pages de contenu substantiel
 - Directement utilisable en classe par le professeur
 """
+
+        elif "Rapport de Stage" in service:
+            prompt = f"""Tu es un expert en rédaction de rapports de stage académiques pour le système éducatif ivoirien et africain francophone.
+Tu maîtrises parfaitement les normes des BTS, Licences et Masters, et tu produis des rapports complets, structurés et directement soumissibles.
+
+INFORMATIONS FOURNIES PAR L'ÉTUDIANT :
+{description}
+
+STRUCTURE OBLIGATOIRE DU RAPPORT DE STAGE :
+
+# PAGE DE GARDE
+(Nom de l'établissement · Mention filière · Titre du rapport · Nom de l'étudiant · Nom de l'entreprise · Année académique)
+
+---SAUT_DE_PAGE---
+
+# REMERCIEMENTS
+
+---SAUT_DE_PAGE---
+
+# SOMMAIRE
+
+---SAUT_DE_PAGE---
+
+# LISTE DES ABRÉVIATIONS
+
+---SAUT_DE_PAGE---
+
+## INTRODUCTION GÉNÉRALE
+(Contexte du stage · Motivation du choix · Problématique · Annonce du plan)
+
+---SAUT_DE_PAGE---
+
+# PARTIE I — PRÉSENTATION DE L'ENTREPRISE
+
+## 1.1 Historique et création
+## 1.2 Activités et secteur d'activité
+## 1.3 Organisation et organigramme
+## 1.4 Cadre juridique et statut
+
+---SAUT_DE_PAGE---
+
+# PARTIE II — DÉROULEMENT DU STAGE
+
+## 2.1 Conditions d'accueil et intégration
+## 2.2 Missions et tâches effectuées
+(Détaille chaque mission : contexte, méthodologie, outils utilisés, résultats obtenus)
+## 2.3 Difficultés rencontrées et solutions apportées
+## 2.4 Compétences acquises et développées
+
+---SAUT_DE_PAGE---
+
+# PARTIE III — ANALYSE CRITIQUE ET APPORTS
+
+## 3.1 Analyse de l'expérience professionnelle
+## 3.2 Apports du stage à la formation académique
+## 3.3 Apports personnels à l'entreprise
+## 3.4 Recommandations à l'entreprise
+
+---SAUT_DE_PAGE---
+
+## CONCLUSION GÉNÉRALE
+(Bilan du stage · Perspectives professionnelles · Ouverture)
+
+---SAUT_DE_PAGE---
+
+# RÉFÉRENCES BIBLIOGRAPHIQUES
+
+---SAUT_DE_PAGE---
+
+# ANNEXES
+
+RÈGLES DE RÉDACTION :
+- Rédige chaque section en paragraphes complets et détaillés (pas de phrases vides ou génériques)
+- Intègre directement toutes les informations fournies par l'étudiant dans le bon contexte
+- Utilise un ton académique professionnel adapté au niveau d'études mentionné
+- Si l'étudiant mentionne une entreprise réelle, contextualise avec des infos plausibles du secteur
+- Longueur minimale : 15 pages équivalent Word — chaque section doit être substantielle
+- Rédige UNIQUEMENT en français"""
 
         elif "CV" in service:
             prompt = f"""Tu es un expert RH et recrutement. Crée un CV et une lettre de motivation professionnels basés sur :
@@ -5981,6 +6059,7 @@ def main_dashboard():
                 "📖 Fiche de Cours Professeur IA",
                 "👔 CV & Lettre de Motivation",
                 "📄 Création Word (depuis zéro)",
+                "📋 Rapport de Stage IA",
             ]
             # Définition locale pour éviter les NameError
             _SERVICES_GEMINI_LOCAL = [
@@ -5989,6 +6068,7 @@ def main_dashboard():
                 "📖 Fiche de Cours Professeur IA",
                 "👔 CV & Lettre de Motivation",
                 "📄 Création Word (depuis zéro)",
+                "📋 Rapport de Stage IA",
             ]
 
             for _req in _fresh_demandes:
@@ -6089,6 +6169,7 @@ def main_dashboard():
         "📖 Fiche de Cours Professeur IA",
         "👔 CV & Lettre de Motivation",
         "📄 Création Word (depuis zéro)",
+        "📋 Rapport de Stage IA",
         "📊 Data & Excel Analytics",
     ]
 
@@ -6127,19 +6208,6 @@ def main_dashboard():
                 ],
                 "note": "Plus votre description est précise, plus le document sera prêt à l'emploi sans retouches."
             },
-            "🎨 Création Design IA": {
-                "icone": "🎨",
-                "titre": "Création Design IA",
-                "intro": "Pour créer un design à la hauteur de vos attentes, indiquez-nous :",
-                "items": [
-                    ("🖼️", "Le type de visuel (affiche, bannière, logo, flyer...)"),
-                    ("📐", "Le format ou dimensions souhaitées"),
-                    ("🎨", "Les couleurs ou thème visuel préféré"),
-                    ("✍️", "Les textes ou messages à intégrer"),
-                    ("🏢", "Le nom de votre entreprise ou projet"),
-                ],
-                "note": "Une référence visuelle ou exemple que vous aimez accélérera le travail."
-            },
             "📚 Affiches & Reçus": {
                 "icone": "📚",
                 "titre": "Affiches & Reçus",
@@ -6151,6 +6219,19 @@ def main_dashboard():
                     ("📐", "Le format désiré (A4, A5, reçu thermique...)"),
                 ],
                 "note": "Un logo ou image à intégrer peut être envoyé via WhatsApp."
+            },
+            "📋 Rapport de Stage IA": {
+                "icone": "📋",
+                "titre": "Rapport de Stage IA",
+                "intro": "Pour rédiger un rapport de stage complet et professionnel, indiquez-nous :",
+                "items": [
+                    ("🏢", "Le nom de l'entreprise ou organisation d'accueil"),
+                    ("📅", "La durée du stage (dates de début et de fin)"),
+                    ("🎓", "Votre niveau d'études et filière (BTS, Licence, Master...)"),
+                    ("💼", "Vos missions principales durant le stage"),
+                    ("📝", "Vos observations et apprentissages clés"),
+                ],
+                "note": "Plus vous décrivez vos missions en détail, plus le rapport sera réaliste et personnalisé."
             },
             "👔 CV & Lettre de Motivation": {
                 "icone": "👔",
@@ -6181,7 +6262,7 @@ def main_dashboard():
             "📝 Exposé scolaire complet IA",
             "📝 Création de Sujets & Examens",
             "📄 Création Word (depuis zéro)",
-            "🎨 Création Design IA",
+            "📋 Rapport de Stage IA",
             "📚 Affiches & Reçus",
             "👔 CV & Lettre de Motivation",
             "📄 Conversion & Fichier PDF",
@@ -6240,7 +6321,7 @@ def main_dashboard():
             "📝 Exposé scolaire complet IA": ("📝 Exposé scolaire", "Remplissez le formulaire : niveau, matière, sujet, pages. Nova Platform rédige un exposé structuré complet.\n\n✅ Idéal pour : collège, lycée, université\n⭐ Service PREMIUM uniquement"),
             "📝 Création de Sujets & Examens": ("📝 Sujets & Examens", "Choisissez niveau, matière, type d'épreuve et durée. Importez votre cours pour baser le sujet dessus.\n\n✅ Types : QCM, Vrai/Faux, Cas pratique, Devoir complet\n⭐ Génération auto avec Premium"),
             "📄 Création Word (depuis zéro)": ("📄 Création Word", "Décrivez précisément le document Word que vous voulez : type, contenu, ton, longueur. Nova Platform le crée de A à Z, prêt à l'emploi.\n\n✅ Contrats, rapports, lettres, procédures, formulaires...\n📝 Plus vous êtes précis, plus le résultat est parfait"),
-            "🎨 Création Design IA": ("🎨 Création Design", "Décrivez votre visuel : type, couleurs, textes, style souhaité.\n\n✅ Livraison en image ou PDF\n💡 Mentionnez votre secteur d'activité"),
+            "📋 Rapport de Stage IA": ("📋 Rapport de Stage", "Décrivez votre stage : entreprise, durée, niveau d'études, missions effectuées. Nova Platform rédige un rapport complet et structuré.\n\n✅ Introduction · Présentation de l'entreprise · Missions · Analyse · Conclusion\n🎓 Adapté BTS, Licence, Master"),
             "📚 Affiches & Reçus": ("📚 Affiches & Reçus", "Précisez le type (affiche, reçu, bon de commande...) et les infos à afficher.\n\n✅ Idéal pour : commerces, associations, événements\n📋 Fournissez les données exactes"),
             "👔 CV & Lettre de Motivation": ("👔 CV & Lettre", "Indiquez votre parcours, le poste visé et l'entreprise cible.\n\n✅ Formats modernes et professionnels\n💡 Précisez si vous avez déjà un CV à améliorer"),
             "📄 Conversion & Fichier PDF": ("📄 Conversion PDF", "Importez votre fichier et choisissez le format cible.\n\n✅ Formats : Word↔PDF, Excel↔CSV, PPT↔PDF\n⚡ Résultat immédiat"),
@@ -6317,7 +6398,7 @@ def main_dashboard():
 
             SERVICE_AUDIO = {
                 "📄 Création Word (depuis zéro)": "prerequis_word.mp3",
-                "🎨 Création Design IA":           "prerequis_design.mp3",
+                "📋 Rapport de Stage IA":          "prerequis_rapport_stage.mp3",
                 "📚 Affiches & Reçus":             "prerequis_affiches.mp3",
                 "👔 CV & Lettre de Motivation":    "prerequis_cv.mp3",
             }
@@ -7576,8 +7657,8 @@ NOTE : fichier original joint via lien ci-dessous.
                 _show_splash("CV")
             elif "Word" in service:
                 _show_splash("Word")
-            elif "Design" in service or "Affiches" in service:
-                _show_splash("Design")
+            elif "Rapport de Stage" in service:
+                _show_splash("RapportStage")
             # ── CHAMP TEXTE LIBRE POUR LES AUTRES SERVICES ────────────────────
             prompt = st.text_area("Cahier des charges Nova", height=150, placeholder="Détaillez votre projet pour une exécution parfaite...")
 
@@ -8253,7 +8334,7 @@ SERVICES DISPONIBLES :
 - 📝 Exposé scolaire complet IA : exposés structurés du CP au Master (PREMIUM uniquement)
 - 📝 Création de Sujets & Examens : devoirs, contrôles, QCM, examens (PREMIUM auto-généré)
 - 📄 Création Word (depuis zéro) : le client décrit son document, Nova le crée complet et prêt à l'emploi
-- 🎨 Création Design IA : affiches, flyers, bannières, logos (décrits en texte)
+- 📋 Rapport de Stage IA : rapport complet structuré (BTS, Licence, Master) · Introduction · Missions · Analyse · Conclusion
 - 📚 Affiches & Reçus : supports visuels pour entreprises et associations
 - 👔 CV & Lettre de Motivation : CV et lettres percutants
 - 🔄 Conversion & Fichier PDF : conversion entre formats (Word↔PDF, Excel↔CSV, etc.)
@@ -9207,7 +9288,7 @@ SERVICES :
 - 📝 Exposé scolaire complet IA : exposés du CP au Master (PREMIUM)
 - 📝 Création de Sujets & Examens : devoirs, QCM, contrôles (PREMIUM = auto)
 - 📄 Création Word (depuis zéro) : le client décrit son document Word, Nova le génère complet
-- 🎨 Création Design IA : affiches, flyers, bannières, logos
+- 📋 Rapport de Stage IA : rapport académique complet (BTS, Licence, Master) · Missions · Analyse · Conclusion
 - 📚 Affiches & Reçus : supports visuels entreprises
 - 👔 CV & Lettre de Motivation : CV et lettres percutants
 - 🔄 Conversion & Fichier PDF : conversion entre formats
@@ -9560,9 +9641,9 @@ CATALOGUE COMPLET DES SERVICES NOVA PLATFORM
    → Infos ESSENTIELLES : prénom et nom, poste visé, secteur d'activité
    → Infos FACULTATIVES : expériences passées, formations, compétences clés, langues parlées, ton (dynamique/classique/créatif), lettre de motivation souhaitée (oui/non)
 
-6. 🎨 CRÉATION DESIGN IA (affiches, flyers, bannières, logos)
-   → Infos ESSENTIELLES : type de visuel, sujet/thème, texte principal à afficher
-   → Infos FACULTATIVES : couleurs souhaitées, style (moderne/traditionnel/coloré/épuré), taille/format, slogan, contact à afficher
+6. 📋 RAPPORT DE STAGE IA
+   → Infos ESSENTIELLES : nom de l'entreprise d'accueil, durée du stage, niveau d'études (BTS / Licence / Master), filière
+   → Infos FACULTATIVES : missions effectuées, nom du maître de stage, difficultés rencontrées, compétences acquises, recommandations
 
 7. 📊 DATA & EXCEL ANALYTICS
    → Infos ESSENTIELLES : type d'analyse (tableau de bord / graphique / rapport de données), description des données
