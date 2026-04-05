@@ -6411,7 +6411,7 @@ def main_dashboard():
 {"".join(f"- {icone} {texte}\n" for icone, texte in info["items"])}
 💡 *{info["note"]}*
 """)
-            audio_file = SERVICE_AUDIO.get(service)
+            audio_file = SERVICE_AUDIO.get(service) if service in SERVICE_AUDIO else None
             if audio_file and os.path.exists(audio_file):
                 with open(audio_file, "rb") as f:
                     b64 = __import__('base64').b64encode(f.read()).decode()
