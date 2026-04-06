@@ -2331,14 +2331,23 @@ Tu maîtrises parfaitement les normes des BTS, Licences et Masters, et tu produi
 INFORMATIONS FOURNIES PAR L'ÉTUDIANT :
 {description}
 
+INSTRUCTIONS DE PERSONNALISATION :
+- Utilise le prénom et nom exact du stagiaire partout où c'est nécessaire (page de garde, remerciements, conclusion)
+- Intègre le nom complet de l'entreprise, sa ville et son secteur d'activité dans toutes les sections pertinentes
+- Adapte le ton, la profondeur et la rigueur académique au niveau d'études (BTS = concret/pratique, Licence = analytique, Master = critique/stratégique)
+- Utilise la période exacte du stage (dates de début et fin) dans la page de garde et l'introduction
+- Développe les missions effectuées en détail : contexte, méthode, outils utilisés, résultats — ne reste pas vague
+- Si le secteur de l'entreprise est connu, contextualise avec des données économiques réelles de Côte d'Ivoire ou d'Afrique francophone
+
 STRUCTURE OBLIGATOIRE DU RAPPORT DE STAGE :
 
 # PAGE DE GARDE
-(Nom de l'établissement · Mention filière · Titre du rapport · Nom de l'étudiant · Nom de l'entreprise · Année académique)
+(Nom de l'établissement · Filière et niveau · Titre : "Rapport de Stage" · Nom complet du stagiaire · Nom de l'entreprise · Période du stage · Année académique)
 
 ---SAUT_DE_PAGE---
 
 # REMERCIEMENTS
+(Remercier le maître de stage, l'équipe de l'entreprise, les encadreurs pédagogiques — personnalisé avec les noms si fournis)
 
 ---SAUT_DE_PAGE---
 
@@ -2351,7 +2360,7 @@ STRUCTURE OBLIGATOIRE DU RAPPORT DE STAGE :
 ---SAUT_DE_PAGE---
 
 ## INTRODUCTION GÉNÉRALE
-(Contexte du stage · Motivation du choix · Problématique · Annonce du plan)
+(Contexte du stage · Motivation du choix de l'entreprise · Problématique · Annonce du plan · Mention de la période et durée exacte)
 
 ---SAUT_DE_PAGE---
 
@@ -2359,8 +2368,10 @@ STRUCTURE OBLIGATOIRE DU RAPPORT DE STAGE :
 
 ## 1.1 Historique et création
 ## 1.2 Activités et secteur d'activité
+(Développe avec des éléments réels du secteur mentionné en Côte d'Ivoire)
 ## 1.3 Organisation et organigramme
 ## 1.4 Cadre juridique et statut
+## 1.5 Localisation et implantation géographique
 
 ---SAUT_DE_PAGE---
 
@@ -2368,7 +2379,7 @@ STRUCTURE OBLIGATOIRE DU RAPPORT DE STAGE :
 
 ## 2.1 Conditions d'accueil et intégration
 ## 2.2 Missions et tâches effectuées
-(Détaille chaque mission : contexte, méthodologie, outils utilisés, résultats obtenus)
+(Pour chaque mission fournie : contexte précis, méthodologie, outils utilisés, résultats obtenus — minimum 1 page par mission principale)
 ## 2.3 Difficultés rencontrées et solutions apportées
 ## 2.4 Compétences acquises et développées
 
@@ -2384,7 +2395,7 @@ STRUCTURE OBLIGATOIRE DU RAPPORT DE STAGE :
 ---SAUT_DE_PAGE---
 
 ## CONCLUSION GÉNÉRALE
-(Bilan du stage · Perspectives professionnelles · Ouverture)
+(Bilan du stage · Lien avec la formation · Perspectives professionnelles · Ouverture)
 
 ---SAUT_DE_PAGE---
 
@@ -2395,12 +2406,12 @@ STRUCTURE OBLIGATOIRE DU RAPPORT DE STAGE :
 # ANNEXES
 
 RÈGLES DE RÉDACTION :
-- Rédige chaque section en paragraphes complets et détaillés (pas de phrases vides ou génériques)
-- Intègre directement toutes les informations fournies par l'étudiant dans le bon contexte
-- Utilise un ton académique professionnel adapté au niveau d'études mentionné
-- Si l'étudiant mentionne une entreprise réelle, contextualise avec des infos plausibles du secteur
+- Rédige chaque section en paragraphes complets et détaillés — JAMAIS de contenu vide ou générique
+- Intègre toutes les informations fournies de façon naturelle et cohérente
+- Ton académique professionnel adapté au niveau mentionné
 - Longueur minimale : 15 pages équivalent Word — chaque section doit être substantielle
-- Rédige UNIQUEMENT en français"""
+- Rédige UNIQUEMENT en français
+- N'invente JAMAIS de noms de personnes non mentionnés — utilise "mon maître de stage" si non précisé"""
 
         elif "CV" in service:
             prompt = f"""Tu es un expert RH et recrutement. Crée un CV et une lettre de motivation professionnels basés sur :
@@ -9696,10 +9707,13 @@ CATALOGUE COMPLET DES SERVICES NOVA PLATFORM
    → Infos ESSENTIELLES (dans cet ordre si manquantes) :
      1. Prénom et nom complet du stagiaire → question : "C'est au nom de qui ? (prénom et nom)"
      2. Nom complet de l'entreprise d'accueil → question : "C'est dans quelle entreprise ?"
-     3. La filière ou spécialité → question : "Tu es en quelle filière ?"
-     4. Le niveau d'études → question : "Tu es en BTS, Licence ou Master ?"
-     5. La durée du stage → question : "Le stage a duré combien de temps ?"
-   → Dès que nom + entreprise + filière + niveau sont connus : RÉCAPITULATIF immédiat
+     3. Ville / localisation de l'entreprise → question : "L'entreprise est dans quelle ville ?"
+     4. Secteur d'activité de l'entreprise → question : "C'est quoi le secteur de l'entreprise ? (banque, BTP, informatique, santé...)"
+     5. La filière ou spécialité → question : "Tu es en quelle filière ?"
+     6. Le niveau d'études → question : "Tu es en BTS, Licence ou Master ?"
+     7. La période exacte du stage → question : "Le stage s'est déroulé du ... au ... ?"
+     8. Les missions effectuées → question : "Tu as fait quoi comme tâches pendant le stage ? (même en quelques mots)"
+   → Dès que nom + entreprise + ville + secteur + filière + niveau + période + missions sont connus : RÉCAPITULATIF immédiat
 
 7. 📊 DATA & EXCEL ANALYTICS
    → Infos ESSENTIELLES (dans cet ordre si manquantes) :
