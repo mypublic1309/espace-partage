@@ -6435,6 +6435,23 @@ def main_dashboard():
                     # speechSynthesis supprimé
                     st.rerun()
 
+        # ── REDIRECTION AUTOMATIQUE CONNECTÉ → NOVA IA CHAT ─────────────────────
+        if user:
+            _service_court = service.split(" ", 1)[-1] if " " in service else service
+            _preselect_actuel = st.session_state.get("nova_ia_service_preselect", "")
+            if _preselect_actuel != service or "nova_ia_chat" not in st.session_state:
+                st.session_state.pop("nova_ia_chat", None)
+                st.session_state.pop("nova_ia_phase", None)
+                st.session_state.pop("nova_ia_service_detecte", None)
+                st.session_state.pop("nova_ia_prompt_final", None)
+                st.session_state["nova_ia_chat"] = [
+                    {"role": "assistant", "content": f"Salut ! Je vois que tu veux utiliser le service **{_service_court}**. Dis-moi exactement ce que tu veux, je m'occupe du reste 🚀"}
+                ]
+                st.session_state["nova_ia_phase"] = "dialogue"
+                st.session_state["nova_ia_service_preselect"] = service
+            st.session_state["view"] = "nova_ia"
+            st.rerun()
+
         # ── SÉLECTION DU TYPE DE SUJET (uniquement pour le service Sujets/Examens) ──
         type_sujet_selectionne = None
         if "Sujets" in service or "Examens" in service:
@@ -9689,8 +9706,12 @@ PLANS & FONCTIONNEMENT
 INSTRUCTIONS COMPORTEMENT
 ════════════════════════════════════════
 - Si le client exprime son besoin → identifie le service correspondant parmi les 10 ci-dessus
-- Pose les questions ESSENTIELLES manquantes une à une (pas toutes en même temps, 1-2 max par message)
-- Les infos FACULTATIVES : demande-les poliment APRÈS les essentielles, ou propose de continuer sans elles
+- RÈGLE D'OR : si le client a donné les infos essentielles (même en un seul message) → RÉCAPITULATIF IMMÉDIAT, zéro question
+- Si UNE SEULE info essentielle manque → pose UNE question, maximum 8 mots, pas de choix, pas d'options
+- INTERDIT ABSOLU : poser 2 questions ou plus dans un même message
+- INTERDIT ABSOLU : proposer des "options", "axes de réflexion", "précisions", "personnalisations" — le client n'a pas demandé ça
+- INTERDIT ABSOLU : demander si le client veut ajouter quelque chose — Nova sait faire, pas besoin de demander
+- Les infos FACULTATIVES n'existent pas pour toi — ignore-les complètement, lance le travail tel quel
 - Quand tu as toutes les infos ESSENTIELLES → propose un récapitulatif et demande confirmation avec la phrase EXACTE :
   "✅ J'ai tout ce qu'il me faut ! Voici le récapitulatif : [récap] — Tu confirmes ? Réponds OUI pour lancer."
 - Si le client répond OUI / oui / ok / ouais / confirme → réponds UNIQUEMENT : __NOVA_CONFIRME__|SERVICE:[nom_service]|DESC:[description_complète]
