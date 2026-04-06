@@ -6310,6 +6310,9 @@ def main_dashboard():
         service = st.session_state.get("service_choisi", TOUS_SERVICES[0])
         SERVICE_SAISIE = "📊 Data & Excel Analytics"
 
+        # wa_display — récupéré depuis le profil utilisateur (plus de champ de saisie)
+        wa_display = db["users"][user]["whatsapp"] if user and user in db["users"] else ""
+
         # ── BOUTON AIDE FLOTTANT ────────────────────────────────────────
         SERVICE_AIDE = {
             "📊 Data & Excel Analytics": ("📊 Data & Excel Analytics", "Soumettez vos données brutes et décrivez l'analyse souhaitée. Nova Platform génère tableaux croisés, graphiques et rapports Excel.\n\n✅ Idéal pour : bilans, stats, dashboards\n📎 Collez vos données dans le cahier des charges"),
