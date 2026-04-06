@@ -6259,12 +6259,11 @@ def main_dashboard():
             },
         }
 
-        # ── HEADER Service + bouton liste ──────────────────────────
         # ── SESSION STATE liste services ──
         if "show_services_list" not in st.session_state:
             st.session_state["show_services_list"] = False
         if "service_choisi" not in st.session_state:
-            st.session_state["service_choisi"] = "📊 Data & Excel Analytics"
+            st.session_state["service_choisi"] = ""
 
         TOUS_SERVICES = [
             "📊 Data & Excel Analytics",
@@ -6280,70 +6279,35 @@ def main_dashboard():
             "🔍 OCR — Numérisation de Document",
         ]
 
-        # ── CONNECTÉ : grille de choix direct → Nova IA ──────────────────────────
-        if user:
-            st.markdown("#### 🛠️ Choisis ton service")
-            st.markdown("<div style='color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:12px;'>Clique sur un service pour démarrer avec Nova IA 🤖</div>", unsafe_allow_html=True)
-            _cols = st.columns(2)
-            for _i, _svc in enumerate(TOUS_SERVICES):
-                with _cols[_i % 2]:
-                    if st.button(_svc, key=f"pick_svc_connect_{_i}", use_container_width=True):
-                        _service_court = _svc.split(" ", 1)[-1] if " " in _svc else _svc
-                        st.session_state.pop("nova_ia_chat", None)
-                        st.session_state.pop("nova_ia_phase", None)
-                        st.session_state.pop("nova_ia_service_detecte", None)
-                        st.session_state.pop("nova_ia_prompt_final", None)
+        # ── GRILLE UNIFIÉE : tout le monde choisit un service → Nova IA ──────────
+        st.markdown("#### 🛠️ Choisis ton service")
+        st.markdown("<div style='color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:12px;'>Clique sur un service pour démarrer 🤖</div>", unsafe_allow_html=True)
+        _cols = st.columns(2)
+        for _i, _svc in enumerate(TOUS_SERVICES):
+            with _cols[_i % 2]:
+                if st.button(_svc, key=f"pick_svc_{_i}", use_container_width=True):
+                    _service_court = _svc.split(" ", 1)[-1] if " " in _svc else _svc
+                    st.session_state.pop("nova_ia_chat", None)
+                    st.session_state.pop("nova_ia_phase", None)
+                    st.session_state.pop("nova_ia_service_detecte", None)
+                    st.session_state.pop("nova_ia_prompt_final", None)
+                    if user:
+                        # Connecté → Nova IA traite directement
                         st.session_state["nova_ia_chat"] = [
                             {"role": "assistant", "content": f"Salut ! Je vois que tu veux utiliser le service **{_service_court}**. Dis-moi exactement ce que tu veux, je m'occupe du reste 🚀"}
                         ]
-                        st.session_state["nova_ia_phase"] = "dialogue"
-                        st.session_state["nova_ia_service_preselect"] = _svc
-                        st.session_state["service_choisi"] = _svc
-                        st.session_state["view"] = "nova_ia"
-                        st.rerun()
-            st.stop()
+                    else:
+                        # Visiteur → Nova IA lui demande de se connecter
+                        st.session_state["nova_ia_chat"] = [
+                            {"role": "assistant", "content": f"Salut 👋 Je vois que tu veux utiliser le service **{_service_court}**.\n\nMais avant de continuer, tu dois **créer un compte ou te connecter** sur Nova Platform — c'est gratuit et ça prend 30 secondes !\n\nUne fois connecté, reviens ici et je m'occupe de tout 🚀"}
+                        ]
+                    st.session_state["nova_ia_phase"] = "dialogue"
+                    st.session_state["nova_ia_service_preselect"] = _svc
+                    st.session_state["service_choisi"] = _svc
+                    st.session_state["view"] = "nova_ia"
+                    st.rerun()
 
-        # ── VISITEUR : sélection classique ───────────────────────────────────────
-        col_svc_title, col_svc_btn = st.columns([3, 1])
-        with col_svc_title:
-            st.markdown("#### 🛠️ Service Nova")
-        with col_svc_btn:
-            st.markdown("")
-            _lbl = "✕ Fermer" if st.session_state["show_services_list"] else "✨ Voir tous les services"
-            if st.button(_lbl, key="btn_open_services", use_container_width=True):
-                st.session_state["show_services_list"] = not st.session_state["show_services_list"]
-                st.rerun()
-
-        if st.session_state["show_services_list"]:
-            st.info("👇 Clique sur un service pour le sélectionner")
-            _cols = st.columns(2)
-            for _i, _svc in enumerate(TOUS_SERVICES):
-                with _cols[_i % 2]:
-                    if st.button(_svc, key=f"pick_svc_{_i}", use_container_width=True):
-                        st.session_state["service_choisi"] = _svc
-                        st.session_state["service_selectbox"] = _svc
-                        st.session_state["show_services_list"] = False
-                        st.rerun()
-
-        col_f, col_wa = st.columns(2)
-        with col_f:
-            _idx_defaut = TOUS_SERVICES.index(st.session_state["service_choisi"]) if st.session_state["service_choisi"] in TOUS_SERVICES else 0
-            service = st.selectbox(
-                "Type d'intervention",
-                TOUS_SERVICES,
-                index=_idx_defaut,
-                key="service_selectbox"
-            )
-            if service != st.session_state["service_choisi"]:
-                st.session_state["service_choisi"] = service
-        with col_wa:
-            st.markdown("#### 📞 Notification")
-            default_wa = db["users"][user]["whatsapp"] if user else ""
-            wa_display_raw = st.text_input("WhatsApp de contact", value=default_wa, placeholder="225...")
-            wa_display = "".join(c for c in wa_display_raw if c.isdigit())
-            if wa_display_raw != wa_display and wa_display_raw:
-                st.warning("⚠️ Chiffres uniquement pour le numéro WhatsApp.")
-
+        service = st.session_state.get("service_choisi", TOUS_SERVICES[0])
         SERVICE_SAISIE = "📊 Data & Excel Analytics"
 
         # ── BOUTON AIDE FLOTTANT ────────────────────────────────────────
