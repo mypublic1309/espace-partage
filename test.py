@@ -6269,6 +6269,30 @@ def main_dashboard():
             "🔍 OCR — Numérisation de Document",
         ]
 
+        # ── CONNECTÉ : grille de choix direct → Nova IA ──────────────────────────
+        if user:
+            st.markdown("#### 🛠️ Choisis ton service")
+            st.markdown("<div style='color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:12px;'>Clique sur un service pour démarrer avec Nova IA 🤖</div>", unsafe_allow_html=True)
+            _cols = st.columns(2)
+            for _i, _svc in enumerate(TOUS_SERVICES):
+                with _cols[_i % 2]:
+                    if st.button(_svc, key=f"pick_svc_connect_{_i}", use_container_width=True):
+                        _service_court = _svc.split(" ", 1)[-1] if " " in _svc else _svc
+                        st.session_state.pop("nova_ia_chat", None)
+                        st.session_state.pop("nova_ia_phase", None)
+                        st.session_state.pop("nova_ia_service_detecte", None)
+                        st.session_state.pop("nova_ia_prompt_final", None)
+                        st.session_state["nova_ia_chat"] = [
+                            {"role": "assistant", "content": f"Salut ! Je vois que tu veux utiliser le service **{_service_court}**. Dis-moi exactement ce que tu veux, je m'occupe du reste 🚀"}
+                        ]
+                        st.session_state["nova_ia_phase"] = "dialogue"
+                        st.session_state["nova_ia_service_preselect"] = _svc
+                        st.session_state["service_choisi"] = _svc
+                        st.session_state["view"] = "nova_ia"
+                        st.rerun()
+            st.stop()
+
+        # ── VISITEUR : sélection classique ───────────────────────────────────────
         col_svc_title, col_svc_btn = st.columns([3, 1])
         with col_svc_title:
             st.markdown("#### 🛠️ Service Nova")
@@ -6279,7 +6303,6 @@ def main_dashboard():
                 st.session_state["show_services_list"] = not st.session_state["show_services_list"]
                 st.rerun()
 
-        # ── LISTE DÉROULANTE NATIVE ──
         if st.session_state["show_services_list"]:
             st.info("👇 Clique sur un service pour le sélectionner")
             _cols = st.columns(2)
@@ -6300,7 +6323,6 @@ def main_dashboard():
                 index=_idx_defaut,
                 key="service_selectbox"
             )
-            # Sync retour
             if service != st.session_state["service_choisi"]:
                 st.session_state["service_choisi"] = service
         with col_wa:
@@ -6434,23 +6456,6 @@ def main_dashboard():
                     st.session_state["show_service_warning"] = False
                     # speechSynthesis supprimé
                     st.rerun()
-
-        # ── REDIRECTION AUTOMATIQUE CONNECTÉ → NOVA IA CHAT ─────────────────────
-        if user:
-            _service_court = service.split(" ", 1)[-1] if " " in service else service
-            _preselect_actuel = st.session_state.get("nova_ia_service_preselect", "")
-            if _preselect_actuel != service or "nova_ia_chat" not in st.session_state:
-                st.session_state.pop("nova_ia_chat", None)
-                st.session_state.pop("nova_ia_phase", None)
-                st.session_state.pop("nova_ia_service_detecte", None)
-                st.session_state.pop("nova_ia_prompt_final", None)
-                st.session_state["nova_ia_chat"] = [
-                    {"role": "assistant", "content": f"Salut ! Je vois que tu veux utiliser le service **{_service_court}**. Dis-moi exactement ce que tu veux, je m'occupe du reste 🚀"}
-                ]
-                st.session_state["nova_ia_phase"] = "dialogue"
-                st.session_state["nova_ia_service_preselect"] = service
-            st.session_state["view"] = "nova_ia"
-            st.rerun()
 
         # ── SÉLECTION DU TYPE DE SUJET (uniquement pour le service Sujets/Examens) ──
         type_sujet_selectionne = None
