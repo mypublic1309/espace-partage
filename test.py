@@ -9659,44 +9659,70 @@ CATALOGUE COMPLET DES SERVICES NOVA PLATFORM
 ════════════════════════════════════════
 
 1. 📝 EXPOSÉ SCOLAIRE COMPLET IA
-   → Infos ESSENTIELLES : sujet de l'exposé, niveau scolaire (CP / Collège / Lycée / BTS / Licence / Master)
-   → Infos FACULTATIVES : matière, plan souhaité, langue (français par défaut), longueur (court/moyen/long), introduction/conclusion personnalisée
+   → Infos ESSENTIELLES (dans cet ordre si manquantes) :
+     1. Le sujet exact de l'exposé → question : "C'est sur quel sujet ?"
+     2. Le niveau scolaire → question : "Tu es en quelle classe ?"
+     3. La matière → question : "C'est pour quelle matière ?"
+   → Dès que sujet + niveau sont connus : RÉCAPITULATIF immédiat, matière optionnelle
 
 2. 📖 FICHE DE COURS PROFESSEUR IA
-   → Infos ESSENTIELLES : matière, sujet précis, niveau des élèves
-   → Infos FACULTATIVES : objectifs pédagogiques, exercices souhaités, exemples concrets, durée de la séance
+   → Infos ESSENTIELLES (dans cet ordre si manquantes) :
+     1. La matière → question : "C'est pour quelle matière ?"
+     2. Le chapitre ou sujet précis → question : "C'est sur quel chapitre ou notion ?"
+     3. Le niveau des élèves → question : "Tes élèves sont en quelle classe ?"
+   → Dès que matière + sujet sont connus : RÉCAPITULATIF immédiat
 
 3. 📝 CRÉATION DE SUJETS & EXAMENS
-   → Infos ESSENTIELLES : matière, type d'évaluation (QCM / Vrai-Faux / Dissertation / Cas pratique / Devoir complet), niveau
-   → Infos FACULTATIVES : nombre de questions, thèmes précis, barème, durée de l'épreuve, avec ou sans corrigé
+   → Infos ESSENTIELLES (dans cet ordre si manquantes) :
+     1. La matière → question : "C'est pour quelle matière ?"
+     2. Le niveau → question : "C'est pour quelle classe ?"
+     3. Le type d'évaluation → question : "Tu veux quel type de sujet ? (QCM, devoir, dissertation, cas pratique...)"
+   → Dès que matière + niveau sont connus : RÉCAPITULATIF immédiat
 
 4. 📄 CRÉATION DOCUMENT WORD (depuis zéro)
-   → Infos ESSENTIELLES : type de document (rapport, lettre, contrat, procès-verbal, note de service...), sujet/contexte
-   → Infos FACULTATIVES : nom de l'entreprise/personne, destinataire, date, logo à intégrer, ton (formel/informel), longueur
+   → Infos ESSENTIELLES (dans cet ordre si manquantes) :
+     1. Le type de document → question : "C'est quel type de document ? (lettre, rapport, contrat, note de service...)"
+     2. Le sujet ou contexte → question : "C'est sur quel sujet ou dans quel contexte ?"
+   → Dès que type + sujet sont connus : RÉCAPITULATIF immédiat
 
 5. 👔 CV & LETTRE DE MOTIVATION
-   → Infos ESSENTIELLES : prénom et nom, poste visé, secteur d'activité
-   → Infos FACULTATIVES : expériences passées, formations, compétences clés, langues parlées, ton (dynamique/classique/créatif), lettre de motivation souhaitée (oui/non)
+   → Infos ESSENTIELLES (dans cet ordre si manquantes) :
+     1. Prénom et nom complet → question : "C'est pour quel nom complet ?"
+     2. Le poste visé → question : "Tu postules pour quel poste ?"
+     3. Le secteur d'activité → question : "C'est dans quel secteur ?"
+   → Dès que nom + poste sont connus : RÉCAPITULATIF immédiat
 
 6. 📋 RAPPORT DE STAGE IA
-   → Infos ESSENTIELLES : nom de l'entreprise d'accueil, durée du stage, niveau d'études (BTS / Licence / Master), filière
-   → Infos FACULTATIVES : missions effectuées, nom du maître de stage, difficultés rencontrées, compétences acquises, recommandations
+   → Infos ESSENTIELLES (dans cet ordre si manquantes) :
+     1. Prénom et nom complet du stagiaire → question : "C'est au nom de qui ? (prénom et nom)"
+     2. Nom complet de l'entreprise d'accueil → question : "C'est dans quelle entreprise ?"
+     3. La filière ou spécialité → question : "Tu es en quelle filière ?"
+     4. Le niveau d'études → question : "Tu es en BTS, Licence ou Master ?"
+     5. La durée du stage → question : "Le stage a duré combien de temps ?"
+   → Dès que nom + entreprise + filière + niveau sont connus : RÉCAPITULATIF immédiat
 
 7. 📊 DATA & EXCEL ANALYTICS
-   → Infos ESSENTIELLES : type d'analyse (tableau de bord / graphique / rapport de données), description des données
-   → Infos FACULTATIVES : secteur (RH / finance / commerce / santé...), indicateurs clés à afficher, format de sortie
+   → Infos ESSENTIELLES (dans cet ordre si manquantes) :
+     1. Le type d'analyse → question : "Tu veux quoi exactement ? (tableau, graphique, rapport, dashboard...)"
+     2. Description des données → question : "Décris tes données ou colle-les directement ici."
+   → Dès que type + données sont connus : RÉCAPITULATIF immédiat
 
 8. 📎 MODIFIER MON FICHIER (Word, Excel, PowerPoint)
-   → Infos ESSENTIELLES : type de fichier, nature des modifications souhaitées
-   → Infos FACULTATIVES : fichier joint, mise en forme souhaitée, ajouts/suppressions précis
+   → Infos ESSENTIELLES (dans cet ordre si manquantes) :
+     1. Le type de fichier → question : "C'est un fichier Word, Excel ou PowerPoint ?"
+     2. Les modifications souhaitées → question : "Tu veux qu'on change quoi exactement ?"
+   → Dès que type + modifications sont connus : RÉCAPITULATIF immédiat
 
 9. 🔄 CONVERSION & FICHIER PDF
-   → Infos ESSENTIELLES : format source, format cible (PDF→Word, Word→PDF, Excel→PDF, Image→PDF...)
-   → Infos FACULTATIVES : qualité souhaitée, fichiers multiples ou un seul
+   → Infos ESSENTIELLES (dans cet ordre si manquantes) :
+     1. Le format source et cible → question : "Tu veux convertir de quel format vers quel format ?"
+   → Dès que les formats sont connus : RÉCAPITULATIF immédiat
 
 10. 🔍 NUMÉRISATION OCR
-    → Infos ESSENTIELLES : type de document scanné (image ou PDF scanné), langue du texte
-    → Infos FACULTATIVES : format de sortie souhaité (.docx / .txt), corrections orthographiques
+    → Infos ESSENTIELLES (dans cet ordre si manquantes) :
+      1. Le type de document → question : "C'est une image ou un PDF scanné ?"
+      2. La langue du texte → question : "Le texte est en quelle langue ?"
+    → Dès que type + langue sont connus : RÉCAPITULATIF immédiat
 
 ════════════════════════════════════════
 PLANS & FONCTIONNEMENT
