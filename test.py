@@ -4656,6 +4656,23 @@ def inject_custom_css():
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
         }
+        .stFormSubmitButton>button {
+            border-radius: 12px;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+            border: none;
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0, 210, 255, 0.3);
+            transition: 0.3s;
+        }
+        .stFormSubmitButton>button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.5);
+        }
         .info-card {
             background: rgba(0, 0, 0, 0.4) !important;
             border-left: 4px solid #00d2ff;
@@ -4910,6 +4927,21 @@ def inject_custom_css():
             transform: translateY(-2px) !important;
         }
 
+        /* ── Boutons de formulaire (Envoyer, Nouvelle conv...) ── */
+        .stFormSubmitButton > button {
+            background: linear-gradient(90deg, #7a5500, #b8860b, #FFD700, #b8860b, #7a5500) !important;
+            background-size: 200% auto !important;
+            color: #0a0800 !important;
+            font-weight: 700 !important;
+            animation: gold-shimmer 3s linear infinite !important;
+            box-shadow: 0 4px 18px rgba(255,215,0,0.35) !important;
+            border: none !important;
+        }
+        .stFormSubmitButton > button:hover {
+            box-shadow: 0 6px 28px rgba(255,215,0,0.6) !important;
+            transform: translateY(-2px) !important;
+        }
+
         /* ── Info cards sidebar ── */
         .info-card {
             border-left: 4px solid #FFD700 !important;
@@ -5132,6 +5164,18 @@ def inject_custom_css():
             font-weight: 800 !important;
         }
         .stButton>button:hover {
+            box-shadow: 0 6px 32px rgba(255,215,0,0.75) !important;
+            transform: translateY(-2px) !important;
+        }
+        .stFormSubmitButton>button {
+            background: linear-gradient(90deg, #8a6200, #c49a00, #FFD700, #c49a00, #8a6200) !important;
+            background-size: 200% auto !important;
+            color: #1a0f00 !important;
+            box-shadow: 0 4px 22px rgba(255,215,0,0.55) !important;
+            animation: shimmer-gold 3s linear infinite !important;
+            font-weight: 800 !important;
+        }
+        .stFormSubmitButton>button:hover {
             box-shadow: 0 6px 32px rgba(255,215,0,0.75) !important;
             transform: translateY(-2px) !important;
         }
@@ -9431,8 +9475,8 @@ def show_nova_ia_page():
     .nova-ia-header{
         background:linear-gradient(135deg,rgba(0,180,255,.13) 0%,rgba(0,100,200,.08) 50%,rgba(0,180,255,.07) 100%);
         border:2px solid rgba(0,200,255,.4);
-        border-radius:22px;padding:36px 24px 28px;text-align:center;
-        animation:novaGlow 2.8s ease-in-out infinite;margin-bottom:20px;
+        border-radius:22px;padding:22px 14px 18px;text-align:center;
+        animation:novaGlow 2.8s ease-in-out infinite;margin-bottom:14px;
         position:relative;overflow:hidden;
     }
     .nova-ia-header::before{
@@ -9458,9 +9502,9 @@ def show_nova_ia_page():
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
-        font-size: 3.6rem;
+        font-size: clamp(1.8rem, 8vw, 3.6rem);
         font-weight: 900;
-        letter-spacing: 6px;
+        letter-spacing: 4px;
         text-transform: uppercase;
         display: block;
         line-height: 1.1;
@@ -9479,11 +9523,11 @@ def show_nova_ia_page():
     }
     .nova-ia-slogan {
         display: block;
-        margin-top: 14px;
-        font-size: 1.05rem;
+        margin-top: 10px;
+        font-size: clamp(0.78rem, 3.5vw, 1.05rem);
         font-weight: 600;
         color: rgba(200,240,255,0.82);
-        letter-spacing: 0.5px;
+        letter-spacing: 0.3px;
         animation: nova-slogan-slide 1s ease-out 0.4s both;
     }
     .nova-ia-slogan em {
@@ -9510,10 +9554,12 @@ def show_nova_ia_page():
         background:linear-gradient(135deg,rgba(0,200,255,.1),rgba(0,120,200,.06));
         border:1px solid rgba(0,200,255,.22);border-left:3px solid #00d2ff;
         border-radius:0 14px 14px 14px;
+        word-break:break-word;
     }
     .msg-user-nova{
         background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
         border-radius:14px 0 14px 14px;
+        word-break:break-word;
     }
     .nova-service-chip{
         display:inline-block;background:rgba(0,200,255,.1);
@@ -9591,10 +9637,10 @@ def show_nova_ia_page():
         while "**" in contenu:
             contenu = contenu.replace("**", "</strong>", 1).replace("**", "<strong>", 1) if "**" in contenu else contenu.replace("**", "</strong>", 1)
         st.markdown(f"""
-        <div style="display:flex;justify-content:{align};margin:8px 0;">
-            <div class="{css}" style="padding:12px 16px;max-width:84%;">
-                <span style="color:{color};font-size:.8rem;font-weight:800;">{icon} {label}</span>
-                <p style="color:#eee;margin:5px 0 0 0;font-size:.92rem;line-height:1.65;">{contenu}</p>
+        <div style="display:flex;justify-content:{align};margin:6px 0;">
+            <div class="{css}" style="padding:10px 14px;max-width:92%;min-width:0;">
+                <span style="color:{color};font-size:.75rem;font-weight:800;">{icon} {label}</span>
+                <p style="color:#eee;margin:4px 0 0 0;font-size:clamp(.85rem,3.8vw,.95rem);line-height:1.65;word-break:break-word;">{contenu}</p>
             </div>
         </div>""", unsafe_allow_html=True)
 
@@ -9851,7 +9897,8 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
 
                     msg_ok = (
                         f"✅ Ton document **{service_final}** est prêt ! "
-                        f"Tu peux le télécharger directement ici ou le retrouver dans **Mes Livrables**. "
+                        f"Tu peux le télécharger directement ici ou le retrouver dans **Mes Livrables**.\n\n"
+                        f"🔧 En plus, nos ingénieurs vont retravailler et peaufiner ton fichier — tu recevras une version améliorée directement sur **WhatsApp** dans peu de temps.\n\n"
                         f"Il te reste **{quota_restant(db['users'].get(user, {})) - 1}** génération(s) aujourd'hui."
                     )
                     st.session_state["nova_ia_chat"].append({"role": "assistant", "content": msg_ok})
@@ -9889,10 +9936,10 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
                 pass
 
             msg_attente = (
-                f"📋 Ta demande **{service_final}** a bien été soumise à l'équipe Nova ! "
-                f"Référence : `{req_id}`. "
-                f"Tu seras contacté(e) sur WhatsApp ({wa_user}) dès que ton document est prêt, généralement sous quelques heures. "
-                f"Pour aller plus vite, passe en **Premium** : {WHATSAPP_NUMBER} 📲"
+                f"✅ Parfait ! Ta demande **{service_final}** a bien été reçue par l'équipe Nova.\n\n"
+                f"🔧 Nos ingénieurs vont retravailler ton fichier et te l'envoyer directement sur **WhatsApp ({wa_user})** dans peu de temps.\n\n"
+                f"📌 Référence : `{req_id}`\n\n"
+                f"Pour recevoir tes documents en moins d'1 minute automatiquement, passe en **Premium** 👉 {WHATSAPP_NUMBER} 📲"
             )
             st.session_state["nova_ia_chat"].append({"role": "assistant", "content": msg_attente})
             st.session_state["nova_ia_phase"] = "termine"
