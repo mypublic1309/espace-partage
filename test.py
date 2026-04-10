@@ -6383,25 +6383,32 @@ def main_dashboard():
             with _cols[_i % 2]:
                 if st.button(_svc, key=f"pick_svc_{_i}", use_container_width=True):
                     _service_court = _svc.split(" ", 1)[-1] if " " in _svc else _svc
-                    st.session_state.pop("nova_ia_chat", None)
-                    st.session_state.pop("nova_ia_phase", None)
-                    st.session_state.pop("nova_ia_service_detecte", None)
-                    st.session_state.pop("nova_ia_prompt_final", None)
-                    if user:
-                        # Connecté → Nova IA traite directement
-                        st.session_state["nova_ia_chat"] = [
-                            {"role": "assistant", "content": f"Salut ! Je vois que tu veux utiliser le service **{_service_court}**. Dis-moi exactement ce que tu veux, je m'occupe du reste 🚀"}
-                        ]
+
+                    # ── OCR et Conversion → formulaire upload direct, pas le chat ──
+                    if "OCR" in _svc or "Numérisation" in _svc or "Conversion" in _svc:
+                        st.session_state["service_choisi"] = _svc
+                        st.rerun()
+
                     else:
-                        # Visiteur → Nova IA lui demande de se connecter
-                        st.session_state["nova_ia_chat"] = [
-                            {"role": "assistant", "content": f"Salut 👋 Je vois que tu veux utiliser le service **{_service_court}**.\n\nMais avant de continuer, tu dois **créer un compte ou te connecter** sur Nova Platform — c'est gratuit et ça prend 30 secondes !\n\nUne fois connecté, reviens ici et je m'occupe de tout 🚀"}
-                        ]
-                    st.session_state["nova_ia_phase"] = "dialogue"
-                    st.session_state["nova_ia_service_preselect"] = _svc
-                    st.session_state["service_choisi"] = _svc
-                    st.session_state["view"] = "nova_ia"
-                    st.rerun()
+                        st.session_state.pop("nova_ia_chat", None)
+                        st.session_state.pop("nova_ia_phase", None)
+                        st.session_state.pop("nova_ia_service_detecte", None)
+                        st.session_state.pop("nova_ia_prompt_final", None)
+                        if user:
+                            # Connecté → Nova IA traite directement
+                            st.session_state["nova_ia_chat"] = [
+                                {"role": "assistant", "content": f"Salut ! Je vois que tu veux utiliser le service **{_service_court}**. Dis-moi exactement ce que tu veux, je m'occupe du reste 🚀"}
+                            ]
+                        else:
+                            # Visiteur → Nova IA lui demande de se connecter
+                            st.session_state["nova_ia_chat"] = [
+                                {"role": "assistant", "content": f"Salut 👋 Je vois que tu veux utiliser le service **{_service_court}**.\n\nMais avant de continuer, tu dois **créer un compte ou te connecter** sur Nova Platform — c'est gratuit et ça prend 30 secondes !\n\nUne fois connecté, reviens ici et je m'occupe de tout 🚀"}
+                            ]
+                        st.session_state["nova_ia_phase"] = "dialogue"
+                        st.session_state["nova_ia_service_preselect"] = _svc
+                        st.session_state["service_choisi"] = _svc
+                        st.session_state["view"] = "nova_ia"
+                        st.rerun()
 
         service = st.session_state.get("service_choisi", TOUS_SERVICES[0])
         SERVICE_SAISIE = "📊 Data & Excel Analytics"
