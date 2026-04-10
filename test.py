@@ -2414,27 +2414,71 @@ RÈGLES DE RÉDACTION :
 - N'invente JAMAIS de noms de personnes non mentionnés — utilise "mon maître de stage" si non précisé"""
 
         elif "CV" in service:
-            prompt = f"""Tu es un expert RH et recrutement. Crée un CV et une lettre de motivation professionnels basés sur :
+            prompt = f"""Tu es un expert RH et recruteur senior francophone spécialisé dans le marché de l'emploi africain (Côte d'Ivoire, Sénégal, Cameroun, etc.).
+Ta mission : produire un CV et/ou une lettre de motivation COMPLETS, RÉELS et DIRECTEMENT UTILISABLES — aucun champ vide, aucun placeholder, aucune ligne générique.
 
+DONNÉES FOURNIES PAR LE CLIENT :
 {description}
+
+════════════════════════════════════════
+RÈGLES ABSOLUES DE RÉDACTION
+════════════════════════════════════════
+- Utilise UNIQUEMENT les informations fournies. N'invente rien.
+- Si un champ est marqué "aucun", "non renseigné", "pas encore", "N/A" ou absent → OMETS complètement cette section du CV, ne la génère pas, ne mets pas de placeholder.
+- Si une info de contact est absente (téléphone, email) → laisse [À compléter] UNIQUEMENT pour ces données, jamais pour le contenu professionnel.
+- Chaque section doit être rédigée avec des phrases complètes et professionnelles, pas des tirets vides.
+- Adapte le ton au secteur indiqué (RH, finance, BTP, santé, IT, enseignement, commerce, etc.).
+- Pour les expériences : rédige les missions/tâches avec des verbes d'action forts (géré, supervisé, assuré, coordonné, développé, optimisé, etc.).
+- Le profil/résumé professionnel doit être accrocheur, personnalisé au poste visé, 3-5 lignes max.
+- Longueur CV : 1 à 2 pages maximum selon le profil.
+- Longueur lettre : 3 paragraphes bien développés (accroche + corps + conclusion).
+- Rédige TOUT en français sauf si le client demande une autre langue.
+- Format : titres en ## et ###, contenu en texte structuré, tableaux Markdown si pertinent pour compétences/langues.
+
+════════════════════════════════════════
+STRUCTURE À RESPECTER
+════════════════════════════════════════
 
 # CURRICULUM VITAE
 
 ## INFORMATIONS PERSONNELLES
-## PROFIL / RÉSUMÉ PROFESSIONNEL
+(Nom, prénom, ville, pays, téléphone, email — uniquement ce qui est fourni)
+
+## PROFIL PROFESSIONNEL
+(Résumé percutant 3-5 lignes : qui est la personne, son niveau, ses points forts, ce qu'elle apporte au poste visé)
+
 ## EXPÉRIENCES PROFESSIONNELLES
+(Pour chaque expérience : Intitulé du poste | Entreprise | Période — puis 3 à 5 missions rédigées avec verbes d'action)
+
 ## FORMATION & DIPLÔMES
-## COMPÉTENCES TECHNIQUES
-## COMPÉTENCES LINGUISTIQUES
+(Diplôme | Établissement | Année — du plus récent au plus ancien)
+
+## COMPÉTENCES
+(Tableau ou liste structurée : compétences techniques d'un côté, compétences comportementales de l'autre)
+
+## LANGUES
+(Langue | Niveau : Débutant / Intermédiaire / Courant / Bilingue / Langue maternelle)
+
 ## CENTRES D'INTÉRÊT
+(Seulement si fournis par le client — sinon omettre cette section)
 
 ---
 
 # LETTRE DE MOTIVATION
+(Uniquement si le client a demandé la lettre ou les deux)
 
-(Structure complète : accroche percutante, présentation, motivation, valeur ajoutée, conclusion)
+**Objet : Candidature au poste de [poste visé]**
 
-Rédige en français, ton professionnel et percutant."""
+§1 — ACCROCHE : Phrase d'ouverture percutante qui montre la connaissance du secteur/poste et donne envie de lire la suite.
+
+§2 — CORPS : Présentation du parcours, mise en valeur des compétences clés en lien direct avec le poste, exemples concrets tirés des expériences fournies.
+
+§3 — CONCLUSION : Motivation pour l'entreprise cible (si précisée), disponibilité, appel à l'action (entretien), formule de politesse professionnelle.
+
+════════════════════════════════════════
+RAPPEL FINAL
+════════════════════════════════════════
+Livre un document COMPLET et PRÊT À L'EMPLOI. Le client doit pouvoir l'envoyer directement à un recruteur sans modifier le fond, seulement ajouter ses données de contact si manquantes."""
 
         elif "Création Word" in service:
             prompt = f"""Tu es un expert en rédaction de documents Word professionnels. Le client te décrit précisément ce qu'il veut, et tu dois créer le document complet, structuré et prêt à l'emploi.
@@ -6245,6 +6289,14 @@ def main_dashboard():
                 use_container_width=True
             )
             st.info("💡 Votre fichier est aussi disponible dans **📂 Mes Livrables** ci-dessus.")
+            st.markdown(f"""
+            <div style="background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);border-radius:10px;padding:12px 16px;margin-top:10px;text-align:center;">
+                <div style="font-size:1.05rem;font-weight:700;color:#25D366;">📲 Un fichier encore mieux vous attend !</div>
+                <div style="color:rgba(255,255,255,0.75);font-size:0.88rem;margin-top:5px;">
+                    Notre équipe retravaille votre document et vous envoie une version améliorée et mise en page sur WhatsApp sous peu.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
             if st.button("🔄 Nouvelle mission", key="reset_livrable"):
                 st.session_state["premium_livrable"] = None
                 st.rerun()
@@ -8211,6 +8263,14 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                     data=lv["buf"], file_name=lv["nom"], mime=lv["mime"],
                     use_container_width=True
                 )
+                st.markdown(f"""
+                <div style="background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);border-radius:10px;padding:12px 16px;margin-top:10px;text-align:center;">
+                    <div style="font-size:1.05rem;font-weight:700;color:#25D366;">📲 Un fichier encore mieux vous attend !</div>
+                    <div style="color:rgba(255,255,255,0.75);font-size:0.88rem;margin-top:5px;">
+                        Notre équipe retravaille votre document et vous envoie une version améliorée et mise en page sur WhatsApp sous peu.
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
                 st.divider()
 
             if user_links:
@@ -8274,6 +8334,12 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                                         📥 TÉLÉCHARGER
                                     </button>
                                 </a>
+                            </div>
+                        </div>
+                        <div style="background:rgba(37,211,102,0.1);border:1px solid rgba(37,211,102,0.4);border-radius:10px;padding:12px 16px;margin-top:8px;margin-bottom:4px;text-align:center;">
+                            <div style="font-size:1.0rem;font-weight:700;color:#25D366;">📲 Un fichier encore mieux vous attend !</div>
+                            <div style="color:rgba(255,255,255,0.75);font-size:0.85rem;margin-top:4px;">
+                                Notre équipe retravaille votre document et vous envoie une version améliorée et mise en page sur WhatsApp sous peu.
                             </div>
                         </div>
                         """, unsafe_allow_html=True)
@@ -9714,7 +9780,14 @@ CATALOGUE COMPLET DES SERVICES NOVA PLATFORM
      1. Prénom et nom complet → question : "C'est pour quel nom complet ?"
      2. Le poste visé → question : "Tu postules pour quel poste ?"
      3. Le secteur d'activité → question : "C'est dans quel secteur ?"
-   → Dès que nom + poste sont connus : RÉCAPITULATIF immédiat
+     4. La formation / diplôme(s) → question : "Tu as quel diplôme et dans quel établissement ?"
+     5. Les expériences professionnelles ou stages → question : "Tu as des expériences ou stages ? (poste, entreprise, durée, tâches principales)"
+     6. Les compétences principales → question : "Cite tes principales compétences (logiciels, outils, savoir-faire)."
+     7. Les langues parlées → question : "Tu parles quelles langues et à quel niveau ?"
+     8. CV seul, lettre seule ou les deux ? → question : "Tu veux le CV seul, la lettre seule ou les deux ?"
+   → RÈGLE SPÉCIALE CV : si le client n'a donné que le nom + poste + secteur sans formation ni expériences → pose UNE question groupée : "Pour faire un vrai CV, dis-moi : ta formation, tes expériences/stages, tes compétences et tes langues."
+   → RÈGLE RESPECT DU CLIENT : si le client répond "aucun", "pas encore", "je sais pas", "rien", "N/A" ou équivalent pour un champ → accepte sa réponse, note l'absence, passe au champ suivant. Ne repose JAMAIS la même question.
+   → Dès que tous les champs ont été abordés (même si certains sont vides par choix du client) : RÉCAPITULATIF immédiat
 
 6. 📋 RAPPORT DE STAGE IA
    → Infos ESSENTIELLES (dans cet ordre si manquantes) :
