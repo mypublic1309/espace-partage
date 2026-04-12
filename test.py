@@ -2430,13 +2430,42 @@ RÈGLES ABSOLUES DE RÉDACTION
 - Adapte le ton au secteur indiqué (RH, finance, BTP, santé, IT, enseignement, commerce, etc.).
 - Pour les expériences : rédige les missions/tâches avec des verbes d'action forts (géré, supervisé, assuré, coordonné, développé, optimisé, etc.).
 - Le profil/résumé professionnel doit être accrocheur, personnalisé au poste visé, 3-5 lignes max.
-- Longueur CV : 1 à 2 pages maximum selon le profil.
-- Longueur lettre : 3 paragraphes bien développés (accroche + corps + conclusion).
 - Rédige TOUT en français sauf si le client demande une autre langue.
-- Format : titres en ## et ###, contenu en texte structuré, tableaux Markdown si pertinent pour compétences/langues.
+- Format : titres en ## et ###, contenu en texte structuré, listes avec tirets simples.
 
 ════════════════════════════════════════
-STRUCTURE À RESPECTER
+ARCHITECTURE DU DOCUMENT — DEUX COLONNES PLEINE PAGE
+════════════════════════════════════════
+Le moteur Nova génère un CV deux colonnes qui occupe TOUTE la page A4 (aucune marge) :
+
+╔══════════════════════════════════════════════════════╗
+║  EN-TÊTE PLEINE LARGEUR — fond bleu foncé            ║
+║  NOM EN GRAND  •  Poste  •  Contact                  ║
+╠══════════════════╦═══════════════════════════════════╣
+║  COLONNE GAUCHE  ║  COLONNE DROITE                   ║
+║  (1/3 — bleu)    ║  (2/3 — blanc)                   ║
+║                  ║                                   ║
+║  ## FORMATION    ║  ## PROFIL PROFESSIONNEL          ║
+║  ## COMPÉTENCES  ║  ## EXPÉRIENCES                   ║
+║  ## LANGUES      ║  ## INFORMATIONS PERSO            ║
+║  ## CENTRES      ║                                   ║
+╚══════════════════╩═══════════════════════════════════╝
+
+RÈGLES IMPÉRATIVES POUR REMPLIR LES COLONNES :
+- Chaque section doit contenir ASSEZ de contenu pour que le CV occupe toute la page
+- COLONNE GAUCHE (## FORMATION, ## COMPÉTENCES, ## LANGUES, ## CENTRES D'INTÉRÊT) :
+  → Développe chaque item sur une ligne complète, sois précis et détaillé
+  → Exemple formation : "Licence en Gestion des RH — Université FHB, Abidjan (2022)"
+  → Exemple compétence : "Maîtrise de Word, Excel, PowerPoint — niveau avancé"
+- COLONNE DROITE (## PROFIL PROFESSIONNEL, ## EXPÉRIENCES PROFESSIONNELLES, ## INFORMATIONS PERSONNELLES) :
+  → Le profil doit faire 4-6 lignes complètes et percutantes
+  → Chaque expérience : titre en gras + 4 à 6 missions rédigées avec des verbes d'action
+  → Les infos perso : ville, téléphone, email, disponibilité, situation familiale si fournie
+- Si le client a peu d'expériences → développe davantage le profil et les compétences
+- Si le client a peu de formation → développe les certifications, auto-formations, projets personnels
+
+════════════════════════════════════════
+STRUCTURE À RESPECTER EXACTEMENT
 ════════════════════════════════════════
 
 # CURRICULUM VITAE
@@ -2445,22 +2474,27 @@ STRUCTURE À RESPECTER
 (Nom, prénom, ville, pays, téléphone, email — uniquement ce qui est fourni)
 
 ## PROFIL PROFESSIONNEL
-(Résumé percutant 3-5 lignes : qui est la personne, son niveau, ses points forts, ce qu'elle apporte au poste visé)
+(4-6 lignes percutantes : qui est la personne, son niveau, ses points forts, sa valeur ajoutée pour le poste visé)
 
 ## EXPÉRIENCES PROFESSIONNELLES
-(Pour chaque expérience : Intitulé du poste | Entreprise | Période — puis 3 à 5 missions rédigées avec verbes d'action)
+(Pour chaque expérience :
+**Intitulé du poste** | Entreprise | Période
+- Mission 1 rédigée avec verbe d'action fort
+- Mission 2
+- Mission 3
+- Mission 4)
 
 ## FORMATION & DIPLÔMES
-(Diplôme | Établissement | Année — du plus récent au plus ancien)
+(Diplôme complet | Établissement | Année — du plus récent au plus ancien, une ligne par diplôme)
 
 ## COMPÉTENCES
-(Tableau ou liste structurée : compétences techniques d'un côté, compétences comportementales de l'autre)
+(Une compétence par ligne, précise et développée — pas des mots isolés)
 
 ## LANGUES
-(Langue | Niveau : Débutant / Intermédiaire / Courant / Bilingue / Langue maternelle)
+(Langue — Niveau précis : Débutant / Intermédiaire / Courant / Bilingue / Langue maternelle)
 
 ## CENTRES D'INTÉRÊT
-(Seulement si fournis par le client — sinon omettre cette section)
+(Seulement si fournis — développe en 1 phrase chaque centre)
 
 ---
 
@@ -2478,6 +2512,7 @@ STRUCTURE À RESPECTER
 ════════════════════════════════════════
 RAPPEL FINAL
 ════════════════════════════════════════
+Le CV DOIT occuper toute la page A4 — si le contenu est insuffisant, développe et enrichis chaque section.
 Livre un document COMPLET et PRÊT À L'EMPLOI. Le client doit pouvoir l'envoyer directement à un recruteur sans modifier le fond, seulement ajouter ses données de contact si manquantes."""
 
         elif "Création Word" in service:
@@ -3320,18 +3355,18 @@ def creer_docx(contenu, service, client_nom):
 
         def add_cv_heading(cell, text, hex_color="2E9BE0"):
             p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(10)
-            p.paragraph_format.space_after  = Pt(3)
+            p.paragraph_format.space_before = Pt(12)
+            p.paragraph_format.space_after  = Pt(4)
             run = p.add_run(text.upper())
             run.bold = True
             run.font.name = "Arial"
-            run.font.size = Pt(11)
+            run.font.size = Pt(12)  # était 11 → +1
             r, g, b = hex_to_rgb(hex_color)
             run.font.color.rgb = RGBColor(r, g, b)
             run.underline = True
             return p
 
-        def add_cv_text(cell, text, white=False, bold=False, size=10):
+        def add_cv_text(cell, text, white=False, bold=False, size=11):  # était 10 → +1
             p = cell.add_paragraph()
             p.paragraph_format.space_before = Pt(1)
             p.paragraph_format.space_after  = Pt(2)
@@ -3351,7 +3386,7 @@ def creer_docx(contenu, service, client_nom):
             p.paragraph_format.space_after  = Pt(2)
             run = p.add_run(text)
             run.font.name = "Arial"
-            run.font.size = Pt(10)
+            run.font.size = Pt(11)  # était 10 → +1
             if white:
                 run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
             else:
@@ -3414,10 +3449,17 @@ def creer_docx(contenu, service, client_nom):
         contact_cv = contact_cv.rstrip("  •  ")
 
         # ── Construction du document ───────────────────────────────
+        # A4 pleine largeur : marges à 0 pour que les tableaux occupent toute la page
         doc.sections[0].top_margin    = Cm(0)
-        doc.sections[0].bottom_margin = Cm(1.5)
+        doc.sections[0].bottom_margin = Cm(1.0)
         doc.sections[0].left_margin   = Cm(0)
         doc.sections[0].right_margin  = Cm(0)
+
+        # Largeur utile A4 en DXA (11906) convertie en EMU pour python-docx
+        # 1 DXA = 914.4 EMU  →  11906 DXA ≈ 10,885,224 EMU ≈ Inches(8.27)
+        PAGE_FULL = Inches(8.27)   # largeur totale A4 sans marges
+        COL_G_W   = Inches(2.90)   # colonne gauche ~1/3
+        COL_D_W   = Inches(5.37)   # colonne droite ~2/3
 
         # ── EN-TÊTE pleine largeur ─────────────────────────────────
         tbl_header = doc.add_table(rows=1, cols=1)
@@ -3425,7 +3467,7 @@ def creer_docx(contenu, service, client_nom):
         cell_h = tbl_header.cell(0, 0)
         set_cell_bg(cell_h, "1565A8")
         remove_cell_borders(cell_h)
-        cell_h.width = Inches(8.27)
+        cell_h.width = PAGE_FULL
 
         # Vider le paragraphe par défaut
         for p in cell_h.paragraphs:
@@ -3434,11 +3476,11 @@ def creer_docx(contenu, service, client_nom):
 
         p_nom = cell_h.paragraphs[0]
         p_nom.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_nom.paragraph_format.space_before = Pt(14)
-        p_nom.paragraph_format.space_after  = Pt(4)
+        p_nom.paragraph_format.space_before = Pt(18)
+        p_nom.paragraph_format.space_after  = Pt(6)
         r_nom = p_nom.add_run(nom_cv.upper())
         r_nom.font.name = "Arial"
-        r_nom.font.size = Pt(22)
+        r_nom.font.size = Pt(26)  # était 22 → +4 pour que le nom soit bien visible
         r_nom.bold = True
         r_nom.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
@@ -3446,23 +3488,21 @@ def creer_docx(contenu, service, client_nom):
             p_contact = cell_h.add_paragraph()
             p_contact.alignment = WD_ALIGN_PARAGRAPH.CENTER
             p_contact.paragraph_format.space_before = Pt(2)
-            p_contact.paragraph_format.space_after  = Pt(14)
+            p_contact.paragraph_format.space_after  = Pt(18)
             r_contact = p_contact.add_run(contact_cv)
             r_contact.font.name = "Arial"
-            r_contact.font.size = Pt(10)
+            r_contact.font.size = Pt(11)  # était 10 → +1
             r_contact.font.color.rgb = RGBColor(0xCC, 0xE5, 0xFF)
-
-        doc.add_paragraph("")  # espace
 
         # ── CORPS : tableau 2 colonnes ─────────────────────────────
         tbl_body = doc.add_table(rows=1, cols=2)
         tbl_body.style = "Table Grid"
 
-        col_g = tbl_body.cell(0, 0)  # Gauche 1/3
-        col_d = tbl_body.cell(0, 1)  # Droite 2/3
+        col_g = tbl_body.cell(0, 0)  # Gauche ~1/3
+        col_d = tbl_body.cell(0, 1)  # Droite ~2/3
 
-        col_g.width = Inches(2.76)   # ~1/3 de A4
-        col_d.width = Inches(5.51)   # ~2/3 de A4
+        col_g.width = COL_G_W
+        col_d.width = COL_D_W
 
         set_cell_bg(col_g, "1A78C2")
         remove_cell_borders(col_g)
