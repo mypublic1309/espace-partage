@@ -9781,7 +9781,7 @@ def show_nova_ia_page():
 
             if _est_image:
                 # Image → base64 pour Gemini vision
-                _bytes = fichier_joint.read()
+                _bytes = fichier_joint.getvalue()
                 _mime_img = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg", "webp": "image/webp"}.get(_ext, "image/png")
                 st.session_state["nova_ia_fichier"] = {
                     "nom": _nom, "type": _mime_img,
@@ -9791,7 +9791,7 @@ def show_nova_ia_page():
                 st.success(f"📸 Image jointe : **{_nom}** — Nova va l'analyser avec ta demande.")
 
             elif _ext == "txt":
-                _texte = fichier_joint.read().decode("utf-8", errors="ignore")
+                _texte = fichier_joint.getvalue().decode("utf-8", errors="ignore")
                 st.session_state["nova_ia_fichier"] = {
                     "nom": _nom, "type": "text/plain",
                     "contenu": _texte, "est_image": False
@@ -9802,8 +9802,19 @@ def show_nova_ia_page():
                 try:
                     from docx import Document as _Doc
                     import io as _io
-                    _doc = _Doc(_io.BytesIO(fichier_joint.read()))
-                    _texte = "\n".join([p.text for p in _doc.paragraphs if p.text.strip()])
+                    _raw_bytes = fichier_joint.getvalue()  # getvalue() plus fiable que read() avec Streamlit
+                    _doc = _Doc(_io.BytesIO(_raw_bytes))
+                    # Extraire paragraphes + cellules de tableaux
+                    _lignes = []
+                    for p in _doc.paragraphs:
+                        if p.text.strip():
+                            _lignes.append(p.text.strip())
+                    for tbl in _doc.tables:
+                        for row in tbl.rows:
+                            _row_txt = " | ".join(c.text.strip() for c in row.cells if c.text.strip())
+                            if _row_txt:
+                                _lignes.append(_row_txt)
+                    _texte = "\n".join(_lignes)
                     st.session_state["nova_ia_fichier"] = {
                         "nom": _nom, "type": "application/docx",
                         "contenu": _texte, "est_image": False
@@ -9815,7 +9826,7 @@ def show_nova_ia_page():
             elif _ext == "pdf":
                 try:
                     import io as _io
-                    _pdf_bytes = fichier_joint.read()
+                    _pdf_bytes = fichier_joint.getvalue()
                     # Tentative extraction texte PDF via pdfminer si dispo
                     try:
                         from pdfminer.high_level import extract_text as _pdf_extract
