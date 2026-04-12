@@ -756,7 +756,7 @@ def get_modeles_disponibles(api_key):
         return ["gemini-2.0-flash-lite", "gemini-2.0-flash", "gemini-2.5-flash"]
 
 
-def generer_avec_gemini(service, description, client_nom, is_premium=False, gen_used=0, _plan_for_model=None):
+def generer_avec_gemini(service, description, client_nom, is_premium=False, gen_used=0, _plan_for_model=None, _image_b64=None, _image_mime=None):
     try:
         import urllib.request as _ur
         import urllib.error
@@ -2481,22 +2481,57 @@ RAPPEL FINAL
 Livre un document COMPLET et PRÊT À L'EMPLOI. Le client doit pouvoir l'envoyer directement à un recruteur sans modifier le fond, seulement ajouter ses données de contact si manquantes."""
 
         elif "Création Word" in service:
-            prompt = f"""Tu es un expert en rédaction de documents Word professionnels. Le client te décrit précisément ce qu'il veut, et tu dois créer le document complet, structuré et prêt à l'emploi.
+            prompt = f"""Tu es un expert en rédaction de documents Word professionnels pour Nova Platform. Le client te décrit ce qu'il veut et tu produis le document COMPLET, structuré et prêt à l'emploi.
 
 DEMANDE CLIENT :
 {description}
 
-INSTRUCTIONS DE CRÉATION :
-- Crée le document COMPLET tel que demandé par le client, du début à la fin
-- Structure avec des titres (##), sous-titres (###) et paragraphes bien organisés
-- Utilise des tableaux Markdown si le client en a besoin ou si c'est pertinent
-- Adapte le ton et le style exactement à ce que le client décrit (formel, commercial, juridique, scolaire, etc.)
-- Inclus TOUT le contenu réel : ne laisse aucune section vide ou en exemple générique
-- Si le client mentionne des noms, données, chiffres ou infos spécifiques → intègre-les directement
-- Longueur : aussi long que nécessaire pour que le document soit COMPLET et utilisable tel quel
+════════════════════════════════════════
+RÈGLES DE FORMATAGE NOVA — OBLIGATOIRES
+════════════════════════════════════════
+Ces règles sont converties automatiquement en vrai formatage Word. Respecte-les à la lettre.
+
+TITRES :
+- # Titre principal → grand titre Word (utilisé 1 seule fois, en tête de document)
+- ## Titre de section → titre de partie
+- ### Sous-titre → sous-section
+- #### Micro-titre → point précis
+
+TABLEAUX (si le client demande un tableau ou si c'est pertinent) :
+- Écris TOUJOURS **Tableau N : [Titre]** avant le tableau
+- Format OBLIGATOIRE :
+  | Colonne 1 | Colonne 2 | Colonne 3 |
+  |-----------|-----------|-----------|
+  | Donnée    | Donnée    | Donnée    |
+- Remplis TOUTES les cellules avec du contenu réel, jamais vide
+- Écris *Source : [référence]* après chaque tableau si pertinent
+
+TEXTE :
+- Paragraphes normaux : commence par 4 espaces (    ) pour l'alinéa
+- Gras : **mot important** → mis en gras dans Word
+- Listes : "- item" → puce Word / "1. item" → liste numérotée
+- Séparateur majeur : ════════════════════ (entre grandes parties)
+- Séparateur mineur : ──────────────────── (entre sous-sections)
+- Saut de page : ---SAUT_DE_PAGE--- (si le document doit être paginé)
+
+INTERDIT ABSOLU :
+- Jamais de LaTeX ($formule$, \\frac, \\omega...)
+- Jamais de HTML (<br>, <b>, <div>...)
+- Jamais d'italique simple *texte*
+- Jamais de section vide ou placeholder comme "[À compléter]"
+
+════════════════════════════════════════
+INSTRUCTIONS CONTENU
+════════════════════════════════════════
+- Crée le document COMPLET du début à la fin
+- Adapte le ton au type de document (formel, journalistique, juridique, commercial, scolaire, technique...)
+- Intègre DIRECTEMENT tous les noms, données, chiffres et infos fournis par le client
+- Si le client demande un tableau avec N colonnes et M lignes → crée exactement ce tableau avec du contenu réel dans chaque cellule
+- Si le client demande un article → structure avec titre accrocheur, chapeau, corps développé, conclusion
+- Longueur : aussi longue que nécessaire pour que le document soit COMPLET et utilisable tel quel
 - Rédige en français sauf si le client demande une autre langue
 
-Le document doit être livrable directement, sans que le client ait à compléter quoi que ce soit."""
+Le document est livré directement au client — il ne doit rien avoir à compléter ou reformater."""
 
         elif "Excel" in service or "Data" in service:
             prompt = f"""Tu es un expert Excel et Data Analytics africain francophone.
@@ -2661,11 +2696,19 @@ Rédige en français avec une structure claire : titres, sous-titres, paragraphe
             "du monde francophone africain."
         )
 
+        # ── Construction des parts du message (texte + image si présente) ──
+        _parts = [{"text": prompt}]
+        if _image_b64 and _image_mime:
+            _parts = [
+                {"inline_data": {"mime_type": _image_mime, "data": _image_b64}},
+                {"text": prompt}
+            ]
+
         payload = json.dumps({
             "system_instruction": {
                 "parts": [{"text": system_instruction}]
             },
-            "contents": [{"parts": [{"text": prompt}]}],
+            "contents": [{"parts": _parts}],
             "generationConfig": {
                 "temperature": 0.65,
                 "maxOutputTokens": 65536,
@@ -9698,6 +9741,9 @@ def show_nova_ia_page():
     if "nova_ia_livrable" not in st.session_state:
         st.session_state["nova_ia_livrable"] = None
 
+    if "nova_ia_fichier" not in st.session_state:
+        st.session_state["nova_ia_fichier"] = None  # {"nom": str, "type": str, "contenu": str|bytes, "est_image": bool}
+
     # ── AFFICHAGE HISTORIQUE ──────────────────────────────────────
     for msg in st.session_state["nova_ia_chat"]:
         align = "flex-end" if msg["role"] == "user" else "flex-start"
@@ -9719,6 +9765,78 @@ def show_nova_ia_page():
 
     # ── PHASE : DIALOGUE / COLLECTE ───────────────────────────────
     if st.session_state["nova_ia_phase"] in ("dialogue",):
+
+        # ── FILE UPLOADER hors form (Streamlit ne permet pas uploader dans form) ──
+        fichier_joint = st.file_uploader(
+            "📎 Joindre un fichier (photo, Word, PDF, txt)",
+            type=["png", "jpg", "jpeg", "webp", "pdf", "docx", "txt"],
+            label_visibility="collapsed",
+            key="nova_ia_uploader"
+        )
+        if fichier_joint is not None:
+            import base64 as _b64
+            _nom = fichier_joint.name
+            _ext = _nom.rsplit(".", 1)[-1].lower()
+            _est_image = _ext in ("png", "jpg", "jpeg", "webp")
+
+            if _est_image:
+                # Image → base64 pour Gemini vision
+                _bytes = fichier_joint.read()
+                _mime_img = {"png": "image/png", "jpg": "image/jpeg", "jpeg": "image/jpeg", "webp": "image/webp"}.get(_ext, "image/png")
+                st.session_state["nova_ia_fichier"] = {
+                    "nom": _nom, "type": _mime_img,
+                    "contenu": _b64.b64encode(_bytes).decode("utf-8"),
+                    "est_image": True
+                }
+                st.success(f"📸 Image jointe : **{_nom}** — Nova va l'analyser avec ta demande.")
+
+            elif _ext == "txt":
+                _texte = fichier_joint.read().decode("utf-8", errors="ignore")
+                st.session_state["nova_ia_fichier"] = {
+                    "nom": _nom, "type": "text/plain",
+                    "contenu": _texte, "est_image": False
+                }
+                st.success(f"📄 Fichier texte joint : **{_nom}** ({len(_texte)} caractères)")
+
+            elif _ext == "docx":
+                try:
+                    from docx import Document as _Doc
+                    import io as _io
+                    _doc = _Doc(_io.BytesIO(fichier_joint.read()))
+                    _texte = "\n".join([p.text for p in _doc.paragraphs if p.text.strip()])
+                    st.session_state["nova_ia_fichier"] = {
+                        "nom": _nom, "type": "application/docx",
+                        "contenu": _texte, "est_image": False
+                    }
+                    st.success(f"📝 Document Word joint : **{_nom}** ({len(_texte)} caractères extraits)")
+                except Exception as _e:
+                    st.warning(f"⚠️ Impossible de lire ce fichier Word : {_e}")
+
+            elif _ext == "pdf":
+                try:
+                    import io as _io
+                    _pdf_bytes = fichier_joint.read()
+                    # Tentative extraction texte PDF via pdfminer si dispo
+                    try:
+                        from pdfminer.high_level import extract_text as _pdf_extract
+                        _texte = _pdf_extract(_io.BytesIO(_pdf_bytes))
+                    except ImportError:
+                        # Fallback : envoyer comme image la première page n'est pas possible sans lib
+                        # On stocke le PDF en base64 et on prévient
+                        _texte = f"[PDF joint : {_nom} — contenu non extractible sans pdfminer]"
+                    st.session_state["nova_ia_fichier"] = {
+                        "nom": _nom, "type": "application/pdf",
+                        "contenu": _texte, "est_image": False
+                    }
+                    st.success(f"📋 PDF joint : **{_nom}** ({len(_texte)} caractères extraits)")
+                except Exception as _e:
+                    st.warning(f"⚠️ Impossible de lire ce PDF : {_e}")
+
+        # Afficher le fichier actuellement en mémoire si déjà uploadé avant
+        elif st.session_state.get("nova_ia_fichier"):
+            _f = st.session_state["nova_ia_fichier"]
+            st.info(f"📎 Fichier en mémoire : **{_f['nom']}** — il sera utilisé avec ta prochaine demande. | [Supprimer](javascript:void(0))")
+
         with st.form("nova_ia_form", clear_on_submit=True):
             msg_input = st.text_input(
                 "Message",
@@ -9739,18 +9857,39 @@ def show_nova_ia_page():
             st.rerun()
 
         if envoyer and msg_input.strip():
-            st.session_state["nova_ia_chat"].append({"role": "user", "content": msg_input.strip()})
+            _fichier = st.session_state.get("nova_ia_fichier")
+            _msg_affiche = msg_input.strip()
+            if _fichier:
+                if _fichier["est_image"]:
+                    _msg_affiche += f"\n📎 *[Image jointe : {_fichier['nom']}]*"
+                else:
+                    _msg_affiche += f"\n📎 *[Fichier joint : {_fichier['nom']}]*"
+            st.session_state["nova_ia_chat"].append({"role": "user", "content": _msg_affiche})
 
             historique_txt = "\n".join([
                 f"{'Client' if m['role']=='user' else 'Nova IA'}: {m['content']}"
                 for m in st.session_state["nova_ia_chat"]
             ])
 
+            # ── Injection contenu fichier dans le prompt si présent ──
+            _fichier = st.session_state.get("nova_ia_fichier")
+            _bloc_fichier = ""
+            _image_b64  = None
+            _image_mime = None
+            if _fichier:
+                if _fichier["est_image"]:
+                    _image_b64  = _fichier["contenu"]
+                    _image_mime = _fichier["type"]
+                    _bloc_fichier = f"\n\n════════════════════════════════════════\nFICHIER IMAGE JOINT PAR LE CLIENT : {_fichier['nom']}\n════════════════════════════════════════\nAnalyse cette image et utilise son contenu pour répondre à la demande du client.\nSi le client demande de reproduire un tableau → extrais toutes les données et colonnes visibles.\nSi le client demande d'améliorer un document → base-toi sur ce qui est visible.\n"
+                else:
+                    _contenu_txt = _fichier["contenu"][:8000]  # sécurité tokens
+                    _bloc_fichier = f"\n\n════════════════════════════════════════\nFICHIER JOINT PAR LE CLIENT : {_fichier['nom']}\n════════════════════════════════════════\n{_contenu_txt}\n════════════════════════════════════════\nUtilise ce contenu comme base pour répondre à la demande du client.\n"
+
             prompt_nova = f"""Tu es NOVA IA, l'assistante intelligente de Nova Platform (Côte d'Ivoire).
 Tu t'appelles Nova IA — jamais Gemini, jamais ChatGPT, jamais Claude, jamais le support IA.
 Tu parles toujours en français, avec bienveillance et précision.
 TON RÔLE : comprendre ce que le client veut créer, collecter les informations nécessaires, puis confirmer.
-
+{_bloc_fichier}
 ════════════════════════════════════════
 CATALOGUE COMPLET DES SERVICES NOVA PLATFORM
 ════════════════════════════════════════
@@ -9777,10 +9916,19 @@ CATALOGUE COMPLET DES SERVICES NOVA PLATFORM
    → Dès que matière + niveau sont connus : RÉCAPITULATIF immédiat
 
 4. 📄 CRÉATION DOCUMENT WORD (depuis zéro)
+   → Ce service couvre TOUT ce que Gemini peut produire en Word : article de journal, tableau, contrat, lettre, rapport, discours, affiche, note de service, fiche technique, formulaire, planning, facture, règlement, etc.
    → Infos ESSENTIELLES (dans cet ordre si manquantes) :
-     1. Le type de document → question : "C'est quel type de document ? (lettre, rapport, contrat, note de service...)"
+     1. Le type exact de document → question : "C'est quel type de document ?"
      2. Le sujet ou contexte → question : "C'est sur quel sujet ou dans quel contexte ?"
-   → Dès que type + sujet sont connus : RÉCAPITULATIF immédiat
+   → RÈGLE COLLECTE INTELLIGENTE : selon le type détecté, pose UNE question supplémentaire si critique :
+     - TABLEAU → si nombre de colonnes/lignes non précisé : "Combien de colonnes et de lignes tu veux ?"
+     - ARTICLE DE JOURNAL → si rubrique non précisée : "C'est pour quelle rubrique ? (actualité, sport, culture, économie...)"
+     - CONTRAT / LETTRE OFFICIELLE → si parties non précisées : "C'est entre qui et qui ?"
+     - PLANNING / PROGRAMME → si période non précisée : "C'est sur quelle période ?"
+     - FACTURE / DEVIS → si produits non précisés : "Cite les produits ou services avec les montants."
+     - Autres types simples (discours, affiche, note de service...) → RÉCAPITULATIF immédiat dès type + sujet connus
+   → RÈGLE RESPECT CLIENT : si le client donne toutes les infos dans son premier message → RÉCAPITULATIF IMMÉDIAT, zéro question
+   → Dès que les infos critiques sont connues : RÉCAPITULATIF immédiat
 
 5. 👔 CV & LETTRE DE MOTIVATION
    → Infos ESSENTIELLES (dans cet ordre si manquantes) :
@@ -9865,7 +10013,12 @@ Historique :
 Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le récapitulatif."""
 
             with st.spinner("🤖 Nova IA réfléchit..."):
-                reponse = generer_avec_gemini("Nova IA Chat", prompt_nova, user or "visiteur")
+                reponse = generer_avec_gemini(
+                    "Nova IA Chat", prompt_nova, user or "visiteur",
+                    _image_b64=_image_b64, _image_mime=_image_mime
+                )
+            # Vider le fichier après utilisation
+            st.session_state["nova_ia_fichier"] = None
 
             if reponse.startswith("❌"):
                 reponse = f"Désolé, une erreur s'est produite. Contacte Nova directement sur WhatsApp : {WHATSAPP_NUMBER} 📲"
