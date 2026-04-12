@@ -2535,10 +2535,17 @@ Le document est livré directement au client — il ne doit rien avoir à compl�
 
         elif "Excel" in service or "Data" in service:
             prompt = f"""Tu es un expert Excel et Data Analytics africain francophone.
-Tu dois analyser la demande et retourner UNIQUEMENT un objet JSON valide, sans texte avant ni après, sans balises markdown.
+Tu dois analyser la demande et retourner UNIQUEMENT un objet JSON valide, sans texte avant ni après, sans balises markdown, sans bloc ```json```.
 
 DEMANDE CLIENT :
 {description}
+
+RÈGLES ABSOLUES SUR LES DONNÉES :
+- Si le client a fourni un fichier ou des données réelles (tableau Word, liste, texte) → utilise EXACTEMENT ces données dans "lignes_exemple". Ne les résume pas, ne les tronque pas, mets-les TOUTES.
+- Si les données contiennent 24 lignes → lignes_exemple doit avoir 24 entrées, pas 12.
+- INTERDIT d'inventer des noms, chiffres ou données fictives quand de vraies données sont fournies.
+- INTERDIT de mettre des balises markdown autour du JSON (pas de ```json, pas de ```).
+- Le JSON doit commencer DIRECTEMENT par {{ et se terminer par }}.
 
 STRUCTURE JSON OBLIGATOIRE :
 {{
@@ -4543,11 +4550,17 @@ def creer_xlsx(description, client_nom):
     # ── PARSE JSON GEMINI ──────────────────────────────────────────
     data = None
     try:
-        # Nettoyer le texte : enlever balises markdown si présentes
+        # Nettoyage robuste : enlever tout ce qui entoure le JSON
         texte = description.strip()
-        texte = re.sub(r"^```json\s*", "", texte)
-        texte = re.sub(r"```\s*$", "", texte)
-        texte = re.sub(r"^```\s*", "", texte)
+        # Supprimer blocs ```json ... ``` ou ``` ... ```
+        texte = re.sub(r"^```(?:json)?\s*", "", texte, flags=re.IGNORECASE)
+        texte = re.sub(r"\s*```\s*$", "", texte)
+        # Si Gemini a mis du texte avant le { ou après le }
+        debut = texte.find("{")
+        fin   = texte.rfind("}")
+        if debut != -1 and fin != -1:
+            texte = texte[debut:fin+1]
+        texte = texte.strip()
         data = json.loads(texte)
     except Exception:
         data = None
