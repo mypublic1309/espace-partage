@@ -9767,8 +9767,57 @@ def show_nova_ia_page():
     if st.session_state["nova_ia_phase"] in ("dialogue",):
 
         # ── FILE UPLOADER hors form (Streamlit ne permet pas uploader dans form) ──
+        st.markdown("""
+        <style>
+        /* Zone principale du file uploader Nova IA */
+        [data-testid="stFileUploader"] section {
+            background: rgba(0, 180, 255, 0.06) !important;
+            border: 1.5px dashed rgba(0, 180, 255, 0.45) !important;
+            border-radius: 10px !important;
+            padding: 8px 14px !important;
+        }
+        [data-testid="stFileUploader"] section:hover {
+            background: rgba(0, 180, 255, 0.12) !important;
+            border-color: rgba(0, 180, 255, 0.75) !important;
+        }
+        /* Texte "Drag and drop" et formats */
+        [data-testid="stFileUploader"] section span,
+        [data-testid="stFileUploader"] section small,
+        [data-testid="stFileUploader"] section p {
+            color: rgba(0, 200, 255, 0.85) !important;
+            font-size: 0.82rem !important;
+        }
+        /* Bouton Browse files */
+        [data-testid="stFileUploader"] section button {
+            background: rgba(0, 180, 255, 0.15) !important;
+            color: #00d2ff !important;
+            border: 1px solid rgba(0, 180, 255, 0.4) !important;
+            border-radius: 6px !important;
+            font-size: 0.8rem !important;
+            font-weight: 600 !important;
+        }
+        [data-testid="stFileUploader"] section button:hover {
+            background: rgba(0, 180, 255, 0.28) !important;
+        }
+        /* Fichier uploadé — nom du fichier */
+        [data-testid="stFileUploader"] [data-testid="stFileUploaderFile"] {
+            background: rgba(0, 180, 255, 0.1) !important;
+            border: 1px solid rgba(0, 180, 255, 0.3) !important;
+            border-radius: 8px !important;
+            color: #00d2ff !important;
+        }
+        [data-testid="stFileUploader"] [data-testid="stFileUploaderFileName"] {
+            color: #00d2ff !important;
+            font-weight: 600 !important;
+        }
+        [data-testid="stFileUploader"] [data-testid="stFileUploaderFileSize"] {
+            color: rgba(0, 200, 255, 0.6) !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+        st.markdown("<div style='color:rgba(0,200,255,0.7);font-size:0.82rem;margin-bottom:4px;'>📎 Joindre un fichier à ta demande (photo, Word, PDF, txt) — optionnel</div>", unsafe_allow_html=True)
         fichier_joint = st.file_uploader(
-            "📎 Joindre un fichier (photo, Word, PDF, txt)",
+            "Joindre un fichier à ta demande",
             type=["png", "jpg", "jpeg", "webp", "pdf", "docx", "txt"],
             label_visibility="collapsed",
             key="nova_ia_uploader"
@@ -9891,10 +9940,10 @@ def show_nova_ia_page():
                 if _fichier["est_image"]:
                     _image_b64  = _fichier["contenu"]
                     _image_mime = _fichier["type"]
-                    _bloc_fichier = f"\n\n════════════════════════════════════════\nFICHIER IMAGE JOINT PAR LE CLIENT : {_fichier['nom']}\n════════════════════════════════════════\nAnalyse cette image et utilise son contenu pour répondre à la demande du client.\nSi le client demande de reproduire un tableau → extrais toutes les données et colonnes visibles.\nSi le client demande d'améliorer un document → base-toi sur ce qui est visible.\n"
+                    _bloc_fichier = f"\n\n════════════════════════════════════════\nFICHIER IMAGE JOINT PAR LE CLIENT : {_fichier['nom']}\n════════════════════════════════════════\nINSTRUCTIONS STRICTES :\n- Si le client demande d'EXTRAIRE du texte ou des données → extrais exactement ce qui est visible, RIEN D'AUTRE.\n- Si le client demande de reproduire un tableau → extrais toutes les colonnes et données visibles en markdown, sans commentaire.\n- Si le client veut UTILISER cette image pour créer un document → collecte les infos manquantes puis confirme normalement.\n- INTERDIT : ajouter une introduction, un développement, une conclusion, une mise en contexte non demandés.\n"
                 else:
                     _contenu_txt = _fichier["contenu"][:8000]  # sécurité tokens
-                    _bloc_fichier = f"\n\n════════════════════════════════════════\nFICHIER JOINT PAR LE CLIENT : {_fichier['nom']}\n════════════════════════════════════════\n{_contenu_txt}\n════════════════════════════════════════\nUtilise ce contenu comme base pour répondre à la demande du client.\n"
+                    _bloc_fichier = f"\n\n════════════════════════════════════════\nFICHIER JOINT PAR LE CLIENT : {_fichier['nom']}\n════════════════════════════════════════\n{_contenu_txt}\n════════════════════════════════════════\nINSTRUCTIONS STRICTES SUR CE FICHIER :\n- Si le client demande d'EXTRAIRE du texte → copie exactement les lignes demandées, RIEN D'AUTRE. Zéro intro, zéro conclusion, zéro commentaire.\n- Si le client demande de RÉSUMER → résume en 2-3 phrases max, pas de structure académique.\n- Si le client veut UTILISER ce contenu pour créer un document → collecte les infos manquantes puis confirme normalement.\n- INTERDIT : ajouter une introduction, un développement, une conclusion, une mise en contexte non demandés.\n"
 
             prompt_nova = f"""Tu es NOVA IA, l'assistante intelligente de Nova Platform (Côte d'Ivoire).
 Tu t'appelles Nova IA — jamais Gemini, jamais ChatGPT, jamais Claude, jamais le support IA.
