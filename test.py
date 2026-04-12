@@ -3277,6 +3277,295 @@ def creer_docx(contenu, service, client_nom):
     # ══ MODE EXAMEN IVOIRIEN ══════════════════════════════════════════
     IS_EXAMEN = "Examens" in service or "Sujets" in service
     IS_EXPOSE = "Expos" in service
+    IS_CV     = "CV" in service or "Lettre de Motivation" in service
+
+    # ══════════════════════════════════════════════════════════════
+    # MODE CV — Template deux colonnes professionnel
+    # ══════════════════════════════════════════════════════════════
+    if IS_CV:
+        from docx.oxml.ns import qn
+        from docx.oxml import OxmlElement
+        from docx.shared import Inches
+
+        def hex_to_rgb(h):
+            h = h.lstrip("#")
+            return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+        def set_cell_bg(cell, hex_color):
+            hex_color = hex_color.lstrip("#")
+            tc = cell._tc
+            tcPr = tc.get_or_add_tcPr()
+            shd = OxmlElement("w:shd")
+            shd.set(qn("w:val"), "clear")
+            shd.set(qn("w:color"), "auto")
+            shd.set(qn("w:fill"), hex_color)
+            tcPr.append(shd)
+
+        def remove_cell_borders(cell):
+            tc = cell._tc
+            tcPr = tc.get_or_add_tcPr()
+            tcBorders = OxmlElement("w:tcBorders")
+            for side in ["top","left","bottom","right","insideH","insideV"]:
+                border = OxmlElement(f"w:{side}")
+                border.set(qn("w:val"), "nil")
+                tcBorders.append(border)
+            tcPr.append(tcBorders)
+
+        def add_cv_heading(cell, text, hex_color="2E9BE0"):
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(10)
+            p.paragraph_format.space_after  = Pt(3)
+            run = p.add_run(text.upper())
+            run.bold = True
+            run.font.name = "Arial"
+            run.font.size = Pt(11)
+            r, g, b = hex_to_rgb(hex_color)
+            run.font.color.rgb = RGBColor(r, g, b)
+            run.underline = True
+            return p
+
+        def add_cv_text(cell, text, white=False, bold=False, size=10):
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(1)
+            p.paragraph_format.space_after  = Pt(2)
+            run = p.add_run(text)
+            run.font.name = "Arial"
+            run.font.size = Pt(size)
+            run.bold = bold
+            if white:
+                run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+            else:
+                run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+            return p
+
+        def add_cv_bullet(cell, text, white=False):
+            p = cell.add_paragraph(style="List Bullet")
+            p.paragraph_format.space_before = Pt(1)
+            p.paragraph_format.space_after  = Pt(2)
+            run = p.add_run(text)
+            run.font.name = "Arial"
+            run.font.size = Pt(10)
+            if white:
+                run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+            else:
+                run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+            return p
+
+        # ── Parser le contenu Gemini ───────────────────────────────
+        import re as _re
+        lignes = [l for l in contenu.split("\n")]
+
+        # Extraire les sections du CV depuis le contenu Gemini
+        sections = {}
+        section_courante = None
+        buffer_lignes = []
+
+        SECTION_KEYS = {
+            "INFORMATIONS PERSONNELLES": "infos",
+            "PROFIL": "profil",
+            "EXPÉRIENCES": "experiences",
+            "EXPÉRIENCE": "experiences",
+            "FORMATION": "formation",
+            "COMPÉTENCES": "competences",
+            "LANGUES": "langues",
+            "CENTRES D'INTÉRÊT": "interets",
+            "CENTRES D'INTERET": "interets",
+            "LETTRE DE MOTIVATION": "lettre",
+        }
+
+        for ligne in lignes:
+            l_clean = ligne.strip().lstrip("#").strip().upper()
+            matched = None
+            for key, val in SECTION_KEYS.items():
+                if key in l_clean:
+                    matched = val
+                    break
+            if matched:
+                if section_courante and buffer_lignes:
+                    sections[section_courante] = "\n".join(buffer_lignes).strip()
+                section_courante = matched
+                buffer_lignes = []
+            elif section_courante:
+                t = ligne.strip().lstrip("#").strip()
+                if t:
+                    buffer_lignes.append(t)
+
+        if section_courante and buffer_lignes:
+            sections[section_courante] = "\n".join(buffer_lignes).strip()
+
+        # Extraire nom/contact depuis infos perso
+        infos_raw  = sections.get("infos", "")
+        profil_raw = sections.get("profil", "")
+        nom_cv = client_nom or "Candidat"
+        contact_cv = ""
+        for line in infos_raw.split("\n"):
+            l = line.strip().lstrip("-").strip()
+            if any(k in l.lower() for k in ["nom", "prénom", "prenom"]):
+                nom_cv = l.split(":")[-1].strip() if ":" in l else l
+            if any(k in l.lower() for k in ["email", "mail", "tél", "tel", "téléphone", "telephone", "ville", "adresse"]):
+                contact_cv += l.split(":")[-1].strip() + "  •  " if ":" in l else l + "  •  "
+        contact_cv = contact_cv.rstrip("  •  ")
+
+        # ── Construction du document ───────────────────────────────
+        doc.sections[0].top_margin    = Cm(0)
+        doc.sections[0].bottom_margin = Cm(1.5)
+        doc.sections[0].left_margin   = Cm(0)
+        doc.sections[0].right_margin  = Cm(0)
+
+        # ── EN-TÊTE pleine largeur ─────────────────────────────────
+        tbl_header = doc.add_table(rows=1, cols=1)
+        tbl_header.style = "Table Grid"
+        cell_h = tbl_header.cell(0, 0)
+        set_cell_bg(cell_h, "1565A8")
+        remove_cell_borders(cell_h)
+        cell_h.width = Inches(8.27)
+
+        # Vider le paragraphe par défaut
+        for p in cell_h.paragraphs:
+            for run in p.runs:
+                run.clear()
+
+        p_nom = cell_h.paragraphs[0]
+        p_nom.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_nom.paragraph_format.space_before = Pt(14)
+        p_nom.paragraph_format.space_after  = Pt(4)
+        r_nom = p_nom.add_run(nom_cv.upper())
+        r_nom.font.name = "Arial"
+        r_nom.font.size = Pt(22)
+        r_nom.bold = True
+        r_nom.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+
+        if contact_cv:
+            p_contact = cell_h.add_paragraph()
+            p_contact.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_contact.paragraph_format.space_before = Pt(2)
+            p_contact.paragraph_format.space_after  = Pt(14)
+            r_contact = p_contact.add_run(contact_cv)
+            r_contact.font.name = "Arial"
+            r_contact.font.size = Pt(10)
+            r_contact.font.color.rgb = RGBColor(0xCC, 0xE5, 0xFF)
+
+        doc.add_paragraph("")  # espace
+
+        # ── CORPS : tableau 2 colonnes ─────────────────────────────
+        tbl_body = doc.add_table(rows=1, cols=2)
+        tbl_body.style = "Table Grid"
+
+        col_g = tbl_body.cell(0, 0)  # Gauche 1/3
+        col_d = tbl_body.cell(0, 1)  # Droite 2/3
+
+        col_g.width = Inches(2.76)   # ~1/3 de A4
+        col_d.width = Inches(5.51)   # ~2/3 de A4
+
+        set_cell_bg(col_g, "1A78C2")
+        remove_cell_borders(col_g)
+        remove_cell_borders(col_d)
+
+        # Vider paragraphes par défaut
+        for p in col_g.paragraphs: p._element.getparent().remove(p._element)
+        for p in col_d.paragraphs: p._element.getparent().remove(p._element)
+
+        # ── COLONNE GAUCHE ─────────────────────────────────────────
+        # Formation
+        if sections.get("formation"):
+            add_cv_heading(col_g, "Formation", "FFFFFF")
+            for line in sections["formation"].split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l:
+                    add_cv_bullet(col_g, l, white=True)
+
+        # Compétences
+        if sections.get("competences"):
+            add_cv_heading(col_g, "Compétences", "FFFFFF")
+            for line in sections["competences"].split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l:
+                    add_cv_bullet(col_g, l, white=True)
+
+        # Langues
+        if sections.get("langues"):
+            add_cv_heading(col_g, "Langues", "FFFFFF")
+            for line in sections["langues"].split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l:
+                    add_cv_bullet(col_g, l, white=True)
+
+        # Centres d'intérêt
+        if sections.get("interets"):
+            add_cv_heading(col_g, "Centres d'intérêt", "FFFFFF")
+            for line in sections["interets"].split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l:
+                    add_cv_bullet(col_g, l, white=True)
+
+        # ── COLONNE DROITE ─────────────────────────────────────────
+        # Profil
+        if profil_raw:
+            add_cv_heading(col_d, "Profil professionnel", "1565A8")
+            for line in profil_raw.split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l:
+                    add_cv_text(col_d, l)
+
+        # Expériences
+        if sections.get("experiences"):
+            add_cv_heading(col_d, "Expériences professionnelles", "1565A8")
+            for line in sections["experiences"].split("\n"):
+                l = line.strip()
+                if not l:
+                    continue
+                if l.startswith(("##", "###", "**")):
+                    titre = l.lstrip("#").strip().strip("**")
+                    add_cv_text(col_d, titre, bold=True)
+                elif l.startswith(("-", "•")):
+                    add_cv_bullet(col_d, l.lstrip("-•").strip())
+                else:
+                    add_cv_text(col_d, l)
+
+        # Informations personnelles restantes
+        if infos_raw:
+            add_cv_heading(col_d, "Informations personnelles", "1565A8")
+            for line in infos_raw.split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l and not any(k in l.lower() for k in ["nom", "prénom", "prenom"]):
+                    add_cv_bullet(col_d, l)
+
+        # ── LETTRE DE MOTIVATION (page séparée si présente) ───────
+        if sections.get("lettre"):
+            doc.add_page_break()
+            p_titre_lettre = doc.add_paragraph()
+            run_tl = p_titre_lettre.add_run("LETTRE DE MOTIVATION")
+            run_tl.font.name = "Arial"
+            run_tl.font.size = Pt(16)
+            run_tl.bold = True
+            run_tl.font.color.rgb = RGBColor(0x15, 0x65, 0xA8)
+            p_titre_lettre.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_titre_lettre.paragraph_format.space_after = Pt(20)
+
+            doc.sections[0].left_margin  = Cm(2.5)
+            doc.sections[0].right_margin = Cm(2.5)
+
+            for line in sections["lettre"].split("\n"):
+                l = line.strip()
+                if not l:
+                    doc.add_paragraph("")
+                    continue
+                p = doc.add_paragraph()
+                p.paragraph_format.space_before = Pt(0)
+                p.paragraph_format.space_after  = Pt(6)
+                p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                run = p.add_run(l.lstrip("#-•").strip())
+                run.font.name = "Arial"
+                run.font.size = Pt(11)
+                run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+
+        buf = BytesIO()
+        doc.save(buf)
+        buf.seek(0)
+        return buf
+    # ══════════════════════════════════════════════════════════════
+    # FIN MODE CV
+    # ══════════════════════════════════════════════════════════════
 
     if IS_EXAMEN:
         for section in doc.sections:
