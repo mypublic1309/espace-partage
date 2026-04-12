@@ -10302,7 +10302,13 @@ CATALOGUE COMPLET DES SERVICES NOVA PLATFORM
      6. Les compétences principales → question : "Cite tes principales compétences (logiciels, outils, savoir-faire)."
      7. Les langues parlées → question : "Tu parles quelles langues et à quel niveau ?"
      8. CV seul, lettre seule ou les deux ? → question : "Tu veux le CV seul, la lettre seule ou les deux ?"
-   → RÈGLE SPÉCIALE CV : si le client n'a donné que le nom + poste + secteur sans formation ni expériences → pose UNE question groupée : "Pour faire un vrai CV, dis-moi : ta formation, tes expériences/stages, tes compétences et tes langues."
+   → RÈGLE SPÉCIALE CV — COLLECTE SÉQUENTIELLE (un champ à la fois, dans cet ordre) :
+     Si le client n'a pas encore donné sa formation → pose UNIQUEMENT : "Ta formation ? (ex : BAC, BTS, Licence — précise l'établissement et l'année)"
+     Si formation connue mais pas les expériences → pose UNIQUEMENT : "Tu as des expériences ou stages ? (poste, entreprise, durée et 2-3 tâches) — réponds 'aucun' si non"
+     Si expériences connues mais pas les compétences → pose UNIQUEMENT : "Tes compétences principales ? (logiciels, outils, savoir-faire)"
+     Si compétences connues mais pas les langues → pose UNIQUEMENT : "Les langues que tu parles et ton niveau ? (ex : Français courant, Anglais débutant)"
+     Si tout est connu → RÉCAPITULATIF immédiat
+   → RÈGLE D'OR : une seule question à la fois, jamais deux champs dans le même message
    → RÈGLE RESPECT DU CLIENT : si le client répond "aucun", "pas encore", "je sais pas", "rien", "N/A" ou équivalent pour un champ → accepte sa réponse, note l'absence, passe au champ suivant. Ne repose JAMAIS la même question.
    → Dès que tous les champs ont été abordés (même si certains sont vides par choix du client) : RÉCAPITULATIF immédiat
 
