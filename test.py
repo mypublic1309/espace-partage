@@ -2566,6 +2566,18 @@ INSTRUCTIONS CONTENU
 - Longueur : aussi longue que nécessaire pour que le document soit COMPLET et utilisable tel quel
 - Rédige en français sauf si le client demande une autre langue
 
+════════════════════════════════════════
+RÈGLE REPRODUCTION / EXTRACTION — PRIORITÉ ABSOLUE
+════════════════════════════════════════
+Si la demande contient des mots comme : "reproduis", "recopie", "mets en Word", "extrais", "liste", "tableau depuis", "convertis", "mets en forme", "voici les données", "voici la liste", "liste des", ou si le client colle directement des données brutes (noms, chiffres, lignes de données) :
+
+→ INTERDIT ABSOLU de rédiger un texte d'introduction, de contextualisation, d'analyse ou de commentaire.
+→ INTERDIT ABSOLU d'ajouter des paragraphes qui ne sont pas dans les données fournies.
+→ Tu dois UNIQUEMENT mettre en forme les données exactes fournies par le client, sans rien inventer, sans rien ajouter.
+→ Si les données sont une liste → tu fais un tableau ou une liste propre, rien d'autre.
+→ Si les données sont un tableau → tu reproduis ce tableau exactement, sans texte autour.
+→ Commence DIRECTEMENT par le titre et les données. Aucune phrase d'introduction.
+
 Le document est livré directement au client — il ne doit rien avoir à compléter ou reformater."""
 
         elif "Excel" in service or "Data" in service:
@@ -10524,6 +10536,22 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
                         f"INTERDIT : inventer, halluciner, compléter ou modifier quoi que ce soit.\n"
                         f"Chaque chiffre, chaque nom, chaque cellule doit être recopié exactement tel quel depuis l'image.\n"
                         f"Si une cellule est vide dans l'image → elle reste vide. Aucune donnée fictive tolérée."
+                    )
+
+                # ── Anti-rédaction : si service Word + données collées ───────────
+                _mots_repro = ["reproduis", "recopie", "mets en word", "extrais", "liste des",
+                               "voici les", "voici la liste", "convertis", "mets en forme",
+                               "liste :", "tableau depuis", "les données", "les noms", "les membres"]
+                _desc_lower = desc_finale_trait.lower()
+                if "word" in (service_final or "").lower() and any(m in _desc_lower for m in _mots_repro):
+                    desc_finale_trait = (
+                        f"{desc_finale_trait}\n\n"
+                        f"⚠️ RÈGLE ANTI-RÉDACTION ABSOLUE :\n"
+                        f"Le client t'a fourni des données brutes à mettre en forme. "
+                        f"INTERDIT d'écrire un texte d'introduction, d'analyse ou de contexte. "
+                        f"INTERDIT d'ajouter des paragraphes qui ne sont pas dans les données fournies. "
+                        f"Tu dois UNIQUEMENT reproduire et structurer les données exactes du client. "
+                        f"Commence directement par le titre et les données. Aucune phrase introductive."
                     )
 
                 with st.spinner("⚡ Génération en cours... Cela prend moins d'1 minute."):
