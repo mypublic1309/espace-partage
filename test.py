@@ -10447,7 +10447,10 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
                     "Nova IA Chat", prompt_nova, user or "visiteur",
                     _image_b64=_image_b64, _image_mime=_image_mime
                 )
-            # Vider le fichier après utilisation
+            # === FIX BUG IMAGE - PHASE DIALOGUE ===
+            # Sauvegarder l'image jointe avant de vider nova_ia_fichier.
+            if st.session_state.get("nova_ia_fichier"):
+                st.session_state["nova_ia_pending_fichier"] = st.session_state["nova_ia_fichier"]
             st.session_state["nova_ia_fichier"] = None
 
             if reponse.startswith("❌"):
@@ -10518,12 +10521,22 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
                 st.rerun()
             else:
                 with st.spinner("⚡ Génération en cours... Cela prend moins d'1 minute."):
+                    # === FIX BUG IMAGE - PHASE TRAITEMENT ===
+                    _pending_fichier = st.session_state.get("nova_ia_pending_fichier")
+                    _image_b64 = None
+                    _image_mime = None
+                    if _pending_fichier and _pending_fichier.get("est_image"):
+                        _image_b64 = _pending_fichier.get("contenu")
+                        _image_mime = _pending_fichier.get("type")
+
                     resultat = generer_avec_gemini(
                         service_final,
                         desc_finale,
                         user,
                         is_premium=True,
-                        gen_used=used_auj
+                        gen_used=used_auj,
+                        _image_b64=_image_b64,
+                        _image_mime=_image_mime
                     )
 
                 if resultat.startswith("❌"):
@@ -10565,6 +10578,8 @@ Réponds UNIQUEMENT au dernier message du client. 2-4 phrases max sauf pour le r
                         f"Il te reste **{quota_restant(db['users'].get(user, {})) - 1}** génération(s) aujourd'hui."
                     )
                     st.session_state["nova_ia_chat"].append({"role": "assistant", "content": msg_ok})
+                    st.session_state.pop("nova_ia_pending_fichier", None)
+                    st.session_state.pop("nova_ia_fichier", None)
                     st.session_state["nova_ia_phase"] = "termine"
                     st.rerun()
 
