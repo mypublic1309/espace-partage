@@ -6925,6 +6925,7 @@ def main_dashboard():
 
         # ── SÉLECTION DU TYPE DE SUJET (uniquement pour le service Sujets/Examens) ──
         type_sujet_selectionne = None
+        cahier_fichier_joint = None  # Fichier joint au cahier des charges (autres services)
         if "Sujets" in service or "Examens" in service:
             _show_splash("Sujets")
             st.markdown("#### 🎯 Type de sujet")
@@ -8150,6 +8151,17 @@ NOTE : fichier original joint via lien ci-dessous.
             # ── CHAMP TEXTE LIBRE POUR LES AUTRES SERVICES ────────────────────
             prompt = st.text_area("Cahier des charges Nova", height=150, placeholder="Détaillez votre projet pour une exécution parfaite...")
 
+            # ── FILE UPLOADER — Joindre un fichier à la demande ───────────────
+            st.markdown("<div style='color:rgba(255,215,0,0.75);font-size:0.82rem;margin:6px 0 4px 0;'>📎 Joindre un fichier à votre demande (image, Word, PDF, txt) — optionnel</div>", unsafe_allow_html=True)
+            cahier_fichier_joint = st.file_uploader(
+                "Joindre un fichier",
+                type=["png", "jpg", "jpeg", "webp", "pdf", "docx", "txt"],
+                label_visibility="collapsed",
+                key="cahier_fichier_joint"
+            )
+            if cahier_fichier_joint is not None:
+                st.success(f"📎 Fichier joint : **{cahier_fichier_joint.name}** ({round(len(cahier_fichier_joint.getvalue())/1024, 1)} Ko) — il sera transmis avec votre demande.")
+
         if service == SERVICE_SAISIE and service in SERVICE_PREREQUIS:
             if prompt and not st.session_state["warning_triggered"]:
                 st.session_state["warning_triggered"] = True
@@ -8573,6 +8585,16 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                     st.warning(f"⚠️ Fichier non uploadé ({url_f})")
                 else:
                     fichier_info = f"\n📎 FICHIER CLIENT : {url_f}"
+            # ── Upload du fichier joint au cahier des charges ──────────────────
+            elif cahier_fichier_joint is not None:
+                with st.spinner("📤 Upload du fichier joint..."):
+                    url_cj = upload_fichier_client(
+                        user if user else "guest", req_id_new,
+                        cahier_fichier_joint.getvalue(), cahier_fichier_joint.name)
+                if url_cj.startswith("ERREUR"):
+                    st.warning(f"⚠️ Fichier joint non uploadé ({url_cj})")
+                else:
+                    fichier_info = f"\n📎 FICHIER CLIENT : {url_cj}"
             desc_finale = (prompt if prompt else "(aucune description fournie)") + fichier_info
             new_req = {
                 "id": req_id_new,
@@ -10282,7 +10304,7 @@ def show_nova_ia_page():
                 if _fichier["est_image"]:
                     _image_b64  = _fichier["contenu"]
                     _image_mime = _fichier["type"]
-                    _bloc_fichier = f"\n\n════════════════════════════════════════\nFICHIER IMAGE JOINT PAR LE CLIENT : {_fichier['nom']}\n════════════════════════════════════════\nINSTRUCTIONS STRICTES :\n- Si le client demande d'EXTRAIRE du texte ou des données → extrais exactement ce qui est visible, RIEN D'AUTRE.\n- Si le client demande de reproduire un tableau → extrais toutes les colonnes et données visibles en markdown, sans commentaire.\n- Si le client veut UTILISER cette image pour créer un document → collecte les infos manquantes puis confirme normalement.\n- INTERDIT : ajouter une introduction, un développement, une conclusion, une mise en contexte non demandés.\n"
+                    _bloc_fichier = f"\n\n════════════════════════════════════════\nFICHIER IMAGE JOINT PAR LE CLIENT : {_fichier['nom']}\n════════════════════════════════════════\n⚠️ RÈGLE ABSOLUE — REPRODUCTION FIDÈLE :\nTu dois reproduire EXACTEMENT ce qui est visible dans l'image, SANS AUCUNE MODIFICATION.\nCela signifie :\n- CHAQUE chiffre, CHAQUE mot, CHAQUE cellule doit être recopié tel quel, sans arrondi, sans correction, sans interprétation.\n- Tu n'as PAS le droit de changer un chiffre, même si tu penses qu'il y a une erreur.\n- Tu n'as PAS le droit de renommer une colonne, une ligne ou un intitulé.\n- Tu n'as PAS le droit d'ajouter des données qui ne sont PAS visibles dans l'image.\n- Tu n'as PAS le droit de supprimer des données visibles dans l'image.\n- Si une cellule est vide dans l'image → elle reste vide dans ta reproduction.\n- INTERDIT : corriger, compléter, réorganiser, reformuler, arrondir, ou interpréter les données.\n\nINSTRUCTIONS SELON LA DEMANDE DU CLIENT :\n- Si le client demande de REPRODUIRE un tableau en Word → reproduis chaque ligne et chaque colonne exactement comme dans l'image, en tableau markdown. Zéro ajout, zéro suppression.\n- Si le client demande d'EXTRAIRE du texte → copie exactement les mots visibles, RIEN D'AUTRE.\n- Si le client veut UTILISER cette image pour créer un document → collecte les infos manquantes puis confirme normalement.\n- INTERDIT : ajouter une introduction, un développement, une conclusion, une mise en contexte non demandés.\n"
                 else:
                     _contenu_txt = _fichier["contenu"][:8000]  # sécurité tokens
                     _bloc_fichier = f"\n\n════════════════════════════════════════\nFICHIER JOINT PAR LE CLIENT : {_fichier['nom']}\n════════════════════════════════════════\n{_contenu_txt}\n════════════════════════════════════════\nINSTRUCTIONS STRICTES SUR CE FICHIER :\n- Si le client demande d'EXTRAIRE du texte → copie exactement les lignes demandées, RIEN D'AUTRE. Zéro intro, zéro conclusion, zéro commentaire.\n- Si le client demande de RÉSUMER → résume en 2-3 phrases max, pas de structure académique.\n- Si le client veut UTILISER ce contenu pour créer un document → collecte les infos manquantes puis confirme normalement.\n- INTERDIT : ajouter une introduction, un développement, une conclusion, une mise en contexte non demandés.\n"
