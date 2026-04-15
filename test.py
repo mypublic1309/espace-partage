@@ -2497,34 +2497,20 @@ Missions principales :
 - Mission 5
 
 ## FORMATION
-Pour chaque diplôme, 3 lignes séparées SANS tiret ni puce :
-Ligne 1 : Intitulé complet du diplôme
-Ligne 2 : Nom de l'établissement
-Ligne 3 : Année–Année  –  Ville
-
-Exemple exact :
-Master en Communication
-Université Alassane Ouattara
-2023-2024  –  Bouaké
-
-Licence Sciences de la Communication
-Université Alassane Ouattara
-2021-2022  –  Bouaké
-
-(du plus récent au plus ancien — une ligne vide entre chaque diplôme)
+- Diplôme complet — Établissement — Ville (Année)
+- (du plus récent au plus ancien)
 
 ## COMPÉTENCES
-(une compétence par ligne, sans tiret ni puce — le moteur Nova ajoute automatiquement le symbole ◆)
-Compétence précise et développée
-(minimum 5 — ex : Maîtrise de Word, Excel, PowerPoint — niveau avancé)
+- Compétence précise et développée
+- (minimum 5 compétences — ex : "Maîtrise de Word, Excel, PowerPoint — niveau avancé")
 
 ## LANGUES
 - Langue : Niveau (Débutant / Intermédiaire / Courant / Bilingue / Langue maternelle)
 
 ## SPORTS & LOISIRS
-(uniquement si fournis — une activité par ligne, sans tiret ni puce — le moteur les affichera sur une seule ligne séparés par •)
-Activité 1
-Activité 2
+(uniquement si fournis — loisirs, sports, activités personnelles)
+- Activité 1
+- Activité 2
 
 ## CENTRES D'INTÉRÊT
 (uniquement si fournis — intérêts professionnels, domaines de passion liés au travail)
@@ -3362,15 +3348,17 @@ def creer_docx(contenu, service, client_nom):
     IS_CV     = "CV" in service or "Lettre de Motivation" in service
 
     # ══════════════════════════════════════════════════════════════
-    # MODE CV — Template deux colonnes (design Arsène)
+    # MODE CV — Template deux colonnes professionnel
     # ══════════════════════════════════════════════════════════════
     if IS_CV:
         from docx.oxml.ns import qn
         from docx.oxml import OxmlElement
         from docx.shared import Inches
-        import re as _re
 
-        # ── Helpers XML ───────────────────────────────────────────
+        def hex_to_rgb(h):
+            h = h.lstrip("#")
+            return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
         def set_cell_bg(cell, hex_color):
             hex_color = hex_color.lstrip("#")
             tc = cell._tc
@@ -3391,69 +3379,69 @@ def creer_docx(contenu, service, client_nom):
                 tcBorders.append(border)
             tcPr.append(tcBorders)
 
-        def set_cell_padding(cell, top=80, bottom=80, left=120, right=120):
-            tc = cell._tc
-            tcPr = tc.get_or_add_tcPr()
-            tcMar = OxmlElement("w:tcMar")
-            for side, val in [("top", top), ("bottom", bottom), ("left", left), ("right", right)]:
-                m = OxmlElement(f"w:{side}")
-                m.set(qn("w:w"), str(val))
-                m.set(qn("w:type"), "dxa")
-                tcMar.append(m)
-            tcPr.append(tcMar)
+        def add_cv_heading(cell, text, hex_color="2E9BE0"):
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(12)
+            p.paragraph_format.space_after  = Pt(4)
+            run = p.add_run(text.upper())
+            run.bold = True
+            run.font.name = "Arial"
+            run.font.size = Pt(12)  # était 11 → +1
+            r, g, b = hex_to_rgb(hex_color)
+            run.font.color.rgb = RGBColor(r, g, b)
+            run.underline = True
+            return p
 
-        def add_para(cell, text, bold=False, size=11,
-                      color_rgb=(0x1A, 0x1A, 0x2E),
-                      space_before=2, space_after=2,
-                      align=WD_ALIGN_PARAGRAPH.LEFT,
-                      italic=False, is_bullet=False):
-            if is_bullet:
-                try:
-                    p = cell.add_paragraph(style="List Bullet")
-                except Exception:
-                    p = cell.add_paragraph()
-            else:
-                p = cell.add_paragraph()
-            p.alignment = align
-            p.paragraph_format.space_before = Pt(space_before)
-            p.paragraph_format.space_after  = Pt(space_after)
-            if is_bullet:
-                p.paragraph_format.left_indent = Pt(6)
+        def add_cv_text(cell, text, white=False, bold=False, size=11):  # était 10 → +1
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(1)
+            p.paragraph_format.space_after  = Pt(2)
             run = p.add_run(text)
-            run.font.name  = "Arial"
-            run.font.size  = Pt(size)
-            run.bold       = bold
-            run.italic     = italic
-            run.font.color.rgb = RGBColor(*color_rgb)
+            run.font.name = "Arial"
+            run.font.size = Pt(size)
+            run.bold = bold
+            if white:
+                run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+            else:
+                run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
             return p
 
-        def add_section_title(cell, text, white=True):
-            """Titre de section MAJUSCULES bold dans colonne gauche ou droite."""
-            color = (0xFF,0xFF,0xFF) if white else (0x15,0x65,0xA8)
-            p = add_para(cell, text.upper(), bold=True, size=10,
-                         color_rgb=color, space_before=10, space_after=4)
+        def add_cv_bullet(cell, text, white=False):
+            p = cell.add_paragraph(style="List Bullet")
+            p.paragraph_format.space_before = Pt(1)
+            p.paragraph_format.space_after  = Pt(2)
+            run = p.add_run(text)
+            run.font.name = "Arial"
+            run.font.size = Pt(11)  # était 10 → +1
+            if white:
+                run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+            else:
+                run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
             return p
 
-        # ── Parser sections depuis Gemini ─────────────────────────
-        lignes = contenu.split("\n")
+        # ── Parser le contenu Gemini ───────────────────────────────
+        import re as _re
+        lignes = [l for l in contenu.split("\n")]
+
+        # Extraire les sections du CV depuis le contenu Gemini
         sections = {}
         section_courante = None
         buffer_lignes = []
 
         SECTION_KEYS = {
             "INFORMATIONS PERSONNELLES": "infos",
-            "TITRE PROFESSIONNEL":       "titre",
-            "PROFIL":                    "profil",
-            "EXPÉRIENCES":               "experiences",
-            "EXPÉRIENCE":                "experiences",
-            "FORMATION":                 "formation",
-            "COMPÉTENCES":               "competences",
-            "LANGUES":                   "langues",
-            "SPORTS":                    "sports",
-            "LOISIRS":                   "sports",
-            "CENTRES D'INTÉRÊT":         "interets",
-            "CENTRES D'INTERET":         "interets",
-            "LETTRE DE MOTIVATION":      "lettre",
+            "TITRE PROFESSIONNEL": "titre",
+            "PROFIL": "profil",
+            "EXPÉRIENCES": "experiences",
+            "EXPÉRIENCE": "experiences",
+            "FORMATION": "formation",
+            "COMPÉTENCES": "competences",
+            "LANGUES": "langues",
+            "SPORTS": "sports",
+            "LOISIRS": "sports",
+            "CENTRES D'INTÉRÊT": "interets",
+            "CENTRES D'INTERET": "interets",
+            "LETTRE DE MOTIVATION": "lettre",
         }
 
         for ligne in lignes:
@@ -3476,85 +3464,98 @@ def creer_docx(contenu, service, client_nom):
         if section_courante and buffer_lignes:
             sections[section_courante] = "\n".join(buffer_lignes).strip()
 
-        # ── Extraire nom/contact/titre depuis infos perso ─────────
+        # Extraire nom/contact depuis infos perso
         infos_raw  = sections.get("infos", "")
         profil_raw = sections.get("profil", "")
-        titre_raw  = sections.get("titre", "").strip().lstrip("-•*#").strip()
-        nom_cv        = client_nom or "Candidat"
+        titre_raw  = sections.get("titre", "").strip().lstrip("-•").strip()
+        nom_cv = client_nom or "Candidat"
         contact_email = ""
         contact_tel   = ""
         contact_ville = ""
-
         for line in infos_raw.split("\n"):
-            l = line.strip().lstrip("-•*").strip()
-            llow = l.lower()
-            val = l.split(":", 1)[-1].strip() if ":" in l else l
-            if any(k in llow for k in ["nom", "prénom", "prenom"]):
-                nom_cv = val
-            elif any(k in llow for k in ["email", "mail", "e-mail"]):
-                contact_email = val
-            elif any(k in llow for k in ["tél", "tel", "téléphone", "telephone", "portable", "mobile"]):
-                contact_tel = val
-            elif any(k in llow for k in ["ville", "adresse", "résidence", "residence", "localité", "localite"]):
+            l = line.strip().lstrip("-").strip()
+            if any(k in l.lower() for k in ["nom", "prénom", "prenom"]):
+                nom_cv = l.split(":")[-1].strip() if ":" in l else l
+            if any(k in l.lower() for k in ["email", "mail"]):
+                contact_email = l.split(":")[-1].strip() if ":" in l else l
+            if any(k in l.lower() for k in ["tél", "tel", "téléphone", "telephone"]):
+                contact_tel = l.split(":")[-1].strip() if ":" in l else l
+            if any(k in l.lower() for k in ["ville", "adresse", "résidence", "residence"]):
+                val = l.split(":")[-1].strip() if ":" in l else l
+                # garder seulement la ville/pays, pas le label
                 contact_ville = val
 
+        # Construire ligne contact avec icônes
         parts_contact = []
         if contact_email: parts_contact.append(f"✉  {contact_email}")
         if contact_tel:   parts_contact.append(f"☎  {contact_tel}")
         if contact_ville: parts_contact.append(f"📍  {contact_ville}")
-        contact_cv = "   |   ".join(parts_contact)
+        contact_cv = "   │   ".join(parts_contact)
 
-        # ── Mise en page A4, marges 0 ─────────────────────────────
+        # ── Construction du document ───────────────────────────────
+        # A4 pleine largeur : marges à 0 pour que les tableaux occupent toute la page
         doc.sections[0].top_margin    = Cm(0)
         doc.sections[0].bottom_margin = Cm(1.0)
         doc.sections[0].left_margin   = Cm(0)
         doc.sections[0].right_margin  = Cm(0)
 
-        PAGE_FULL = Inches(8.27)
-        COL_G_W   = Inches(2.90)
-        COL_D_W   = Inches(5.37)
+        # Largeur utile A4 en DXA (11906) convertie en EMU pour python-docx
+        # 1 DXA = 914.4 EMU  →  11906 DXA ≈ 10,885,224 EMU ≈ Inches(8.27)
+        PAGE_FULL = Inches(8.27)   # largeur totale A4 sans marges
+        COL_G_W   = Inches(2.90)   # colonne gauche ~1/3
+        COL_D_W   = Inches(5.37)   # colonne droite ~2/3
 
-        # ══════════════════════════════════════════════════════════
-        # TABLEAU 2 LIGNES × 2 COLONNES
-        # Ligne 0 : en-tête fusionnée (nom + titre + contact)
-        # Ligne 1 : corps gauche (bleu) + droite (blanc)
-        # ══════════════════════════════════════════════════════════
-        tbl = doc.add_table(rows=2, cols=2)
-        tbl.style = "Table Grid"
-
-        # Fusionner ligne 0 → une seule cellule en-tête
-        cell_h = tbl.cell(0, 0).merge(tbl.cell(0, 1))
+        # ── EN-TÊTE pleine largeur ─────────────────────────────────
+        tbl_header = doc.add_table(rows=1, cols=1)
+        tbl_header.style = "Table Grid"
+        cell_h = tbl_header.cell(0, 0)
         set_cell_bg(cell_h, "1565A8")
         remove_cell_borders(cell_h)
-        set_cell_padding(cell_h, top=160, bottom=120, left=300, right=300)
+        cell_h.width = PAGE_FULL
 
-        # Vider paragraphe par défaut
+        # Vider le paragraphe par défaut
         for p in cell_h.paragraphs:
-            p._element.getparent().remove(p._element)
+            for run in p.runs:
+                run.clear()
 
-        # Nom (blanc, gras, 24pt, centré)
-        add_para(cell_h, nom_cv, bold=True, size=24,
-                 color_rgb=(0xFF,0xFF,0xFF),
-                 space_before=6, space_after=3,
-                 align=WD_ALIGN_PARAGRAPH.CENTER)
+        p_nom = cell_h.paragraphs[0]
+        p_nom.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_nom.paragraph_format.space_before = Pt(16)
+        p_nom.paragraph_format.space_after  = Pt(4)
+        r_nom = p_nom.add_run(nom_cv.upper())
+        r_nom.font.name = "Arial"
+        r_nom.font.size = Pt(26)
+        r_nom.bold = True
+        r_nom.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
-        # Titre professionnel (bleu très clair, 10pt, centré)
+        # Ligne titre professionnel (diplôme | spécialité | domaine)
         if titre_raw:
-            add_para(cell_h, titre_raw, bold=False, size=10,
-                     color_rgb=(0xCC,0xE5,0xFF),
-                     space_before=0, space_after=4,
-                     align=WD_ALIGN_PARAGRAPH.CENTER)
+            p_titre = cell_h.add_paragraph()
+            p_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_titre.paragraph_format.space_before = Pt(0)
+            p_titre.paragraph_format.space_after  = Pt(6)
+            r_titre = p_titre.add_run(titre_raw)
+            r_titre.font.name = "Arial"
+            r_titre.font.size = Pt(10)
+            r_titre.font.color.rgb = RGBColor(0xCC, 0xE5, 0xFF)
 
-        # Contact (bleu clair, 10pt, centré)
+        # Ligne contact avec icônes
         if contact_cv:
-            add_para(cell_h, contact_cv, bold=False, size=10,
-                     color_rgb=(0xAD,0xD8,0xFF),
-                     space_before=0, space_after=8,
-                     align=WD_ALIGN_PARAGRAPH.CENTER)
+            p_contact = cell_h.add_paragraph()
+            p_contact.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_contact.paragraph_format.space_before = Pt(4)
+            p_contact.paragraph_format.space_after  = Pt(16)
+            r_contact = p_contact.add_run(contact_cv)
+            r_contact.font.name = "Arial"
+            r_contact.font.size = Pt(10)
+            r_contact.font.color.rgb = RGBColor(0xAD, 0xD8, 0xFF)
 
-        # ── Cellules corps ────────────────────────────────────────
-        col_g = tbl.cell(1, 0)
-        col_d = tbl.cell(1, 1)
+        # ── CORPS : tableau 2 colonnes ─────────────────────────────
+        tbl_body = doc.add_table(rows=1, cols=2)
+        tbl_body.style = "Table Grid"
+
+        col_g = tbl_body.cell(0, 0)  # Gauche ~1/3
+        col_d = tbl_body.cell(0, 1)  # Droite ~2/3
 
         col_g.width = COL_G_W
         col_d.width = COL_D_W
@@ -3562,180 +3563,122 @@ def creer_docx(contenu, service, client_nom):
         set_cell_bg(col_g, "1A78C2")
         remove_cell_borders(col_g)
         remove_cell_borders(col_d)
-        set_cell_padding(col_g, top=60, bottom=60, left=140, right=120)
-        set_cell_padding(col_d, top=60, bottom=60, left=160, right=140)
 
+        # Vider paragraphes par défaut
         for p in col_g.paragraphs: p._element.getparent().remove(p._element)
         for p in col_d.paragraphs: p._element.getparent().remove(p._element)
 
-        # ══════════════════════════════════════════════════════════
-        # COLONNE GAUCHE — FORMATION détaillée + Compétences + Langues + Sports
-        # ══════════════════════════════════════════════════════════
-
-        # — FORMATION —
-        # Gemini doit envoyer chaque diplôme sous forme :
-        #   Diplôme
-        #   École / Université
-        #   Année – Ville
-        # On parse les triplets et on les affiche avec le bon style
+        # ── COLONNE GAUCHE ─────────────────────────────────────────
+        # Formation
         if sections.get("formation"):
-            add_section_title(col_g, "Formation", white=True)
-            form_lignes = [l.strip().lstrip("-•*#").strip()
-                           for l in sections["formation"].split("\n")
-                           if l.strip().lstrip("-•*#").strip()]
-            i = 0
-            while i < len(form_lignes):
-                ligne_f = form_lignes[i]
-                # Diplôme → gras blanc
-                add_para(col_g, ligne_f, bold=True, size=10,
-                         color_rgb=(0xFF,0xFF,0xFF),
-                         space_before=6, space_after=1)
-                # École → si ligne suivante existe et pas ressemble à date
-                if i + 1 < len(form_lignes):
-                    ecole = form_lignes[i+1]
-                    add_para(col_g, ecole, bold=False, size=9,
-                             color_rgb=(0xB3,0xD9,0xF5),
-                             space_before=0, space_after=1)
-                    i += 2
-                    # Année/Ville → si ligne suivante ressemble à une date ou tiret
-                    if i < len(form_lignes):
-                        annee_v = form_lignes[i]
-                        # on considère que c'est année/ville si contient chiffre ou tiret de date
-                        if _re.search(r'\d{4}|–|-', annee_v):
-                            add_para(col_g, annee_v, bold=False, size=9,
-                                     color_rgb=(0xC8,0xE6,0xFF),
-                                     space_before=0, space_after=3)
-                            i += 1
-                else:
-                    i += 1
+            add_cv_heading(col_g, "Formation", "FFFFFF")
+            for line in sections["formation"].split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l:
+                    add_cv_bullet(col_g, l, white=True)
 
-        # — COMPÉTENCES —
+        # Compétences
         if sections.get("competences"):
-            add_section_title(col_g, "Compétences", white=True)
+            add_cv_heading(col_g, "Compétences", "FFFFFF")
             for line in sections["competences"].split("\n"):
-                l = line.strip().lstrip("-•*◆#").strip()
+                l = line.strip().lstrip("-•").strip()
                 if l:
-                    # ◆ comme puce (texte)
-                    p = add_para(col_g, l, bold=False, size=10,
-                                 color_rgb=(0xFF,0xFF,0xFF),
-                                 space_before=1, space_after=1)
-                    # Ajouter ◆ manuellement devant
-                    p.runs[0].text = "◆   " + l
+                    add_cv_bullet(col_g, l, white=True)
 
-        # — LANGUES —
+        # Langues
         if sections.get("langues"):
-            add_section_title(col_g, "Langues", white=True)
+            add_cv_heading(col_g, "Langues", "FFFFFF")
             for line in sections["langues"].split("\n"):
-                l = line.strip().lstrip("-•*#").strip()
+                l = line.strip().lstrip("-•").strip()
                 if l:
-                    add_para(col_g, l, bold=True, size=10,
-                             color_rgb=(0xFF,0xFF,0xFF),
-                             space_before=1, space_after=1)
+                    add_cv_bullet(col_g, l, white=True)
 
-        # — SPORTS & LOISIRS —
+        # Sports & Loisirs
         if sections.get("sports"):
-            add_section_title(col_g, "Sports & Loisirs", white=True)
-            items_sport = []
+            add_cv_heading(col_g, "Sports & Loisirs", "FFFFFF")
             for line in sections["sports"].split("\n"):
-                l = line.strip().lstrip("-•*#").strip()
+                l = line.strip().lstrip("-•").strip()
                 if l:
-                    items_sport.append(l)
-            if items_sport:
-                # Tout sur une ligne avec •
-                sport_line = "  •  ".join(items_sport)
-                add_para(col_g, sport_line, bold=False, size=10,
-                         color_rgb=(0xB3,0xD9,0xF5),
-                         space_before=1, space_after=2)
+                    add_cv_bullet(col_g, l, white=True)
 
-        # ══════════════════════════════════════════════════════════
-        # COLONNE DROITE — Profil + Expériences + Intérêts + Infos perso
-        # ══════════════════════════════════════════════════════════
-
-        # — PROFIL PROFESSIONNEL —
+        # ── COLONNE DROITE ─────────────────────────────────────────
+        # Profil
         if profil_raw:
-            add_section_title(col_d, "Profil Professionnel", white=False)
+            add_cv_heading(col_d, "Profil professionnel", "1565A8")
             for line in profil_raw.split("\n"):
-                l = line.strip().lstrip("-•*#").strip()
+                l = line.strip().lstrip("-•").strip()
                 if l:
-                    add_para(col_d, l, bold=False, size=10,
-                             color_rgb=(0x4A,0x4A,0x4A),
-                             space_before=0, space_after=3,
-                             align=WD_ALIGN_PARAGRAPH.JUSTIFY)
+                    add_cv_text(col_d, l)
 
-        # — EXPÉRIENCES PROFESSIONNELLES —
+        # Expériences
         if sections.get("experiences"):
-            add_section_title(col_d, "Expériences Professionnelles", white=False)
+            add_cv_heading(col_d, "Expériences professionnelles", "1565A8")
             for line in sections["experiences"].split("\n"):
                 l = line.strip()
                 if not l:
                     continue
-                l_clean = l.lstrip("#-•*").strip()
-                # Groupe (###)
+                # Sous-titre de groupe (### Expérience de Bénévolat)
                 if l.startswith("###"):
-                    add_para(col_d, l_clean, bold=True, size=10,
-                             color_rgb=(0x15,0x65,0xA8),
-                             space_before=8, space_after=2)
-                # Poste principal (**)
-                elif l.startswith("**") or l.startswith("##"):
-                    titre_p = l.lstrip("#*").strip().strip("*")
-                    add_para(col_d, titre_p, bold=True, size=10,
-                             color_rgb=(0x4C,0x94,0xD8),
-                             space_before=4, space_after=1)
-                # Missions principales
-                elif l_clean.lower().startswith("missions"):
-                    add_para(col_d, l_clean.rstrip(":") + " :", bold=True, size=10,
-                             color_rgb=(0x21,0x5E,0x99),
-                             space_before=4, space_after=2)
-                # Bullet *  ou -  ou •
-                elif l.startswith(("* ", "- ", "• ", "· ")):
-                    add_para(col_d, l_clean, bold=False, size=10,
-                             color_rgb=(0x2A,0x2A,0x2A),
-                             space_before=1, space_after=1,
-                             is_bullet=True)
+                    sous_titre = l.lstrip("#").strip()
+                    p = col_d.add_paragraph()
+                    p.paragraph_format.space_before = Pt(8)
+                    p.paragraph_format.space_after  = Pt(2)
+                    run = p.add_run(sous_titre)
+                    run.font.name  = "Arial"
+                    run.font.size  = Pt(11)
+                    run.bold       = True
+                    run.underline  = True
+                    run.font.color.rgb = RGBColor(0x15, 0x65, 0xA8)
+                # Titre de poste en gras (**)
+                elif l.startswith(("##", "**")):
+                    titre_exp = l.lstrip("#").strip().strip("**")
+                    add_cv_text(col_d, titre_exp, bold=True)
+                # Sous-label "Missions principales :"
+                elif l.lower().startswith("missions"):
+                    p = col_d.add_paragraph()
+                    p.paragraph_format.space_before = Pt(4)
+                    p.paragraph_format.space_after  = Pt(2)
+                    run = p.add_run(l.rstrip(":") + " :")
+                    run.font.name  = "Arial"
+                    run.font.size  = Pt(10)
+                    run.bold       = True
+                    run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+                elif l.startswith(("-", "•")):
+                    add_cv_bullet(col_d, l.lstrip("-•").strip())
                 else:
-                    add_para(col_d, l_clean, bold=False, size=10,
-                             color_rgb=(0x2A,0x2A,0x2A),
-                             space_before=1, space_after=2)
+                    add_cv_text(col_d, l)
 
-        # — CENTRES D'INTÉRÊT —
+        # Centres d'intérêt (colonne droite)
         if sections.get("interets"):
-            add_section_title(col_d, "Centres d'Intérêt", white=False)
+            add_cv_heading(col_d, "Centres d'intérêt", "1565A8")
             for line in sections["interets"].split("\n"):
-                l = line.strip().lstrip("-•*#").strip()
+                l = line.strip().lstrip("-•").strip()
                 if l:
-                    add_para(col_d, l, bold=True, size=10,
-                             color_rgb=(0x15,0x65,0xA8),
-                             space_before=1, space_after=1)
+                    add_cv_bullet(col_d, l)
 
-        # — INFORMATIONS PERSONNELLES —
+        # Informations personnelles restantes
         if infos_raw:
-            add_section_title(col_d, "Informations Personnelles", white=False)
-            SKIP_KEYS = ["nom", "prénom", "prenom", "email", "mail", "e-mail",
-                         "tél", "tel", "téléphone", "telephone", "portable", "mobile",
-                         "ville", "adresse", "résidence", "residence", "localité", "localite"]
+            add_cv_heading(col_d, "Informations personnelles", "1565A8")
             for line in infos_raw.split("\n"):
-                l = line.strip().lstrip("-•*#").strip()
-                if not l:
-                    continue
-                llow = l.lower()
-                if not any(k in llow for k in SKIP_KEYS):
-                    add_para(col_d, l, bold=True, size=10,
-                             color_rgb=(0x1A,0x1A,0x2E),
-                             space_before=1, space_after=1)
+                l = line.strip().lstrip("-•").strip()
+                if l and not any(k in l.lower() for k in ["nom", "prénom", "prenom", "email", "mail", "tél", "tel", "téléphone", "telephone", "ville", "adresse", "résidence", "residence"]):
+                    add_cv_bullet(col_d, l)
 
         # ── LETTRE DE MOTIVATION (page séparée si présente) ───────
         if sections.get("lettre"):
             doc.add_page_break()
-            doc.sections[0].left_margin  = Cm(2.5)
-            doc.sections[0].right_margin = Cm(2.5)
-            p_tl = doc.add_paragraph()
-            p_tl.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            p_tl.paragraph_format.space_after = Pt(20)
-            run_tl = p_tl.add_run("LETTRE DE MOTIVATION")
+            p_titre_lettre = doc.add_paragraph()
+            run_tl = p_titre_lettre.add_run("LETTRE DE MOTIVATION")
             run_tl.font.name = "Arial"
             run_tl.font.size = Pt(16)
             run_tl.bold = True
             run_tl.font.color.rgb = RGBColor(0x15, 0x65, 0xA8)
+            p_titre_lettre.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_titre_lettre.paragraph_format.space_after = Pt(20)
+
+            doc.sections[0].left_margin  = Cm(2.5)
+            doc.sections[0].right_margin = Cm(2.5)
+
             for line in sections["lettre"].split("\n"):
                 l = line.strip()
                 if not l:
@@ -3745,7 +3688,7 @@ def creer_docx(contenu, service, client_nom):
                 p.paragraph_format.space_before = Pt(0)
                 p.paragraph_format.space_after  = Pt(6)
                 p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-                run = p.add_run(l.lstrip("#-•*").strip())
+                run = p.add_run(l.lstrip("#-•").strip())
                 run.font.name = "Arial"
                 run.font.size = Pt(11)
                 run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
