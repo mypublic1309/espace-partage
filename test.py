@@ -3792,34 +3792,7 @@ def creer_docx(contenu, service, client_nom):
         tcPr.append(shd)
 
     from docx.shared import RGBColor as RC
-    # Pour les exposés : pas de header service/client — la page de garde Nova suffit
-    if not IS_EXPOSE:
-        p_titre = doc.add_paragraph()
-        p_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        run_t = p_titre.add_run(service.replace("📝","").replace("👔","").replace("📊","").replace("⚙️","").replace("🎨","").replace("📚","").replace("📄","").strip())
-        run_t.bold = True
-        run_t.font.size = Pt(16)
-        run_t.font.color.rgb = RC(0x1F, 0x4E, 0x79)
-        run_t.font.name = "Arial"
-
-        p_info = doc.add_paragraph()
-        p_info.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        run_i = p_info.add_run(f"Client : {client_nom}     |     Généré le : {datetime.now().strftime('%d/%m/%Y à %H:%M')}")
-        run_i.font.size = Pt(10)
-        run_i.font.color.rgb = RC(0x7F, 0x7F, 0x7F)
-        run_i.font.name = "Arial"
-        run_i.italic = True
-
-        p_sep = doc.add_paragraph()
-        pPr = p_sep._p.get_or_add_pPr()
-        pBdr = OxmlElement("w:pBdr")
-        bottom = OxmlElement("w:bottom")
-        bottom.set(qn("w:val"), "single")
-        bottom.set(qn("w:sz"), "6")
-        bottom.set(qn("w:space"), "1")
-        bottom.set(qn("w:color"), "1F4E79")
-        pBdr.append(bottom)
-        pPr.append(pBdr)
+    # En-tête service/client supprimé — page de garde gérée séparément pour exposés
 
     def add_formatted_para(doc, text, style_name="Normal", bold=False, size=11, color=None, align=None):
         p = doc.add_paragraph(style=style_name)
