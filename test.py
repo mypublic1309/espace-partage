@@ -4838,6 +4838,8 @@ if "last_service_seen" not in st.session_state:
     st.session_state["last_service_seen"] = None
 if "warning_triggered" not in st.session_state:
     st.session_state["warning_triggered"] = False
+if "ocr_conv_uses" not in st.session_state:
+    st.session_state["ocr_conv_uses"] = 0
 if "intro_played" not in st.session_state:
     st.session_state["intro_played"] = False
 if "gemini_results" not in st.session_state:
@@ -6781,9 +6783,13 @@ def main_dashboard():
                 if st.button(_svc, key=f"pick_svc_{_i}", use_container_width=True):
                     _service_court = _svc.split(" ", 1)[-1] if " " in _svc else _svc
 
-                    # ── OCR et Conversion → formulaire upload direct, mais auth requise ──
+                    # ── OCR et Conversion → 1er essai toléré, 2e = auth requise ──
                     if "OCR" in _svc or "Numérisation" in _svc or "Conversion" in _svc:
                         if user:
+                            st.session_state["service_choisi"] = _svc
+                            st.rerun()
+                        elif st.session_state["ocr_conv_uses"] == 0:
+                            st.session_state["ocr_conv_uses"] = 1
                             st.session_state["service_choisi"] = _svc
                             st.rerun()
                         else:
