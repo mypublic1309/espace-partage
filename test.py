@@ -2468,21 +2468,28 @@ RÈGLES STRICTES :
 - Rédige en français sauf demande contraire.
 - Développe chaque section suffisamment pour remplir une page A4.
 
-STRUCTURE OBLIGATOIRE — respecte ces titres EXACTEMENT (le moteur les lit mot pour mot) :
+STRUCTURE OBLIGATOIRE — respecte ces titres EXACTEMENT, le moteur Nova les lit mot pour mot :
 
 ## INFORMATIONS PERSONNELLES
 - Nom complet : ...
-- Ville / Pays : ...
-- Téléphone : ...
 - Email : ...
-- (autres infos perso si fournies : date de naissance, situation familiale...)
+- Téléphone : ...
+- Ville : ...
+- Pays : ...
+- (date de naissance, situation familiale si fournis)
+
+## TITRE PROFESSIONNEL
+(1 ligne max : diplôme principal | spécialité | domaine — ex: "Licence Sciences de la Communication | Relations Publiques | Communication")
 
 ## PROFIL PROFESSIONNEL
-Rédigé en 4 à 6 phrases complètes. Qui est la personne, son niveau, ses points forts, sa valeur pour le poste visé. Accrocheur et personnalisé.
+Rédigé en 4 à 6 phrases complètes et percutantes. Qui est la personne, son niveau, ses points forts, sa valeur pour le poste visé.
 
 ## EXPÉRIENCES PROFESSIONNELLES
-Pour chaque poste, format EXACT :
-**Intitulé du poste | Entreprise | Période**
+Pour chaque poste, format EXACT — respecte ce modèle :
+
+### Intitulé du poste ou type d'expérience (ex: Expérience de Bénévolat)
+**Titre précis du rôle (Année ou Période)** : description courte du contexte si pertinent.
+Missions principales :
 - Mission 1 avec verbe d'action fort et détail concret
 - Mission 2
 - Mission 3
@@ -2494,16 +2501,20 @@ Pour chaque poste, format EXACT :
 - (du plus récent au plus ancien)
 
 ## COMPÉTENCES
-- Compétence précise et développée (pas un mot seul)
-- Exemple : "Maîtrise de Word, Excel, PowerPoint — niveau avancé"
-- (minimum 5 compétences)
+- Compétence précise et développée
+- (minimum 5 compétences — ex : "Maîtrise de Word, Excel, PowerPoint — niveau avancé")
 
 ## LANGUES
-- Langue — Niveau : Débutant / Intermédiaire / Courant / Bilingue / Langue maternelle
+- Langue : Niveau (Débutant / Intermédiaire / Courant / Bilingue / Langue maternelle)
+
+## SPORTS & LOISIRS
+(uniquement si fournis — loisirs, sports, activités personnelles)
+- Activité 1
+- Activité 2
 
 ## CENTRES D'INTÉRÊT
-(uniquement si fournis par le client)
-- Centre d'intérêt développé en une phrase
+(uniquement si fournis — intérêts professionnels, domaines de passion liés au travail)
+- Centre d'intérêt développé en une phrase complète
 
 ---
 
@@ -2514,9 +2525,9 @@ Pour chaque poste, format EXACT :
 
 [Paragraphe 1 — ACCROCHE : phrase d'ouverture percutante, connaissance du secteur, donne envie de lire.]
 
-[Paragraphe 2 — PARCOURS & VALEUR : présente les compétences clés en lien direct avec le poste, exemples concrets tirés des expériences fournies.]
+[Paragraphe 2 — PARCOURS & VALEUR : compétences clés en lien avec le poste, exemples concrets des expériences.]
 
-[Paragraphe 3 — MOTIVATION & CONCLUSION : intérêt pour l'entreprise si précisée, disponibilité, demande d'entretien, formule de politesse professionnelle complète.]"""
+[Paragraphe 3 — MOTIVATION & CONCLUSION : intérêt pour l'entreprise si précisée, disponibilité, demande d'entretien, formule de politesse complète.]"""
 
         elif "Création Word" in service:
             prompt = f"""Tu es un expert en rédaction de documents Word professionnels pour Nova Platform. Le client te décrit ce qu'il veut et tu produis le document COMPLET, structuré et prêt à l'emploi.
@@ -3419,12 +3430,15 @@ def creer_docx(contenu, service, client_nom):
 
         SECTION_KEYS = {
             "INFORMATIONS PERSONNELLES": "infos",
+            "TITRE PROFESSIONNEL": "titre",
             "PROFIL": "profil",
             "EXPÉRIENCES": "experiences",
             "EXPÉRIENCE": "experiences",
             "FORMATION": "formation",
             "COMPÉTENCES": "competences",
             "LANGUES": "langues",
+            "SPORTS": "sports",
+            "LOISIRS": "sports",
             "CENTRES D'INTÉRÊT": "interets",
             "CENTRES D'INTERET": "interets",
             "LETTRE DE MOTIVATION": "lettre",
@@ -3453,15 +3467,30 @@ def creer_docx(contenu, service, client_nom):
         # Extraire nom/contact depuis infos perso
         infos_raw  = sections.get("infos", "")
         profil_raw = sections.get("profil", "")
+        titre_raw  = sections.get("titre", "").strip().lstrip("-•").strip()
         nom_cv = client_nom or "Candidat"
-        contact_cv = ""
+        contact_email = ""
+        contact_tel   = ""
+        contact_ville = ""
         for line in infos_raw.split("\n"):
             l = line.strip().lstrip("-").strip()
             if any(k in l.lower() for k in ["nom", "prénom", "prenom"]):
                 nom_cv = l.split(":")[-1].strip() if ":" in l else l
-            if any(k in l.lower() for k in ["email", "mail", "tél", "tel", "téléphone", "telephone", "ville", "adresse"]):
-                contact_cv += l.split(":")[-1].strip() + "  •  " if ":" in l else l + "  •  "
-        contact_cv = contact_cv.rstrip("  •  ")
+            if any(k in l.lower() for k in ["email", "mail"]):
+                contact_email = l.split(":")[-1].strip() if ":" in l else l
+            if any(k in l.lower() for k in ["tél", "tel", "téléphone", "telephone"]):
+                contact_tel = l.split(":")[-1].strip() if ":" in l else l
+            if any(k in l.lower() for k in ["ville", "adresse", "résidence", "residence"]):
+                val = l.split(":")[-1].strip() if ":" in l else l
+                # garder seulement la ville/pays, pas le label
+                contact_ville = val
+
+        # Construire ligne contact avec icônes
+        parts_contact = []
+        if contact_email: parts_contact.append(f"✉  {contact_email}")
+        if contact_tel:   parts_contact.append(f"☎  {contact_tel}")
+        if contact_ville: parts_contact.append(f"📍  {contact_ville}")
+        contact_cv = "   │   ".join(parts_contact)
 
         # ── Construction du document ───────────────────────────────
         # A4 pleine largeur : marges à 0 pour que les tableaux occupent toute la page
@@ -3491,23 +3520,35 @@ def creer_docx(contenu, service, client_nom):
 
         p_nom = cell_h.paragraphs[0]
         p_nom.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_nom.paragraph_format.space_before = Pt(18)
-        p_nom.paragraph_format.space_after  = Pt(6)
+        p_nom.paragraph_format.space_before = Pt(16)
+        p_nom.paragraph_format.space_after  = Pt(4)
         r_nom = p_nom.add_run(nom_cv.upper())
         r_nom.font.name = "Arial"
-        r_nom.font.size = Pt(26)  # était 22 → +4 pour que le nom soit bien visible
+        r_nom.font.size = Pt(26)
         r_nom.bold = True
         r_nom.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
+        # Ligne titre professionnel (diplôme | spécialité | domaine)
+        if titre_raw:
+            p_titre = cell_h.add_paragraph()
+            p_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_titre.paragraph_format.space_before = Pt(0)
+            p_titre.paragraph_format.space_after  = Pt(6)
+            r_titre = p_titre.add_run(titre_raw)
+            r_titre.font.name = "Arial"
+            r_titre.font.size = Pt(10)
+            r_titre.font.color.rgb = RGBColor(0xCC, 0xE5, 0xFF)
+
+        # Ligne contact avec icônes
         if contact_cv:
             p_contact = cell_h.add_paragraph()
             p_contact.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            p_contact.paragraph_format.space_before = Pt(2)
-            p_contact.paragraph_format.space_after  = Pt(18)
+            p_contact.paragraph_format.space_before = Pt(4)
+            p_contact.paragraph_format.space_after  = Pt(16)
             r_contact = p_contact.add_run(contact_cv)
             r_contact.font.name = "Arial"
-            r_contact.font.size = Pt(11)  # était 10 → +1
-            r_contact.font.color.rgb = RGBColor(0xCC, 0xE5, 0xFF)
+            r_contact.font.size = Pt(10)
+            r_contact.font.color.rgb = RGBColor(0xAD, 0xD8, 0xFF)
 
         # ── CORPS : tableau 2 colonnes ─────────────────────────────
         tbl_body = doc.add_table(rows=1, cols=2)
@@ -3552,10 +3593,10 @@ def creer_docx(contenu, service, client_nom):
                 if l:
                     add_cv_bullet(col_g, l, white=True)
 
-        # Centres d'intérêt
-        if sections.get("interets"):
-            add_cv_heading(col_g, "Centres d'intérêt", "FFFFFF")
-            for line in sections["interets"].split("\n"):
+        # Sports & Loisirs
+        if sections.get("sports"):
+            add_cv_heading(col_g, "Sports & Loisirs", "FFFFFF")
+            for line in sections["sports"].split("\n"):
                 l = line.strip().lstrip("-•").strip()
                 if l:
                     add_cv_bullet(col_g, l, white=True)
@@ -3576,20 +3617,51 @@ def creer_docx(contenu, service, client_nom):
                 l = line.strip()
                 if not l:
                     continue
-                if l.startswith(("##", "###", "**")):
-                    titre = l.lstrip("#").strip().strip("**")
-                    add_cv_text(col_d, titre, bold=True)
+                # Sous-titre de groupe (### Expérience de Bénévolat)
+                if l.startswith("###"):
+                    sous_titre = l.lstrip("#").strip()
+                    p = col_d.add_paragraph()
+                    p.paragraph_format.space_before = Pt(8)
+                    p.paragraph_format.space_after  = Pt(2)
+                    run = p.add_run(sous_titre)
+                    run.font.name  = "Arial"
+                    run.font.size  = Pt(11)
+                    run.bold       = True
+                    run.underline  = True
+                    run.font.color.rgb = RGBColor(0x15, 0x65, 0xA8)
+                # Titre de poste en gras (**)
+                elif l.startswith(("##", "**")):
+                    titre_exp = l.lstrip("#").strip().strip("**")
+                    add_cv_text(col_d, titre_exp, bold=True)
+                # Sous-label "Missions principales :"
+                elif l.lower().startswith("missions"):
+                    p = col_d.add_paragraph()
+                    p.paragraph_format.space_before = Pt(4)
+                    p.paragraph_format.space_after  = Pt(2)
+                    run = p.add_run(l.rstrip(":") + " :")
+                    run.font.name  = "Arial"
+                    run.font.size  = Pt(10)
+                    run.bold       = True
+                    run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
                 elif l.startswith(("-", "•")):
                     add_cv_bullet(col_d, l.lstrip("-•").strip())
                 else:
                     add_cv_text(col_d, l)
+
+        # Centres d'intérêt (colonne droite)
+        if sections.get("interets"):
+            add_cv_heading(col_d, "Centres d'intérêt", "1565A8")
+            for line in sections["interets"].split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l:
+                    add_cv_bullet(col_d, l)
 
         # Informations personnelles restantes
         if infos_raw:
             add_cv_heading(col_d, "Informations personnelles", "1565A8")
             for line in infos_raw.split("\n"):
                 l = line.strip().lstrip("-•").strip()
-                if l and not any(k in l.lower() for k in ["nom", "prénom", "prenom"]):
+                if l and not any(k in l.lower() for k in ["nom", "prénom", "prenom", "email", "mail", "tél", "tel", "téléphone", "telephone", "ville", "adresse", "résidence", "residence"]):
                     add_cv_bullet(col_d, l)
 
         # ── LETTRE DE MOTIVATION (page séparée si présente) ───────
