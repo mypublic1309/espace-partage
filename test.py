@@ -63,6 +63,46 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# ══════════════════════════════════════════════════════════════════
+# PWA MANIFEST — Nova s'affiche "Nova" sur l'écran d'accueil mobile
+# L'icône Streamlit est conservée, seul le nom change
+# ══════════════════════════════════════════════════════════════════
+import base64 as _b64, json as _json
+
+def _inject_nova_pwa():
+    _manifest = {
+        "name": "Nova Platform",
+        "short_name": "Nova",
+        "description": "Nova Platform – L'IA bureautique ivoirienne",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#ffffff",
+        "theme_color": "#131416",
+        "icons": [
+            {
+                "src": "https://streamlit.io/images/brand/streamlit-mark-color.png",
+                "sizes": "192x192",
+                "type": "image/png"
+            },
+            {
+                "src": "https://streamlit.io/images/brand/streamlit-mark-color.png",
+                "sizes": "512x512",
+                "type": "image/png"
+            }
+        ]
+    }
+    _m64 = _b64.b64encode(_json.dumps(_manifest).encode()).decode()
+    st.markdown(f"""
+    <link rel="manifest" href="data:application/json;base64,{_m64}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Nova">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="https://streamlit.io/images/brand/streamlit-mark-color.png">
+    <meta name="application-name" content="Nova">
+    """, unsafe_allow_html=True)
+
+_inject_nova_pwa()
+
 DATA_FILE = "data_nova_v3.json"
 ADMIN_CODE  = st.secrets.get("ADMIN_CODE", "02110240")
 COLLAB_CODE = "2026"   # Collaborateur — accès missions uniquement
