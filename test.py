@@ -2454,106 +2454,69 @@ RÈGLES DE RÉDACTION :
 - N'invente JAMAIS de noms de personnes non mentionnés — utilise "mon maître de stage" si non précisé"""
 
         elif "CV" in service:
-            prompt = f"""Tu es un expert RH et recruteur senior francophone spécialisé dans le marché de l'emploi africain (Côte d'Ivoire, Sénégal, Cameroun, etc.).
-Ta mission : produire un CV et/ou une lettre de motivation COMPLETS, RÉELS et DIRECTEMENT UTILISABLES — aucun champ vide, aucun placeholder, aucune ligne générique.
+            prompt = f"""Tu es un expert RH francophone spécialisé dans le marché de l'emploi africain (Côte d'Ivoire, Sénégal, Cameroun, etc.).
 
-DONNÉES FOURNIES PAR LE CLIENT :
+DONNÉES DU CLIENT :
 {description}
 
-════════════════════════════════════════
-RÈGLES ABSOLUES DE RÉDACTION
-════════════════════════════════════════
-- Utilise UNIQUEMENT les informations fournies. N'invente rien.
-- Si un champ est marqué "aucun", "non renseigné", "pas encore", "N/A" ou absent → OMETS complètement cette section du CV, ne la génère pas, ne mets pas de placeholder.
-- Si une info de contact est absente (téléphone, email) → laisse [À compléter] UNIQUEMENT pour ces données, jamais pour le contenu professionnel.
-- Chaque section doit être rédigée avec des phrases complètes et professionnelles, pas des tirets vides.
-- Adapte le ton au secteur indiqué (RH, finance, BTP, santé, IT, enseignement, commerce, etc.).
-- Pour les expériences : rédige les missions/tâches avec des verbes d'action forts (géré, supervisé, assuré, coordonné, développé, optimisé, etc.).
-- Le profil/résumé professionnel doit être accrocheur, personnalisé au poste visé, 3-5 lignes max.
-- Rédige TOUT en français sauf si le client demande une autre langue.
-- Format : titres en ## et ###, contenu en texte structuré, listes avec tirets simples.
+RÈGLES STRICTES :
+- Utilise UNIQUEMENT les informations fournies. N'invente aucune donnée personnelle.
+- Si une section est absente des données → OMETS-LA entièrement (pas de placeholder, pas de "N/A").
+- Pour les contacts manquants (tel/email) → écris [À compléter].
+- Verbes d'action pour les expériences : géré, supervisé, coordonné, développé, optimisé, assuré...
+- Adapte le ton au secteur (finance, BTP, santé, IT, commerce, enseignement...).
+- Rédige en français sauf demande contraire.
+- Développe chaque section suffisamment pour remplir une page A4.
 
-════════════════════════════════════════
-ARCHITECTURE DU DOCUMENT — DEUX COLONNES PLEINE PAGE
-════════════════════════════════════════
-Le moteur Nova génère un CV deux colonnes qui occupe TOUTE la page A4 (aucune marge) :
-
-╔══════════════════════════════════════════════════════╗
-║  EN-TÊTE PLEINE LARGEUR — fond bleu foncé            ║
-║  NOM EN GRAND  •  Poste  •  Contact                  ║
-╠══════════════════╦═══════════════════════════════════╣
-║  COLONNE GAUCHE  ║  COLONNE DROITE                   ║
-║  (1/3 — bleu)    ║  (2/3 — blanc)                   ║
-║                  ║                                   ║
-║  ## FORMATION    ║  ## PROFIL PROFESSIONNEL          ║
-║  ## COMPÉTENCES  ║  ## EXPÉRIENCES                   ║
-║  ## LANGUES      ║  ## INFORMATIONS PERSO            ║
-║  ## CENTRES      ║                                   ║
-╚══════════════════╩═══════════════════════════════════╝
-
-RÈGLES IMPÉRATIVES POUR REMPLIR LES COLONNES :
-- Chaque section doit contenir ASSEZ de contenu pour que le CV occupe toute la page
-- COLONNE GAUCHE (## FORMATION, ## COMPÉTENCES, ## LANGUES, ## CENTRES D'INTÉRÊT) :
-  → Développe chaque item sur une ligne complète, sois précis et détaillé
-  → Exemple formation : "Licence en Gestion des RH — Université FHB, Abidjan (2022)"
-  → Exemple compétence : "Maîtrise de Word, Excel, PowerPoint — niveau avancé"
-- COLONNE DROITE (## PROFIL PROFESSIONNEL, ## EXPÉRIENCES PROFESSIONNELLES, ## INFORMATIONS PERSONNELLES) :
-  → Le profil doit faire 4-6 lignes complètes et percutantes
-  → Chaque expérience : titre en gras + 4 à 6 missions rédigées avec des verbes d'action
-  → Les infos perso : ville, téléphone, email, disponibilité, situation familiale si fournie
-- Si le client a peu d'expériences → développe davantage le profil et les compétences
-- Si le client a peu de formation → développe les certifications, auto-formations, projets personnels
-
-════════════════════════════════════════
-STRUCTURE À RESPECTER EXACTEMENT
-════════════════════════════════════════
-
-# CURRICULUM VITAE
+STRUCTURE OBLIGATOIRE — respecte ces titres EXACTEMENT (le moteur les lit mot pour mot) :
 
 ## INFORMATIONS PERSONNELLES
-(Nom, prénom, ville, pays, téléphone, email — uniquement ce qui est fourni)
+- Nom complet : ...
+- Ville / Pays : ...
+- Téléphone : ...
+- Email : ...
+- (autres infos perso si fournies : date de naissance, situation familiale...)
 
 ## PROFIL PROFESSIONNEL
-(4-6 lignes percutantes : qui est la personne, son niveau, ses points forts, sa valeur ajoutée pour le poste visé)
+Rédigé en 4 à 6 phrases complètes. Qui est la personne, son niveau, ses points forts, sa valeur pour le poste visé. Accrocheur et personnalisé.
 
 ## EXPÉRIENCES PROFESSIONNELLES
-(Pour chaque expérience :
-**Intitulé du poste** | Entreprise | Période
-- Mission 1 rédigée avec verbe d'action fort
+Pour chaque poste, format EXACT :
+**Intitulé du poste | Entreprise | Période**
+- Mission 1 avec verbe d'action fort et détail concret
 - Mission 2
 - Mission 3
-- Mission 4)
+- Mission 4
+- Mission 5
 
-## FORMATION & DIPLÔMES
-(Diplôme complet | Établissement | Année — du plus récent au plus ancien, une ligne par diplôme)
+## FORMATION
+- Diplôme complet — Établissement — Ville (Année)
+- (du plus récent au plus ancien)
 
 ## COMPÉTENCES
-(Une compétence par ligne, précise et développée — pas des mots isolés)
+- Compétence précise et développée (pas un mot seul)
+- Exemple : "Maîtrise de Word, Excel, PowerPoint — niveau avancé"
+- (minimum 5 compétences)
 
 ## LANGUES
-(Langue — Niveau précis : Débutant / Intermédiaire / Courant / Bilingue / Langue maternelle)
+- Langue — Niveau : Débutant / Intermédiaire / Courant / Bilingue / Langue maternelle
 
 ## CENTRES D'INTÉRÊT
-(Seulement si fournis — développe en 1 phrase chaque centre)
+(uniquement si fournis par le client)
+- Centre d'intérêt développé en une phrase
 
 ---
 
 # LETTRE DE MOTIVATION
-(Uniquement si le client a demandé la lettre ou les deux)
+(génère cette section UNIQUEMENT si le client a demandé la lettre ou les deux)
 
 **Objet : Candidature au poste de [poste visé]**
 
-§1 — ACCROCHE : Phrase d'ouverture percutante qui montre la connaissance du secteur/poste et donne envie de lire la suite.
+[Paragraphe 1 — ACCROCHE : phrase d'ouverture percutante, connaissance du secteur, donne envie de lire.]
 
-§2 — CORPS : Présentation du parcours, mise en valeur des compétences clés en lien direct avec le poste, exemples concrets tirés des expériences fournies.
+[Paragraphe 2 — PARCOURS & VALEUR : présente les compétences clés en lien direct avec le poste, exemples concrets tirés des expériences fournies.]
 
-§3 — CONCLUSION : Motivation pour l'entreprise cible (si précisée), disponibilité, appel à l'action (entretien), formule de politesse professionnelle.
-
-════════════════════════════════════════
-RAPPEL FINAL
-════════════════════════════════════════
-Le CV DOIT occuper toute la page A4 — si le contenu est insuffisant, développe et enrichis chaque section.
-Livre un document COMPLET et PRÊT À L'EMPLOI. Le client doit pouvoir l'envoyer directement à un recruteur sans modifier le fond, seulement ajouter ses données de contact si manquantes."""
+[Paragraphe 3 — MOTIVATION & CONCLUSION : intérêt pour l'entreprise si précisée, disponibilité, demande d'entretien, formule de politesse professionnelle complète.]"""
 
         elif "Création Word" in service:
             prompt = f"""Tu es un expert en rédaction de documents Word professionnels pour Nova Platform. Le client te décrit ce qu'il veut et tu produis le document COMPLET, structuré et prêt à l'emploi.
