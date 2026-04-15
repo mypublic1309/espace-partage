@@ -6781,10 +6781,24 @@ def main_dashboard():
                 if st.button(_svc, key=f"pick_svc_{_i}", use_container_width=True):
                     _service_court = _svc.split(" ", 1)[-1] if " " in _svc else _svc
 
-                    # ── OCR et Conversion → formulaire upload direct, pas le chat ──
+                    # ── OCR et Conversion → formulaire upload direct, mais auth requise ──
                     if "OCR" in _svc or "Numérisation" in _svc or "Conversion" in _svc:
-                        st.session_state["service_choisi"] = _svc
-                        st.rerun()
+                        if user:
+                            st.session_state["service_choisi"] = _svc
+                            st.rerun()
+                        else:
+                            st.session_state.pop("nova_ia_chat", None)
+                            st.session_state.pop("nova_ia_phase", None)
+                            st.session_state.pop("nova_ia_service_detecte", None)
+                            st.session_state.pop("nova_ia_prompt_final", None)
+                            st.session_state["nova_ia_chat"] = [
+                                {"role": "assistant", "content": f"Salut 👋 Je vois que tu veux utiliser le service **{_service_court}**.\n\nMais avant de continuer, tu dois **créer un compte ou te connecter** sur Nova Platform — c'est gratuit et ça prend 30 secondes !\n\nUne fois connecté, reviens ici et je m'occupe de tout 🚀"}
+                            ]
+                            st.session_state["nova_ia_phase"] = "dialogue"
+                            st.session_state["nova_ia_service_preselect"] = _svc
+                            st.session_state["service_choisi"] = _svc
+                            st.session_state["view"] = "nova_ia"
+                            st.rerun()
 
                     else:
                         st.session_state.pop("nova_ia_chat", None)
