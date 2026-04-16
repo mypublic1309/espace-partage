@@ -2468,6 +2468,23 @@ RÈGLES STRICTES :
 - Rédige en français sauf demande contraire.
 - Développe chaque section suffisamment pour remplir une page A4.
 
+RÈGLES DE MISE EN FORME — le moteur Nova lit ces balises pour générer le Word :
+
+COLONNE GAUCHE (fond bleu foncé) :
+- Tout le texte est en BLANC
+- Police : Times New Roman
+- Sections : FORMATION, COMPÉTENCES, LANGUES, SPORTS & LOISIRS
+
+COLONNE DROITE (fond blanc) :
+- Police : Arial
+- Les TITRES DE MISSIONS/SOUS-RUBRIQUES sont en BLEU (ex: "Accueil et Orientation", "Gestion de Flux et Sécurité", "Relations publiques", "Communication interculturelle", "RSE", "TIC")
+- Tout le reste (descriptions, texte normal, explications) est en NOIR
+
+Pour marquer un titre de mission en bleu dans la colonne droite, utilise le préfixe >>>BLEU<<< devant le titre :
+Exemple :
+>>>BLEU<<<Accueil et Orientation : explication en noir ici.
+>>>BLEU<<<Gestion de Flux et Sécurité : explication en noir ici.
+
 STRUCTURE OBLIGATOIRE — respecte ces titres EXACTEMENT, le moteur Nova les lit mot pour mot :
 
 ## INFORMATIONS PERSONNELLES
@@ -3385,19 +3402,22 @@ def creer_docx(contenu, service, client_nom):
             p.paragraph_format.space_after  = Pt(4)
             run = p.add_run(text.upper())
             run.bold = True
-            run.font.name = "Arial"
-            run.font.size = Pt(12)  # était 11 → +1
+            # Colonne gauche (hex_color=FFFFFF) → Times New Roman
+            # Colonne droite → Arial
+            run.font.name = "Times New Roman" if hex_color.upper() in ("FFFFFF", "FFF", "WHITE") else "Arial"
+            run.font.size = Pt(12)
             r, g, b = hex_to_rgb(hex_color)
             run.font.color.rgb = RGBColor(r, g, b)
             run.underline = True
             return p
 
-        def add_cv_text(cell, text, white=False, bold=False, size=11):  # était 10 → +1
+        def add_cv_text(cell, text, white=False, bold=False, size=11):
             p = cell.add_paragraph()
             p.paragraph_format.space_before = Pt(1)
             p.paragraph_format.space_after  = Pt(2)
             run = p.add_run(text)
-            run.font.name = "Arial"
+            # Colonne gauche (white=True) → Times New Roman / Colonne droite → Arial
+            run.font.name = "Times New Roman" if white else "Arial"
             run.font.size = Pt(size)
             run.bold = bold
             if white:
@@ -3411,8 +3431,10 @@ def creer_docx(contenu, service, client_nom):
             p.paragraph_format.space_before = Pt(1)
             p.paragraph_format.space_after  = Pt(2)
             run = p.add_run(text)
-            run.font.name = "Arial"
-            run.font.size = Pt(11)  # était 10 → +1
+            # Colonne gauche (white=True) → Times New Roman blanc
+            # Colonne droite (white=False) → Arial noir
+            run.font.name = "Times New Roman" if white else "Arial"
+            run.font.size = Pt(11)
             if white:
                 run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
             else:
@@ -3645,6 +3667,33 @@ def creer_docx(contenu, service, client_nom):
                     run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
                 elif l.startswith(("-", "•")):
                     add_cv_bullet(col_d, l.lstrip("-•").strip())
+                elif l.startswith(">>>BLEU<<<"):
+                    # Titre de mission en bleu — format : >>>BLEU<<<Titre : explication
+                    contenu_bleu = l.replace(">>>BLEU<<<", "").strip()
+                    if ":" in contenu_bleu:
+                        titre_bleu, explication = contenu_bleu.split(":", 1)
+                        # Titre en bleu
+                        p = col_d.add_paragraph()
+                        p.paragraph_format.space_before = Pt(4)
+                        p.paragraph_format.space_after  = Pt(1)
+                        run_b = p.add_run(titre_bleu.strip() + " :")
+                        run_b.font.name = "Arial"
+                        run_b.font.size = Pt(11)
+                        run_b.bold = True
+                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
+                        # Explication en noir
+                        if explication.strip():
+                            run_e = p.add_run(" " + explication.strip())
+                            run_e.font.name = "Arial"
+                            run_e.font.size = Pt(11)
+                            run_e.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+                    else:
+                        p = col_d.add_paragraph()
+                        run_b = p.add_run(contenu_bleu)
+                        run_b.font.name = "Arial"
+                        run_b.font.size = Pt(11)
+                        run_b.bold = True
+                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
                 else:
                     add_cv_text(col_d, l)
 
@@ -3653,7 +3702,33 @@ def creer_docx(contenu, service, client_nom):
             add_cv_heading(col_d, "Centres d'intérêt", "1565A8")
             for line in sections["interets"].split("\n"):
                 l = line.strip().lstrip("-•").strip()
-                if l:
+                if not l:
+                    continue
+                if l.startswith(">>>BLEU<<<"):
+                    contenu_bleu = l.replace(">>>BLEU<<<", "").strip()
+                    if ":" in contenu_bleu:
+                        titre_bleu, explication = contenu_bleu.split(":", 1)
+                        p = col_d.add_paragraph()
+                        p.paragraph_format.space_before = Pt(3)
+                        p.paragraph_format.space_after  = Pt(1)
+                        run_b = p.add_run(titre_bleu.strip() + " :")
+                        run_b.font.name = "Arial"
+                        run_b.font.size = Pt(11)
+                        run_b.bold = True
+                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
+                        if explication.strip():
+                            run_e = p.add_run(" " + explication.strip())
+                            run_e.font.name = "Arial"
+                            run_e.font.size = Pt(11)
+                            run_e.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+                    else:
+                        p = col_d.add_paragraph()
+                        run_b = p.add_run(contenu_bleu)
+                        run_b.font.name = "Arial"
+                        run_b.font.size = Pt(11)
+                        run_b.bold = True
+                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
+                else:
                     add_cv_bullet(col_d, l)
 
         # Informations personnelles restantes
