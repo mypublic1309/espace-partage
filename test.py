@@ -2459,7 +2459,21 @@ RÈGLES DE RÉDACTION :
 DONNÉES DU CLIENT :
 {description}
 
-RÈGLES STRICTES :
+════════════════════════════════════════════════
+RÔLE DE GEMINI : CONTENU UNIQUEMENT
+════════════════════════════════════════════════
+Tu génères UNIQUEMENT le contenu textuel du CV.
+Tu ne gères PAS la mise en forme, les couleurs, les polices ni la disposition.
+C'est le moteur Nova (Python) qui applique automatiquement :
+  → Colonne GAUCHE (fond bleu) : Times New Roman, texte blanc
+  → Colonne DROITE (fond blanc) : Arial, titres de missions en bleu, texte en noir
+  → En-tête : nom en grand, titre professionnel, contacts
+
+TON SEUL TRAVAIL : rédiger un contenu structuré avec les balises ci-dessous.
+
+════════════════════════════════════════════════
+RÈGLES DE RÉDACTION
+════════════════════════════════════════════════
 - Utilise UNIQUEMENT les informations fournies. N'invente aucune donnée personnelle.
 - Si une section est absente des données → OMETS-LA entièrement (pas de placeholder, pas de "N/A").
 - Pour les contacts manquants (tel/email) → écris [À compléter].
@@ -2468,7 +2482,24 @@ RÈGLES STRICTES :
 - Rédige en français sauf demande contraire.
 - Développe chaque section suffisamment pour remplir une page A4.
 
-STRUCTURE OBLIGATOIRE — respecte ces titres EXACTEMENT, le moteur Nova les lit mot pour mot :
+════════════════════════════════════════════════
+BALISES NOVA — le moteur Python les lit mot pour mot
+════════════════════════════════════════════════
+
+Pour les titres de missions dans EXPÉRIENCES et CENTRES D'INTÉRÊT,
+utilise OBLIGATOIREMENT ce format (Python le met automatiquement en bleu gras) :
+>>>BLEU<<<Nom de la mission : explication détaillée en une ou deux phrases.
+
+Exemple correct :
+>>>BLEU<<<Gestion Comptable : Tenue des livres, rapprochements bancaires et suivi des encaissements.
+>>>BLEU<<<Gestion des Stocks : Contrôle entrées/sorties, inventaire périodique et coordination fournisseurs.
+
+NE PAS utiliser de gras (**), italique (*) ou toute autre mise en forme Markdown.
+NE PAS écrire de couleurs, polices ou styles. Python s'en charge entièrement.
+
+════════════════════════════════════════════════
+STRUCTURE OBLIGATOIRE — titres EXACTS ci-dessous
+════════════════════════════════════════════════
 
 ## INFORMATIONS PERSONNELLES
 - Nom complet : ...
@@ -2476,58 +2507,60 @@ STRUCTURE OBLIGATOIRE — respecte ces titres EXACTEMENT, le moteur Nova les lit
 - Téléphone : ...
 - Ville : ...
 - Pays : ...
-- (date de naissance, situation familiale si fournis)
+- Date de naissance : ... (si fournie)
+- Situation familiale : ... (si fournie)
 
 ## TITRE PROFESSIONNEL
-(1 ligne max : diplôme principal | spécialité | domaine — ex: "Licence Sciences de la Communication | Relations Publiques | Communication")
+(1 ligne max — ex: "BTS Finance | Comptabilité | Gestion des Stocks")
 
 ## PROFIL PROFESSIONNEL
-Rédigé en 4 à 6 phrases complètes et percutantes. Qui est la personne, son niveau, ses points forts, sa valeur pour le poste visé.
+Rédige 4 à 6 phrases complètes et percutantes : qui est la personne, son niveau, ses points forts, sa valeur ajoutée.
 
 ## EXPÉRIENCES PROFESSIONNELLES
-Pour chaque poste, format EXACT — respecte ce modèle :
+Pour chaque poste, format EXACT :
 
-### Intitulé du poste ou type d'expérience (ex: Expérience de Bénévolat)
-**Titre précis du rôle (Année ou Période)** : description courte du contexte si pertinent.
+### Intitulé du groupe d'expérience (ex: Stagiaire Polyvalent — CIE Bouaké)
+Entreprise · Ville · Période (ex: CIE Bouaké · 2016–2024)
 Missions principales :
-- Mission 1 avec verbe d'action fort et détail concret
-- Mission 2
-- Mission 3
-- Mission 4
-- Mission 5
+>>>BLEU<<<Titre Mission 1 : description détaillée avec verbe d'action fort.
+>>>BLEU<<<Titre Mission 2 : description détaillée avec verbe d'action fort.
+>>>BLEU<<<Titre Mission 3 : description détaillée avec verbe d'action fort.
+>>>BLEU<<<Titre Mission 4 : description détaillée avec verbe d'action fort.
+>>>BLEU<<<Titre Mission 5 : description détaillée avec verbe d'action fort.
 
 ## FORMATION
-- Diplôme complet — Établissement — Ville (Année)
+- Diplôme — Établissement — Ville (Année)
 - (du plus récent au plus ancien)
 
 ## COMPÉTENCES
-- Compétence précise et développée
-- (minimum 5 compétences — ex : "Maîtrise de Word, Excel, PowerPoint — niveau avancé")
+- Compétence 1 précise et développée
+- Compétence 2
+- (minimum 5)
 
 ## LANGUES
 - Langue : Niveau (Débutant / Intermédiaire / Courant / Bilingue / Langue maternelle)
 
 ## SPORTS & LOISIRS
-(uniquement si fournis — loisirs, sports, activités personnelles)
+(uniquement si fournis)
 - Activité 1
 - Activité 2
 
 ## CENTRES D'INTÉRÊT
-(uniquement si fournis — intérêts professionnels, domaines de passion liés au travail)
-- Centre d'intérêt développé en une phrase complète
+(uniquement si fournis — utilise obligatoirement le format >>>BLEU<<<)
+>>>BLEU<<<Nom du centre d'intérêt : explication en une phrase complète.
 
 ---
 
 # LETTRE DE MOTIVATION
 (génère cette section UNIQUEMENT si le client a demandé la lettre ou les deux)
 
-**Objet : Candidature au poste de [poste visé]**
+Objet : Candidature au poste de [poste visé]
 
-[Paragraphe 1 — ACCROCHE : phrase d'ouverture percutante, connaissance du secteur, donne envie de lire.]
+[Paragraphe 1 — ACCROCHE : phrase d'ouverture percutante, connaissance du secteur.]
 
-[Paragraphe 2 — PARCOURS & VALEUR : compétences clés en lien avec le poste, exemples concrets des expériences.]
+[Paragraphe 2 — PARCOURS ET VALEUR : compétences clés en lien avec le poste, exemples concrets.]
 
-[Paragraphe 3 — MOTIVATION & CONCLUSION : intérêt pour l'entreprise si précisée, disponibilité, demande d'entretien, formule de politesse complète.]"""
+[Paragraphe 3 — MOTIVATION ET CONCLUSION : intérêt pour l'entreprise, disponibilité, demande d'entretien, formule de politesse complète.]"""
 
         elif "Création Word" in service:
             prompt = f"""Tu es un expert en rédaction de documents Word professionnels pour Nova Platform. Le client te décrit ce qu'il veut et tu produis le document COMPLET, structuré et prêt à l'emploi.
@@ -3385,19 +3418,22 @@ def creer_docx(contenu, service, client_nom):
             p.paragraph_format.space_after  = Pt(4)
             run = p.add_run(text.upper())
             run.bold = True
-            run.font.name = "Arial"
-            run.font.size = Pt(12)  # était 11 → +1
+            # Colonne gauche (hex_color=FFFFFF) → Times New Roman
+            # Colonne droite → Arial
+            run.font.name = "Times New Roman" if hex_color.upper() in ("FFFFFF", "FFF", "WHITE") else "Arial"
+            run.font.size = Pt(12)
             r, g, b = hex_to_rgb(hex_color)
             run.font.color.rgb = RGBColor(r, g, b)
             run.underline = True
             return p
 
-        def add_cv_text(cell, text, white=False, bold=False, size=11):  # était 10 → +1
+        def add_cv_text(cell, text, white=False, bold=False, size=11):
             p = cell.add_paragraph()
             p.paragraph_format.space_before = Pt(1)
             p.paragraph_format.space_after  = Pt(2)
             run = p.add_run(text)
-            run.font.name = "Arial"
+            # Colonne gauche (white=True) → Times New Roman / Colonne droite → Arial
+            run.font.name = "Times New Roman" if white else "Arial"
             run.font.size = Pt(size)
             run.bold = bold
             if white:
@@ -3411,8 +3447,10 @@ def creer_docx(contenu, service, client_nom):
             p.paragraph_format.space_before = Pt(1)
             p.paragraph_format.space_after  = Pt(2)
             run = p.add_run(text)
-            run.font.name = "Arial"
-            run.font.size = Pt(11)  # était 10 → +1
+            # Colonne gauche (white=True) → Times New Roman blanc
+            # Colonne droite (white=False) → Arial noir
+            run.font.name = "Times New Roman" if white else "Arial"
+            run.font.size = Pt(11)
             if white:
                 run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
             else:
@@ -3606,7 +3644,7 @@ def creer_docx(contenu, service, client_nom):
         if profil_raw:
             add_cv_heading(col_d, "Profil professionnel", "1565A8")
             for line in profil_raw.split("\n"):
-                l = line.strip().lstrip("-•").strip()
+                l = line.strip().lstrip("-•#").strip()
                 if l:
                     add_cv_text(col_d, l)
 
@@ -3617,11 +3655,12 @@ def creer_docx(contenu, service, client_nom):
                 l = line.strip()
                 if not l:
                     continue
-                # Sous-titre de groupe (### Expérience de Bénévolat)
+
+                # === Sous-titre de groupe : ### Stagiaire CIE Bouaké ===
                 if l.startswith("###"):
                     sous_titre = l.lstrip("#").strip()
                     p = col_d.add_paragraph()
-                    p.paragraph_format.space_before = Pt(8)
+                    p.paragraph_format.space_before = Pt(10)
                     p.paragraph_format.space_after  = Pt(2)
                     run = p.add_run(sous_titre)
                     run.font.name  = "Arial"
@@ -3629,31 +3668,85 @@ def creer_docx(contenu, service, client_nom):
                     run.bold       = True
                     run.underline  = True
                     run.font.color.rgb = RGBColor(0x15, 0x65, 0xA8)
-                # Titre de poste en gras (**)
-                elif l.startswith(("##", "**")):
-                    titre_exp = l.lstrip("#").strip().strip("**")
-                    add_cv_text(col_d, titre_exp, bold=True)
-                # Sous-label "Missions principales :"
+
+                # === Titre de mission BLEU : >>>BLEU<<<Titre : explication ===
+                elif l.startswith(">>>BLEU<<<"):
+                    contenu_bleu = l.replace(">>>BLEU<<<", "").strip()
+                    p = col_d.add_paragraph()
+                    p.paragraph_format.space_before = Pt(5)
+                    p.paragraph_format.space_after  = Pt(2)
+                    if ":" in contenu_bleu:
+                        titre_bleu, explication = contenu_bleu.split(":", 1)
+                        run_b = p.add_run(titre_bleu.strip() + " : ")
+                        run_b.font.name = "Arial"
+                        run_b.font.size = Pt(11)
+                        run_b.bold = True
+                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
+                        if explication.strip():
+                            run_e = p.add_run(explication.strip())
+                            run_e.font.name = "Arial"
+                            run_e.font.size = Pt(11)
+                            run_e.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+                    else:
+                        run_b = p.add_run(contenu_bleu)
+                        run_b.font.name = "Arial"
+                        run_b.font.size = Pt(11)
+                        run_b.bold = True
+                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
+
+                # === Ligne "Missions principales :" ===
                 elif l.lower().startswith("missions"):
                     p = col_d.add_paragraph()
-                    p.paragraph_format.space_before = Pt(4)
+                    p.paragraph_format.space_before = Pt(6)
                     p.paragraph_format.space_after  = Pt(2)
                     run = p.add_run(l.rstrip(":") + " :")
                     run.font.name  = "Arial"
-                    run.font.size  = Pt(10)
+                    run.font.size  = Pt(11)
                     run.bold       = True
                     run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+
+                # === Bullet classique ===
                 elif l.startswith(("-", "•")):
                     add_cv_bullet(col_d, l.lstrip("-•").strip())
+
+                # === Texte normal (contexte, entreprise, période) ===
                 else:
-                    add_cv_text(col_d, l)
+                    # Ignorer les lignes purement Markdown (**)
+                    l_clean = l.strip("*").strip()
+                    if l_clean:
+                        add_cv_text(col_d, l_clean)
 
         # Centres d'intérêt (colonne droite)
         if sections.get("interets"):
             add_cv_heading(col_d, "Centres d'intérêt", "1565A8")
             for line in sections["interets"].split("\n"):
                 l = line.strip().lstrip("-•").strip()
-                if l:
+                if not l:
+                    continue
+                if l.startswith(">>>BLEU<<<"):
+                    contenu_bleu = l.replace(">>>BLEU<<<", "").strip()
+                    p = col_d.add_paragraph()
+                    p.paragraph_format.space_before = Pt(5)
+                    p.paragraph_format.space_after  = Pt(2)
+                    if ":" in contenu_bleu:
+                        titre_bleu, explication = contenu_bleu.split(":", 1)
+                        run_b = p.add_run(titre_bleu.strip() + " : ")
+                        run_b.font.name = "Arial"
+                        run_b.font.size = Pt(11)
+                        run_b.bold = True
+                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
+                        if explication.strip():
+                            run_e = p.add_run(explication.strip())
+                            run_e.font.name = "Arial"
+                            run_e.font.size = Pt(11)
+                            run_e.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+                    else:
+                        run_b = p.add_run(contenu_bleu)
+                        run_b.font.name = "Arial"
+                        run_b.font.size = Pt(11)
+                        run_b.bold = True
+                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
+                else:
                     add_cv_bullet(col_d, l)
 
         # Informations personnelles restantes
