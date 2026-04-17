@@ -3381,12 +3381,34 @@ def creer_docx(contenu, service, client_nom):
     IS_CV     = "CV" in service or "Lettre de Motivation" in service
 
     # ══════════════════════════════════════════════════════════════
-    # MODE CV — Template deux colonnes professionnel
+    # MODE CV — Template deux colonnes (fidèle au modèle SIRIKY)
+    # DISPOSITION :
+    #   EN-TÊTE : fond bleu foncé, pleine largeur
+    #     → NOM en grand blanc Arial centré
+    #     → Titre professionnel bleu clair Arial centré
+    #     → Contacts bleu pâle Arial centré
+    #   CORPS : 2 colonnes côte à côte
+    #     GAUCHE (~31%) fond bleu foncé :
+    #       FORMATION → COMPÉTENCES → LANGUES → SPORTS & LOISIRS
+    #       police Times New Roman, texte BLANC
+    #     DROITE (~69%) fond blanc :
+    #       PROFIL → EXPÉRIENCES → CENTRES D'INTÉRÊT → INFOS PERSO
+    #       police Arial, titres de sections bleu souligné,
+    #       titres de missions bleu gras, texte NOIR
     # ══════════════════════════════════════════════════════════════
     if IS_CV:
         from docx.oxml.ns import qn
         from docx.oxml import OxmlElement
         from docx.shared import Inches
+
+        # ── Couleurs (identiques au modèle JS SIRIKY) ──────────────
+        BLEU_FONCE = "1A3A5C"   # fond colonne gauche + en-tête
+        BLEU_TITRE = "0070C0"   # titres de missions colonne droite
+        BLEU_SEC   = "1565A8"   # titres de sections colonne droite
+        BLANC      = "FFFFFF"
+        NOIR       = "1A1A2E"
+        BLEU_CLAIR = "A8D4F5"   # sous-titre en-tête
+        BLEU_PALE  = "D0E8FF"   # contacts en-tête
 
         def hex_to_rgb(h):
             h = h.lstrip("#")
@@ -3412,74 +3434,148 @@ def creer_docx(contenu, service, client_nom):
                 tcBorders.append(border)
             tcPr.append(tcBorders)
 
-        def add_cv_heading(cell, text, hex_color="2E9BE0"):
+        # ── GAUCHE : Times New Roman, blanc ────────────────────────
+        def g_heading(cell, text):
+            """Titre de section colonne gauche : TNR 12pt blanc gras souligné"""
             p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(12)
-            p.paragraph_format.space_after  = Pt(4)
+            p.paragraph_format.space_before = Pt(14)
+            p.paragraph_format.space_after  = Pt(6)
             run = p.add_run(text.upper())
-            run.bold = True
-            # Colonne gauche (hex_color=FFFFFF) → Times New Roman
-            # Colonne droite → Arial
-            run.font.name = "Times New Roman" if hex_color.upper() in ("FFFFFF", "FFF", "WHITE") else "Arial"
-            run.font.size = Pt(12)
-            r, g, b = hex_to_rgb(hex_color)
-            run.font.color.rgb = RGBColor(r, g, b)
-            run.underline = True
-            return p
+            run.font.name  = "Times New Roman"
+            run.font.size  = Pt(12)
+            run.bold       = True
+            run.underline  = True
+            run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
-        def add_cv_text(cell, text, white=False, bold=False, size=11):
+        def g_text(cell, text, bold=False):
+            """Texte simple colonne gauche : TNR 10pt blanc"""
             p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(1)
+            p.paragraph_format.space_before = Pt(2)
             p.paragraph_format.space_after  = Pt(2)
             run = p.add_run(text)
-            # Colonne gauche (white=True) → Times New Roman / Colonne droite → Arial
-            run.font.name = "Times New Roman" if white else "Arial"
-            run.font.size = Pt(size)
-            run.bold = bold
-            if white:
-                run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
-            else:
-                run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
-            return p
+            run.font.name  = "Times New Roman"
+            run.font.size  = Pt(10)
+            run.bold       = bold
+            run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
-        def add_cv_bullet(cell, text, white=False):
-            p = cell.add_paragraph(style="List Bullet")
-            p.paragraph_format.space_before = Pt(1)
+        def g_bullet(cell, text):
+            """Bullet colonne gauche : TNR 10pt blanc avec • manuel"""
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(2)
             p.paragraph_format.space_after  = Pt(2)
-            run = p.add_run(text)
-            # Colonne gauche (white=True) → Times New Roman blanc
-            # Colonne droite (white=False) → Arial noir
-            run.font.name = "Times New Roman" if white else "Arial"
-            run.font.size = Pt(11)
-            if white:
-                run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
-            else:
-                run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
-            return p
+            p.paragraph_format.left_indent  = Pt(10)
+            r1 = p.add_run("• ")
+            r1.font.name = "Times New Roman"
+            r1.font.size = Pt(10)
+            r1.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+            r2 = p.add_run(text)
+            r2.font.name = "Times New Roman"
+            r2.font.size = Pt(10)
+            r2.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
-        # ── Parser le contenu Gemini ───────────────────────────────
+        def g_space(cell):
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(4)
+            p.paragraph_format.space_after  = Pt(4)
+
+        # ── DROITE : Arial, noir + bleu pour missions ───────────────
+        def d_heading(cell, text):
+            """Titre de section colonne droite : Arial 12pt bleu gras souligné"""
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(16)
+            p.paragraph_format.space_after  = Pt(6)
+            run = p.add_run(text.upper())
+            run.font.name  = "Arial"
+            run.font.size  = Pt(12)
+            run.bold       = True
+            run.underline  = True
+            r, g, b = hex_to_rgb(BLEU_SEC)
+            run.font.color.rgb = RGBColor(r, g, b)
+
+        def d_text(cell, text, bold=False, size=11):
+            """Texte normal colonne droite : Arial 11pt noir justifié"""
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(2)
+            p.paragraph_format.space_after  = Pt(2)
+            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            run = p.add_run(text)
+            run.font.name  = "Arial"
+            run.font.size  = Pt(size)
+            run.bold       = bold
+            run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+
+        def d_bullet(cell, text):
+            """Bullet colonne droite : Arial 10pt noir avec • manuel"""
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(2)
+            p.paragraph_format.space_after  = Pt(2)
+            p.paragraph_format.left_indent  = Pt(10)
+            r1 = p.add_run("• ")
+            r1.font.name = "Arial"
+            r1.font.size = Pt(10)
+            r1.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+            r2 = p.add_run(text)
+            r2.font.name = "Arial"
+            r2.font.size = Pt(10)
+            r2.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+
+        def d_mission(cell, titre, explication=""):
+            """Titre mission BLEU gras + explication NOIR sur même ligne"""
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(5)
+            p.paragraph_format.space_after  = Pt(3)
+            p.paragraph_format.left_indent  = Pt(8)
+            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            r_b = p.add_run(titre + " : ")
+            r_b.font.name  = "Arial"
+            r_b.font.size  = Pt(10)
+            r_b.bold       = True
+            r_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
+            if explication:
+                r_n = p.add_run(explication)
+                r_n.font.name  = "Arial"
+                r_n.font.size  = Pt(10)
+                r_n.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+
+        def d_sous_titre(cell, text):
+            """Sous-titre de poste : Arial 11pt bleu gras souligné"""
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(10)
+            p.paragraph_format.space_after  = Pt(4)
+            run = p.add_run(text)
+            run.font.name  = "Arial"
+            run.font.size  = Pt(11)
+            run.bold       = True
+            run.underline  = True
+            r, g, b = hex_to_rgb(BLEU_SEC)
+            run.font.color.rgb = RGBColor(r, g, b)
+
+        def d_space(cell):
+            p = cell.add_paragraph()
+            p.paragraph_format.space_before = Pt(4)
+            p.paragraph_format.space_after  = Pt(4)
+
+        # ── PARSER le contenu Gemini ────────────────────────────────
         import re as _re
-        lignes = [l for l in contenu.split("\n")]
-
-        # Extraire les sections du CV depuis le contenu Gemini
+        lignes = contenu.split("\n")
         sections = {}
         section_courante = None
         buffer_lignes = []
 
         SECTION_KEYS = {
             "INFORMATIONS PERSONNELLES": "infos",
-            "TITRE PROFESSIONNEL": "titre",
-            "PROFIL": "profil",
-            "EXPÉRIENCES": "experiences",
-            "EXPÉRIENCE": "experiences",
-            "FORMATION": "formation",
-            "COMPÉTENCES": "competences",
-            "LANGUES": "langues",
-            "SPORTS": "sports",
-            "LOISIRS": "sports",
-            "CENTRES D'INTÉRÊT": "interets",
-            "CENTRES D'INTERET": "interets",
-            "LETTRE DE MOTIVATION": "lettre",
+            "TITRE PROFESSIONNEL":       "titre",
+            "PROFIL":                    "profil",
+            "EXPÉRIENCES":               "experiences",
+            "EXPÉRIENCE":                "experiences",
+            "FORMATION":                 "formation",
+            "COMPÉTENCES":               "competences",
+            "LANGUES":                   "langues",
+            "SPORTS":                    "sports",
+            "LOISIRS":                   "sports",
+            "CENTRES D'INTÉRÊT":         "interets",
+            "CENTRES D'INTERET":         "interets",
+            "LETTRE DE MOTIVATION":      "lettre",
         }
 
         for ligne in lignes:
@@ -3502,71 +3598,74 @@ def creer_docx(contenu, service, client_nom):
         if section_courante and buffer_lignes:
             sections[section_courante] = "\n".join(buffer_lignes).strip()
 
-        # Extraire nom/contact depuis infos perso
+        # ── Extraire nom + contacts depuis INFORMATIONS PERSONNELLES ─
         infos_raw  = sections.get("infos", "")
         profil_raw = sections.get("profil", "")
         titre_raw  = sections.get("titre", "").strip().lstrip("-•").strip()
-        nom_cv = client_nom or "Candidat"
+        nom_cv     = client_nom or "Candidat"
         contact_email = ""
         contact_tel   = ""
         contact_ville = ""
+
         for line in infos_raw.split("\n"):
-            l = line.strip().lstrip("-").strip()
+            l = line.strip().lstrip("-•").strip()
             if any(k in l.lower() for k in ["nom", "prénom", "prenom"]):
                 nom_cv = l.split(":")[-1].strip() if ":" in l else l
             if any(k in l.lower() for k in ["email", "mail"]):
                 contact_email = l.split(":")[-1].strip() if ":" in l else l
             if any(k in l.lower() for k in ["tél", "tel", "téléphone", "telephone"]):
                 contact_tel = l.split(":")[-1].strip() if ":" in l else l
-            if any(k in l.lower() for k in ["ville", "adresse", "résidence", "residence"]):
-                val = l.split(":")[-1].strip() if ":" in l else l
-                # garder seulement la ville/pays, pas le label
-                contact_ville = val
+            if any(k in l.lower() for k in ["ville", "adresse", "résidence", "residence", "pays"]):
+                contact_ville = l.split(":")[-1].strip() if ":" in l else l
 
-        # Construire ligne contact avec icônes
         parts_contact = []
         if contact_email: parts_contact.append(f"✉  {contact_email}")
         if contact_tel:   parts_contact.append(f"☎  {contact_tel}")
         if contact_ville: parts_contact.append(f"📍  {contact_ville}")
         contact_cv = "   │   ".join(parts_contact)
 
-        # ── Construction du document ───────────────────────────────
-        # A4 pleine largeur : marges à 0 pour que les tableaux occupent toute la page
+        # ══════════════════════════════════════════════════════════
+        # CONSTRUCTION DU DOCUMENT
+        # Marges à 0 pour que l'en-tête et le corps occupent toute
+        # la largeur de la page A4 (comme le modèle JS SIRIKY)
+        # ══════════════════════════════════════════════════════════
         doc.sections[0].top_margin    = Cm(0)
         doc.sections[0].bottom_margin = Cm(1.0)
         doc.sections[0].left_margin   = Cm(0)
         doc.sections[0].right_margin  = Cm(0)
 
-        # Largeur utile A4 en DXA (11906) convertie en EMU pour python-docx
-        # 1 DXA = 914.4 EMU  →  11906 DXA ≈ 10,885,224 EMU ≈ Inches(8.27)
-        PAGE_FULL = Inches(8.27)   # largeur totale A4 sans marges
-        COL_G_W   = Inches(2.90)   # colonne gauche ~1/3
-        COL_D_W   = Inches(5.37)   # colonne droite ~2/3
+        PAGE_FULL = Inches(8.27)   # A4 pleine largeur
+        COL_G_W   = Inches(2.55)   # Gauche ~31%
+        COL_D_W   = Inches(5.72)   # Droite ~69%
 
-        # ── EN-TÊTE pleine largeur ─────────────────────────────────
+        # ════════════════════════════════════════════════════════
+        # 1. EN-TÊTE PLEINE LARGEUR (fond bleu foncé)
+        #    NOM → TITRE PRO → CONTACTS
+        # ════════════════════════════════════════════════════════
         tbl_header = doc.add_table(rows=1, cols=1)
         tbl_header.style = "Table Grid"
         cell_h = tbl_header.cell(0, 0)
-        set_cell_bg(cell_h, "1565A8")
+        set_cell_bg(cell_h, BLEU_FONCE)
         remove_cell_borders(cell_h)
         cell_h.width = PAGE_FULL
 
-        # Vider le paragraphe par défaut
+        # Vider le paragraphe vide par défaut
         for p in cell_h.paragraphs:
             for run in p.runs:
                 run.clear()
 
+        # NOM en grand, Arial, blanc, centré
         p_nom = cell_h.paragraphs[0]
         p_nom.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_nom.paragraph_format.space_before = Pt(16)
-        p_nom.paragraph_format.space_after  = Pt(4)
+        p_nom.paragraph_format.space_before = Pt(18)
+        p_nom.paragraph_format.space_after  = Pt(6)
         r_nom = p_nom.add_run(nom_cv.upper())
         r_nom.font.name = "Arial"
         r_nom.font.size = Pt(26)
         r_nom.bold = True
         r_nom.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
-        # Ligne titre professionnel (diplôme | spécialité | domaine)
+        # TITRE PROFESSIONNEL (diplôme | spécialité | domaine)
         if titre_raw:
             p_titre = cell_h.add_paragraph()
             p_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -3574,203 +3673,187 @@ def creer_docx(contenu, service, client_nom):
             p_titre.paragraph_format.space_after  = Pt(6)
             r_titre = p_titre.add_run(titre_raw)
             r_titre.font.name = "Arial"
-            r_titre.font.size = Pt(10)
-            r_titre.font.color.rgb = RGBColor(0xCC, 0xE5, 0xFF)
+            r_titre.font.size = Pt(11)
+            r, g, b = hex_to_rgb(BLEU_CLAIR)
+            r_titre.font.color.rgb = RGBColor(r, g, b)
 
-        # Ligne contact avec icônes
+        # CONTACTS (email │ téléphone │ ville)
         if contact_cv:
             p_contact = cell_h.add_paragraph()
             p_contact.alignment = WD_ALIGN_PARAGRAPH.CENTER
             p_contact.paragraph_format.space_before = Pt(4)
-            p_contact.paragraph_format.space_after  = Pt(16)
+            p_contact.paragraph_format.space_after  = Pt(18)
             r_contact = p_contact.add_run(contact_cv)
             r_contact.font.name = "Arial"
             r_contact.font.size = Pt(10)
-            r_contact.font.color.rgb = RGBColor(0xAD, 0xD8, 0xFF)
+            r, g, b = hex_to_rgb(BLEU_PALE)
+            r_contact.font.color.rgb = RGBColor(r, g, b)
 
-        # ── CORPS : tableau 2 colonnes ─────────────────────────────
+        # ════════════════════════════════════════════════════════
+        # 2. CORPS : tableau 2 colonnes
+        # ════════════════════════════════════════════════════════
         tbl_body = doc.add_table(rows=1, cols=2)
         tbl_body.style = "Table Grid"
 
-        col_g = tbl_body.cell(0, 0)  # Gauche ~1/3
-        col_d = tbl_body.cell(0, 1)  # Droite ~2/3
-
+        col_g = tbl_body.cell(0, 0)
+        col_d = tbl_body.cell(0, 1)
         col_g.width = COL_G_W
         col_d.width = COL_D_W
 
-        set_cell_bg(col_g, "1A78C2")
+        set_cell_bg(col_g, BLEU_FONCE)
         remove_cell_borders(col_g)
         remove_cell_borders(col_d)
 
-        # Vider paragraphes par défaut
+        # Vider les paragraphes vides par défaut
         for p in col_g.paragraphs: p._element.getparent().remove(p._element)
         for p in col_d.paragraphs: p._element.getparent().remove(p._element)
 
-        # ── COLONNE GAUCHE ─────────────────────────────────────────
-        # Formation
+        # ════════════════════════════════════════════════════════
+        # COLONNE GAUCHE
+        # Ordre : FORMATION → COMPÉTENCES → LANGUES → SPORTS & LOISIRS
+        # Times New Roman, blanc sur fond bleu foncé
+        # ════════════════════════════════════════════════════════
+
+        # FORMATION
         if sections.get("formation"):
-            add_cv_heading(col_g, "Formation", "FFFFFF")
+            g_heading(col_g, "Formation")
+            prev_bold_line = ""
             for line in sections["formation"].split("\n"):
                 l = line.strip().lstrip("-•").strip()
-                if l:
-                    add_cv_bullet(col_g, l, white=True)
+                if not l:
+                    g_space(col_g)
+                    continue
+                # Première ligne d'un bloc = diplôme (gras), suivante = détail
+                # On détecte si c'est un diplôme (contient un tiret long ou année)
+                if _re.search(r"(BTS|DUT|Licence|Master|BAC|BEPC|BT |CEPE|Doctorat|Ingénieur|CAP|BEP)", l, _re.I):
+                    if prev_bold_line:
+                        g_space(col_g)
+                    g_text(col_g, l, bold=True)
+                    prev_bold_line = l
+                else:
+                    g_text(col_g, l)
 
-        # Compétences
+        # COMPÉTENCES
         if sections.get("competences"):
-            add_cv_heading(col_g, "Compétences", "FFFFFF")
+            g_heading(col_g, "Compétences")
             for line in sections["competences"].split("\n"):
                 l = line.strip().lstrip("-•").strip()
                 if l:
-                    add_cv_bullet(col_g, l, white=True)
+                    g_bullet(col_g, l)
 
-        # Langues
+        # LANGUES
         if sections.get("langues"):
-            add_cv_heading(col_g, "Langues", "FFFFFF")
+            g_heading(col_g, "Langues")
             for line in sections["langues"].split("\n"):
                 l = line.strip().lstrip("-•").strip()
                 if l:
-                    add_cv_bullet(col_g, l, white=True)
+                    g_bullet(col_g, l)
 
-        # Sports & Loisirs
+        # SPORTS & LOISIRS
         if sections.get("sports"):
-            add_cv_heading(col_g, "Sports & Loisirs", "FFFFFF")
+            g_heading(col_g, "Sports & Loisirs")
             for line in sections["sports"].split("\n"):
                 l = line.strip().lstrip("-•").strip()
                 if l:
-                    add_cv_bullet(col_g, l, white=True)
+                    g_bullet(col_g, l)
 
-        # ── COLONNE DROITE ─────────────────────────────────────────
-        # Profil
+        # ════════════════════════════════════════════════════════
+        # COLONNE DROITE
+        # Ordre : PROFIL → EXPÉRIENCES → CENTRES D'INTÉRÊT → INFOS PERSO
+        # Arial, noir. Titres sections = bleu souligné.
+        # Titres missions (>>>BLEU<<<) = bleu gras + explication noire.
+        # ════════════════════════════════════════════════════════
+
+        # PROFIL PROFESSIONNEL
         if profil_raw:
-            add_cv_heading(col_d, "Profil professionnel", "1565A8")
+            d_heading(col_d, "Profil Professionnel")
             for line in profil_raw.split("\n"):
                 l = line.strip().lstrip("-•#").strip()
                 if l:
-                    add_cv_text(col_d, l)
+                    d_text(col_d, l)
 
-        # Expériences
+        # EXPÉRIENCES PROFESSIONNELLES
         if sections.get("experiences"):
-            add_cv_heading(col_d, "Expériences professionnelles", "1565A8")
+            d_heading(col_d, "Expériences Professionnelles")
             for line in sections["experiences"].split("\n"):
                 l = line.strip()
                 if not l:
                     continue
 
-                # === Sous-titre de groupe : ### Stagiaire CIE Bouaké ===
                 if l.startswith("###"):
-                    sous_titre = l.lstrip("#").strip()
-                    p = col_d.add_paragraph()
-                    p.paragraph_format.space_before = Pt(10)
-                    p.paragraph_format.space_after  = Pt(2)
-                    run = p.add_run(sous_titre)
-                    run.font.name  = "Arial"
-                    run.font.size  = Pt(11)
-                    run.bold       = True
-                    run.underline  = True
-                    run.font.color.rgb = RGBColor(0x15, 0x65, 0xA8)
+                    # Sous-titre de poste : Arial 11pt bleu gras souligné
+                    d_sous_titre(col_d, l.lstrip("#").strip())
 
-                # === Titre de mission BLEU : >>>BLEU<<<Titre : explication ===
                 elif l.startswith(">>>BLEU<<<"):
+                    # Titre mission bleu + explication noire
                     contenu_bleu = l.replace(">>>BLEU<<<", "").strip()
-                    p = col_d.add_paragraph()
-                    p.paragraph_format.space_before = Pt(5)
-                    p.paragraph_format.space_after  = Pt(2)
                     if ":" in contenu_bleu:
-                        titre_bleu, explication = contenu_bleu.split(":", 1)
-                        run_b = p.add_run(titre_bleu.strip() + " : ")
-                        run_b.font.name = "Arial"
-                        run_b.font.size = Pt(11)
-                        run_b.bold = True
-                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
-                        if explication.strip():
-                            run_e = p.add_run(explication.strip())
-                            run_e.font.name = "Arial"
-                            run_e.font.size = Pt(11)
-                            run_e.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+                        titre_b, expl = contenu_bleu.split(":", 1)
+                        d_mission(col_d, titre_b.strip(), expl.strip())
                     else:
-                        run_b = p.add_run(contenu_bleu)
-                        run_b.font.name = "Arial"
-                        run_b.font.size = Pt(11)
-                        run_b.bold = True
-                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
+                        d_mission(col_d, contenu_bleu)
 
-                # === Ligne "Missions principales :" ===
                 elif l.lower().startswith("missions"):
-                    p = col_d.add_paragraph()
-                    p.paragraph_format.space_before = Pt(6)
-                    p.paragraph_format.space_after  = Pt(2)
-                    run = p.add_run(l.rstrip(":") + " :")
-                    run.font.name  = "Arial"
-                    run.font.size  = Pt(11)
-                    run.bold       = True
-                    run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+                    # Label "Missions principales :" en noir gras
+                    d_text(col_d, l.rstrip(":") + " :", bold=True)
 
-                # === Bullet classique ===
                 elif l.startswith(("-", "•")):
-                    add_cv_bullet(col_d, l.lstrip("-•").strip())
+                    d_bullet(col_d, l.lstrip("-•").strip())
 
-                # === Texte normal (contexte, entreprise, période) ===
                 else:
-                    # Ignorer les lignes purement Markdown (**)
+                    # Texte de contexte (entreprise, période...)
+                    # Nettoyer les ** résiduels
                     l_clean = l.strip("*").strip()
                     if l_clean:
-                        add_cv_text(col_d, l_clean)
+                        d_text(col_d, l_clean)
 
-        # Centres d'intérêt (colonne droite)
+        # CENTRES D'INTÉRÊT
         if sections.get("interets"):
-            add_cv_heading(col_d, "Centres d'intérêt", "1565A8")
+            d_space(col_d)
+            d_heading(col_d, "Centres d'Intérêt")
             for line in sections["interets"].split("\n"):
                 l = line.strip().lstrip("-•").strip()
                 if not l:
                     continue
                 if l.startswith(">>>BLEU<<<"):
                     contenu_bleu = l.replace(">>>BLEU<<<", "").strip()
-                    p = col_d.add_paragraph()
-                    p.paragraph_format.space_before = Pt(5)
-                    p.paragraph_format.space_after  = Pt(2)
                     if ":" in contenu_bleu:
-                        titre_bleu, explication = contenu_bleu.split(":", 1)
-                        run_b = p.add_run(titre_bleu.strip() + " : ")
-                        run_b.font.name = "Arial"
-                        run_b.font.size = Pt(11)
-                        run_b.bold = True
-                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
-                        if explication.strip():
-                            run_e = p.add_run(explication.strip())
-                            run_e.font.name = "Arial"
-                            run_e.font.size = Pt(11)
-                            run_e.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+                        titre_b, expl = contenu_bleu.split(":", 1)
+                        d_mission(col_d, titre_b.strip(), expl.strip())
                     else:
-                        run_b = p.add_run(contenu_bleu)
-                        run_b.font.name = "Arial"
-                        run_b.font.size = Pt(11)
-                        run_b.bold = True
-                        run_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
+                        d_mission(col_d, contenu_bleu)
                 else:
-                    add_cv_bullet(col_d, l)
+                    d_bullet(col_d, l)
 
-        # Informations personnelles restantes
+        # INFORMATIONS PERSONNELLES (date de naissance, situation familiale, résidence)
         if infos_raw:
-            add_cv_heading(col_d, "Informations personnelles", "1565A8")
+            d_space(col_d)
+            d_heading(col_d, "Informations Personnelles")
+            CONTACT_KEYS = ["nom", "prénom", "prenom", "email", "mail",
+                            "tél", "tel", "téléphone", "telephone",
+                            "ville", "adresse", "résidence", "residence"]
             for line in infos_raw.split("\n"):
                 l = line.strip().lstrip("-•").strip()
-                if l and not any(k in l.lower() for k in ["nom", "prénom", "prenom", "email", "mail", "tél", "tel", "téléphone", "telephone", "ville", "adresse", "résidence", "residence"]):
-                    add_cv_bullet(col_d, l)
+                if l and not any(k in l.lower() for k in CONTACT_KEYS):
+                    d_bullet(col_d, l)
 
-        # ── LETTRE DE MOTIVATION (page séparée si présente) ───────
+        # ════════════════════════════════════════════════════════
+        # LETTRE DE MOTIVATION (page séparée si présente)
+        # ════════════════════════════════════════════════════════
         if sections.get("lettre"):
             doc.add_page_break()
-            p_titre_lettre = doc.add_paragraph()
-            run_tl = p_titre_lettre.add_run("LETTRE DE MOTIVATION")
-            run_tl.font.name = "Arial"
-            run_tl.font.size = Pt(16)
-            run_tl.bold = True
-            run_tl.font.color.rgb = RGBColor(0x15, 0x65, 0xA8)
-            p_titre_lettre.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            p_titre_lettre.paragraph_format.space_after = Pt(20)
-
+            # Remettre les marges normales pour la lettre
             doc.sections[0].left_margin  = Cm(2.5)
             doc.sections[0].right_margin = Cm(2.5)
+            p_tl = doc.add_paragraph()
+            p_tl.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_tl.paragraph_format.space_after = Pt(20)
+            r_tl = p_tl.add_run("LETTRE DE MOTIVATION")
+            r_tl.font.name = "Arial"
+            r_tl.font.size = Pt(16)
+            r_tl.bold = True
+            r, g, b = hex_to_rgb(BLEU_SEC)
+            r_tl.font.color.rgb = RGBColor(r, g, b)
 
             for line in sections["lettre"].split("\n"):
                 l = line.strip()
@@ -3781,7 +3864,7 @@ def creer_docx(contenu, service, client_nom):
                 p.paragraph_format.space_before = Pt(0)
                 p.paragraph_format.space_after  = Pt(6)
                 p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-                run = p.add_run(l.lstrip("#-•").strip())
+                run = p.add_run(l.lstrip("#-•*").strip())
                 run.font.name = "Arial"
                 run.font.size = Pt(11)
                 run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
