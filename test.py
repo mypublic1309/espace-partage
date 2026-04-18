@@ -2483,6 +2483,33 @@ RÈGLES DE RÉDACTION
 - Développe chaque section suffisamment pour remplir une page A4.
 
 ════════════════════════════════════════════════
+RÈGLES SPÉCIALES — LIRE ATTENTIVEMENT
+════════════════════════════════════════════════
+
+① PROFIL PROFESSIONNEL — OBLIGATOIRE, toujours présent, toujours à la 1ère personne :
+   Rédige 3 à 5 phrases à la première personne ("je suis", "je maîtrise", "je m'engage"...).
+   Modèle de style à suivre :
+   "Titulaire d'un BTS en Finance-Comptabilité, je suis passionné(e) par [domaine]. Doté(e) de [qualités],
+   je maîtrise [compétences clés]. Fort(e) de [X] ans d'expérience en [secteur], je m'engage à contribuer
+   efficacement au développement de toute structure qui m'accueillera."
+
+② EXPÉRIENCES PROFESSIONNELLES — toujours placé APRÈS le PROFIL PROFESSIONNEL, jamais avant.
+
+③ CENTRES D'INTÉRÊT — TOUJOURS généré, même si le client n'en a pas précisé :
+   Si le client a précisé ses centres → utilise-les.
+   Si le client n'en a pas précisé → déduis 2 à 3 centres d'intérêt pertinents à partir
+   de son secteur, ses compétences et sa formation (ex: finance → "Actualité économique",
+   informatique → "Nouvelles technologies", communication → "Relations publiques"...).
+   Format obligatoire : >>>BLEU<<<Nom du centre : explication en une phrase.
+
+④ INFORMATIONS PERSONNELLES — contient UNIQUEMENT ces 4 champs (et seulement s'ils sont fournis) :
+   - Situation familiale : ...
+   - Résidence : ...
+   - Téléphone : ...
+   - Date de naissance : ...
+   NE PAS inclure : nom, email, ville seule, pays seul (ces infos vont dans l'en-tête).
+
+════════════════════════════════════════════════
 BALISES NOVA — le moteur Python les lit mot pour mot
 ════════════════════════════════════════════════
 
@@ -2498,7 +2525,7 @@ NE PAS utiliser de gras (**), italique (*) ou toute autre mise en forme Markdown
 NE PAS écrire de couleurs, polices ou styles. Python s'en charge entièrement.
 
 ════════════════════════════════════════════════
-STRUCTURE OBLIGATOIRE — titres EXACTS ci-dessous
+STRUCTURE OBLIGATOIRE — ordre et titres EXACTS
 ════════════════════════════════════════════════
 
 ## INFORMATIONS PERSONNELLES
@@ -2507,20 +2534,18 @@ STRUCTURE OBLIGATOIRE — titres EXACTS ci-dessous
 - Téléphone : ...
 - Ville : ...
 - Pays : ...
-- Date de naissance : ... (si fournie)
-- Situation familiale : ... (si fournie)
 
 ## TITRE PROFESSIONNEL
 (1 ligne max — ex: "BTS Finance | Comptabilité | Gestion des Stocks")
 
 ## PROFIL PROFESSIONNEL
-Rédige 4 à 6 phrases complètes et percutantes : qui est la personne, son niveau, ses points forts, sa valeur ajoutée.
+(3 à 5 phrases à la 1ère personne — voir règle ① ci-dessus)
 
 ## EXPÉRIENCES PROFESSIONNELLES
 Pour chaque poste, format EXACT :
 
 ### Intitulé du groupe d'expérience (ex: Stagiaire Polyvalent — CIE Bouaké)
-Entreprise · Ville · Période (ex: CIE Bouaké · 2016–2024)
+Entreprise · Ville · Période
 Missions principales :
 >>>BLEU<<<Titre Mission 1 : description détaillée avec verbe d'action fort.
 >>>BLEU<<<Titre Mission 2 : description détaillée avec verbe d'action fort.
@@ -2534,7 +2559,6 @@ Missions principales :
 
 ## COMPÉTENCES
 - Compétence 1 précise et développée
-- Compétence 2
 - (minimum 5)
 
 ## LANGUES
@@ -2543,11 +2567,19 @@ Missions principales :
 ## SPORTS & LOISIRS
 (uniquement si fournis)
 - Activité 1
-- Activité 2
 
 ## CENTRES D'INTÉRÊT
-(uniquement si fournis — utilise obligatoirement le format >>>BLEU<<<)
->>>BLEU<<<Nom du centre d'intérêt : explication en une phrase complète.
+(TOUJOURS présent — voir règle ③ ci-dessus)
+>>>BLEU<<<Centre 1 : explication en une phrase.
+>>>BLEU<<<Centre 2 : explication en une phrase.
+>>>BLEU<<<Centre 3 : explication en une phrase.
+
+## INFORMATIONS PERSONNELLES COMPLÉMENTAIRES
+(uniquement ces 4 champs si fournis — voir règle ④)
+- Situation familiale : ...
+- Résidence : ...
+- Téléphone : ...
+- Date de naissance : ...
 
 ---
 
@@ -3563,19 +3595,20 @@ def creer_docx(contenu, service, client_nom):
         buffer_lignes = []
 
         SECTION_KEYS = {
-            "INFORMATIONS PERSONNELLES": "infos",
-            "TITRE PROFESSIONNEL":       "titre",
-            "PROFIL":                    "profil",
-            "EXPÉRIENCES":               "experiences",
-            "EXPÉRIENCE":                "experiences",
-            "FORMATION":                 "formation",
-            "COMPÉTENCES":               "competences",
-            "LANGUES":                   "langues",
-            "SPORTS":                    "sports",
-            "LOISIRS":                   "sports",
-            "CENTRES D'INTÉRÊT":         "interets",
-            "CENTRES D'INTERET":         "interets",
-            "LETTRE DE MOTIVATION":      "lettre",
+            "INFORMATIONS PERSONNELLES COMPLÉMENTAIRES": "infos_compl",
+            "INFORMATIONS PERSONNELLES":                 "infos",
+            "TITRE PROFESSIONNEL":                       "titre",
+            "PROFIL":                                    "profil",
+            "EXPÉRIENCES":                               "experiences",
+            "EXPÉRIENCE":                                "experiences",
+            "FORMATION":                                 "formation",
+            "COMPÉTENCES":                               "competences",
+            "LANGUES":                                   "langues",
+            "SPORTS":                                    "sports",
+            "LOISIRS":                                   "sports",
+            "CENTRES D'INTÉRÊT":                         "interets",
+            "CENTRES D'INTERET":                         "interets",
+            "LETTRE DE MOTIVATION":                      "lettre",
         }
 
         for ligne in lignes:
@@ -3626,83 +3659,122 @@ def creer_docx(contenu, service, client_nom):
 
         # ══════════════════════════════════════════════════════════
         # CONSTRUCTION DU DOCUMENT
-        # Marges à 0 pour que l'en-tête et le corps occupent toute
-        # la largeur de la page A4 (comme le modèle JS SIRIKY)
+        # Dimensions IDENTIQUES au modèle JS SIRIKY :
+        #   Page A4      : 11906 × 16838 DXA, marges 0 sauf bas 400 DXA
+        #   En-tête      : largeur 11400 DXA = Inches(7.92)
+        #                  marges internes : top=200 bottom=160 left=400 right=400 DXA
+        #   COL_G        : 3600 DXA = Inches(2.50)
+        #                  marges : top=200 bottom=200 left=280 right=220 DXA
+        #   COL_D        : 7800 DXA = Inches(5.42)
+        #                  marges : top=200 bottom=200 left=320 right=200 DXA
+        #   NOM          : size 52 demi-pts = Pt(26), bold, blanc, centré
+        #   Titre pro    : size 22 demi-pts = Pt(11), bleu clair A8D4F5
+        #   Contacts     : size 19 demi-pts = Pt(9.5), bleu pâle D0E8FF
+        # Conversion DXA→Cm : 1 DXA = 0.0353 cm
         # ══════════════════════════════════════════════════════════
         doc.sections[0].top_margin    = Cm(0)
-        doc.sections[0].bottom_margin = Cm(1.0)
+        doc.sections[0].bottom_margin = Cm(400 * 0.0353)  # 400 DXA ≈ 1.41 cm
         doc.sections[0].left_margin   = Cm(0)
         doc.sections[0].right_margin  = Cm(0)
 
-        PAGE_FULL = Inches(8.27)   # A4 pleine largeur
-        COL_G_W   = Inches(2.55)   # Gauche ~31%
-        COL_D_W   = Inches(5.72)   # Droite ~69%
+        # Largeurs (1 DXA = 914.4 EMU, python-docx utilise des EMU pour .width)
+        # On passe par Inches car 1 inch = 1440 DXA
+        PAGE_W  = Inches(11400 / 1440)  # 11400 DXA = Inches(7.917)
+        COL_G_W = Inches(3600  / 1440)  # 3600  DXA = Inches(2.500)
+        COL_D_W = Inches(7800  / 1440)  # 7800  DXA = Inches(5.417)
+
+        # Marges internes des cellules en EMU (python-docx OxmlElement tcMar)
+        # 1 DXA = 914.4 EMU  → on stocke en DXA pour les XML
+        # python-docx n'expose pas les marges de cellule via API,
+        # on les injecte en XML directement
+        def set_cell_margins(cell, top, bottom, left, right):
+            """Marges internes de cellule en DXA (comme JS margins en DXA/20)."""
+            tc = cell._tc
+            tcPr = tc.get_or_add_tcPr()
+            tcMar = OxmlElement("w:tcMar")
+            for side, val in [("top", top), ("bottom", bottom),
+                               ("left", left), ("right", right)]:
+                el = OxmlElement(f"w:{side}")
+                el.set(qn("w:w"), str(val))
+                el.set(qn("w:type"), "dxa")
+                tcMar.append(el)
+            tcPr.append(tcMar)
 
         # ════════════════════════════════════════════════════════
         # 1. EN-TÊTE PLEINE LARGEUR (fond bleu foncé)
         #    NOM → TITRE PRO → CONTACTS
+        #    Marges internes : top=200 bottom=160 left=400 right=400 DXA
         # ════════════════════════════════════════════════════════
         tbl_header = doc.add_table(rows=1, cols=1)
         tbl_header.style = "Table Grid"
         cell_h = tbl_header.cell(0, 0)
         set_cell_bg(cell_h, BLEU_FONCE)
         remove_cell_borders(cell_h)
-        cell_h.width = PAGE_FULL
+        cell_h.width = PAGE_W
+        set_cell_margins(cell_h, top=200, bottom=160, left=400, right=400)
 
         # Vider le paragraphe vide par défaut
         for p in cell_h.paragraphs:
             for run in p.runs:
                 run.clear()
 
-        # NOM en grand, Arial, blanc, centré
+        # NOM : size 52 demi-pts = Pt(26), spacing after=60 DXA→Pt(3)
         p_nom = cell_h.paragraphs[0]
         p_nom.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_nom.paragraph_format.space_before = Pt(18)
-        p_nom.paragraph_format.space_after  = Pt(6)
+        p_nom.paragraph_format.space_before = Pt(0)
+        p_nom.paragraph_format.space_after  = Pt(3)
         r_nom = p_nom.add_run(nom_cv.upper())
         r_nom.font.name = "Arial"
-        r_nom.font.size = Pt(26)
+        r_nom.font.size = Pt(26)   # = size 52 demi-pts
         r_nom.bold = True
         r_nom.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
-        # TITRE PROFESSIONNEL (diplôme | spécialité | domaine)
+        # TITRE PROFESSIONNEL : size 22 demi-pts = Pt(11), bleu clair A8D4F5, spacing after=80
         if titre_raw:
             p_titre = cell_h.add_paragraph()
             p_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
             p_titre.paragraph_format.space_before = Pt(0)
-            p_titre.paragraph_format.space_after  = Pt(6)
+            p_titre.paragraph_format.space_after  = Pt(4)
             r_titre = p_titre.add_run(titre_raw)
             r_titre.font.name = "Arial"
-            r_titre.font.size = Pt(11)
-            r, g, b = hex_to_rgb(BLEU_CLAIR)
+            r_titre.font.size = Pt(11)   # = size 22 demi-pts
+            r, g, b = hex_to_rgb(BLEU_CLAIR)   # A8D4F5
             r_titre.font.color.rgb = RGBColor(r, g, b)
 
-        # CONTACTS (email │ téléphone │ ville)
+        # CONTACTS : size 19 demi-pts = Pt(9.5), bleu pâle D0E8FF
         if contact_cv:
             p_contact = cell_h.add_paragraph()
             p_contact.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            p_contact.paragraph_format.space_before = Pt(4)
-            p_contact.paragraph_format.space_after  = Pt(18)
+            p_contact.paragraph_format.space_before = Pt(0)
+            p_contact.paragraph_format.space_after  = Pt(0)
             r_contact = p_contact.add_run(contact_cv)
             r_contact.font.name = "Arial"
-            r_contact.font.size = Pt(10)
-            r, g, b = hex_to_rgb(BLEU_PALE)
+            r_contact.font.size = Pt(9.5)   # = size 19 demi-pts
+            r, g, b = hex_to_rgb(BLEU_PALE)   # D0E8FF
             r_contact.font.color.rgb = RGBColor(r, g, b)
 
         # ════════════════════════════════════════════════════════
         # 2. CORPS : tableau 2 colonnes
+        #    COL_G : 3600 DXA, marges top=200 bot=200 left=280 right=220
+        #    COL_D : 7800 DXA, marges top=200 bot=200 left=320 right=200
         # ════════════════════════════════════════════════════════
         tbl_body = doc.add_table(rows=1, cols=2)
         tbl_body.style = "Table Grid"
 
         col_g = tbl_body.cell(0, 0)
         col_d = tbl_body.cell(0, 1)
-        col_g.width = COL_G_W
-        col_d.width = COL_D_W
+        col_g.width = COL_G_W   # 3600 DXA = Inches(2.500)
+        col_d.width = COL_D_W   # 7800 DXA = Inches(5.417)
 
         set_cell_bg(col_g, BLEU_FONCE)
         remove_cell_borders(col_g)
         remove_cell_borders(col_d)
+
+        # Marges internes identiques au modèle JS SIRIKY :
+        # Gauche : margins { top:200, bottom:200, left:280, right:220 }
+        # Droite : margins { top:200, bottom:200, left:320, right:200 }
+        set_cell_margins(col_g, top=200, bottom=200, left=280, right=220)
+        set_cell_margins(col_d, top=200, bottom=200, left=320, right=200)
 
         # Vider les paragraphes vides par défaut
         for p in col_g.paragraphs: p._element.getparent().remove(p._element)
@@ -3825,17 +3897,32 @@ def creer_docx(contenu, service, client_nom):
                 else:
                     d_bullet(col_d, l)
 
-        # INFORMATIONS PERSONNELLES (date de naissance, situation familiale, résidence)
-        if infos_raw:
+        # INFORMATIONS PERSONNELLES (date de naissance, situation familiale, résidence, téléphone)
+        # On utilise en priorité infos_compl (section dédiée), sinon on filtre infos
+        infos_compl_raw = sections.get("infos_compl", "")
+        source_infos = infos_compl_raw if infos_compl_raw else infos_raw
+        CHAMPS_PERSO = ["situation familiale", "résidence", "residence", "téléphone", "telephone", "date de naissance"]
+        CHAMPS_EXCLUS = ["nom", "prénom", "prenom", "email", "mail", "ville", "pays", "adresse"]
+
+        lignes_perso = []
+        for line in source_infos.split("\n"):
+            l = line.strip().lstrip("-•").strip()
+            if not l:
+                continue
+            l_low = l.lower()
+            # Inclure si c'est un des 4 champs voulus
+            if any(k in l_low for k in CHAMPS_PERSO):
+                lignes_perso.append(l)
+            # Exclure les champs de l'en-tête
+            elif not any(k in l_low for k in CHAMPS_EXCLUS) and infos_compl_raw:
+                # Si section dédiée, inclure tout ce qui n'est pas explicitement exclu
+                lignes_perso.append(l)
+
+        if lignes_perso:
             d_space(col_d)
             d_heading(col_d, "Informations Personnelles")
-            CONTACT_KEYS = ["nom", "prénom", "prenom", "email", "mail",
-                            "tél", "tel", "téléphone", "telephone",
-                            "ville", "adresse", "résidence", "residence"]
-            for line in infos_raw.split("\n"):
-                l = line.strip().lstrip("-•").strip()
-                if l and not any(k in l.lower() for k in CONTACT_KEYS):
-                    d_bullet(col_d, l)
+            for l in lignes_perso:
+                d_bullet(col_d, l)
 
         # ════════════════════════════════════════════════════════
         # LETTRE DE MOTIVATION (page séparée si présente)
