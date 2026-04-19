@@ -2998,379 +2998,423 @@ Messages du client :
 
 def creer_page_garde_expose(doc, titre_expose, noms_exposants, matiere, annee_scolaire, filiere, niveau, etablissement="", logo_ecole_path=None):
     """
-    Page de garde académique Nova — style HTML de référence.
-    Bordures dorées doubles, typographie Cinzel/Garamond, drapeau CI,
-    grille 4 colonnes exposants, séparateurs diamants, pied de page structuré.
+    Page de garde Nova Exposé — version améliorée.
+    ┌─────────────────────────────────────────┐
+    │  BANDEAU DRAPEAU CI (orange│blanc│vert) │
+    │  BLOC EN-TÊTE fond bleu foncé           │
+    │    République · Établissement · Filière │
+    │    Matière · Classe · Année             │
+    ├─────────────────────────────────────────┤
+    │  ZONE CENTRALE fond blanc crème         │
+    │    Badge ✦ EXPOSÉ ✦ doré               │
+    │    PARCHEMIN : THÈME (fond pêche doré)  │
+    │    ornements diamants                   │
+    │  GRILLE EXPOSANTS 4 colonnes            │
+    ├─────────────────────────────────────────┤
+    │  PIED DE PAGE fond bleu foncé           │
+    │    Année | Date | Groupe | Note         │
+    └─────────────────────────────────────────┘
+    Même dimensions et style que le CV SIRIKY :
+    page A4, marges 0 côtés, tableaux pleine largeur.
     """
-    from docx.shared import Pt, Cm, RGBColor, Emu
+    from docx.shared import Pt, Cm, RGBColor, Inches
     from docx.enum.text import WD_ALIGN_PARAGRAPH
     from docx.oxml.ns import qn
     from docx.oxml import OxmlElement
     from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
-    import copy
+    from docx.enum.section import WD_SECTION
+    from datetime import datetime
 
-    # ── COULEURS ────────────────────────────────────────────────
-    GOLD       = RGBColor(0xB8, 0x93, 0x2A)   # #B8932A
-    GOLD_LIGHT = RGBColor(0xD4, 0xAD, 0x52)   # #D4AD52
-    INK        = RGBColor(0x16, 0x12, 0x0D)   # #16120D
-    INK_SOFT   = RGBColor(0x3A, 0x30, 0x20)   # #3A3020
-    INK_FAINT  = RGBColor(0x7A, 0x6E, 0x5A)   # #7A6E5A
-    ORANGE_CI  = RGBColor(0xF7, 0x7F, 0x00)   # drapeau orange
-    GREEN_CI   = RGBColor(0x00, 0x9A, 0x44)   # drapeau vert
+    # ── COULEURS ─────────────────────────────────────────────────
+    BLEU_FONCE  = "1A3A5C"              # fond en-tête / pied (même que CV)
+    BLEU_MED    = "2255A4"              # accent bleu
+    CREME       = "FDFBF5"             # fond zone centrale
+    PECHE_DORE  = "F9F2E2"             # fond parchemin thème
+    GOLD        = RGBColor(0xB8,0x93,0x2A)
+    GOLD_LIGHT  = RGBColor(0xD4,0xAD,0x52)
+    BLANC       = RGBColor(0xFF,0xFF,0xFF)
+    BLEU_CLAIR  = RGBColor(0xA8,0xD4,0xF5)
+    BLEU_PALE   = RGBColor(0xD0,0xE8,0xFF)
+    INK         = RGBColor(0x16,0x12,0x0D)
+    INK_SOFT    = RGBColor(0x3A,0x30,0x20)
+    INK_FAINT   = RGBColor(0x7A,0x6E,0x5A)
+    ORANGE_CI   = "F77F00"
+    GREEN_CI    = "009A44"
 
-    # ── HELPERS ──────────────────────────────────────────────────
+    # ── HELPERS XML ───────────────────────────────────────────────
     def set_cell_bg(cell, hex_color):
-        tc   = cell._tc
+        tc = cell._tc
         tcPr = tc.find(qn("w:tcPr"))
         if tcPr is None:
             tcPr = OxmlElement("w:tcPr"); tc.insert(0, tcPr)
+        for old in tcPr.findall(qn("w:shd")): tcPr.remove(old)
         shd = OxmlElement("w:shd")
         shd.set(qn("w:val"),   "clear")
         shd.set(qn("w:color"), "auto")
-        shd.set(qn("w:fill"),  hex_color)
-        for old in tcPr.findall(qn("w:shd")): tcPr.remove(old)
+        shd.set(qn("w:fill"),  hex_color.lstrip("#"))
         tcPr.append(shd)
 
-    def set_cell_borders(cell, sides, color="C9A440", sz="4"):
-        tc   = cell._tc
+    def set_cell_margins(cell, top=0, bottom=0, left=0, right=0):
+        tc = cell._tc
+        tcPr = tc.find(qn("w:tcPr"))
+        if tcPr is None:
+            tcPr = OxmlElement("w:tcPr"); tc.insert(0, tcPr)
+        for old in tcPr.findall(qn("w:tcMar")): tcPr.remove(old)
+        tcMar = OxmlElement("w:tcMar")
+        # OOXML : top, start (=left), bottom, end (=right)
+        for side, val in [("top",top),("start",left),("bottom",bottom),("end",right)]:
+            el = OxmlElement(f"w:{side}")
+            el.set(qn("w:w"), str(val))
+            el.set(qn("w:type"), "dxa")
+            tcMar.append(el)
+        tcPr.append(tcMar)
+
+    def remove_all_borders(cell):
+        tc = cell._tc
+        tcPr = tc.find(qn("w:tcPr"))
+        if tcPr is None:
+            tcPr = OxmlElement("w:tcPr"); tc.insert(0, tcPr)
+        for old in tcPr.findall(qn("w:tcBorders")): tcPr.remove(old)
+        tcBrd = OxmlElement("w:tcBorders")
+        # OOXML : top, start(=left), bottom, end(=right), insideH, insideV
+        for side in ["top","start","bottom","end","insideH","insideV"]:
+            el = OxmlElement(f"w:{side}")
+            el.set(qn("w:val"), "nil")
+            tcBrd.append(el)
+        # tcBorders doit être avant shd dans tcPr
+        shd = tcPr.find(qn("w:shd"))
+        if shd is not None:
+            shd.addprevious(tcBrd)
+        else:
+            tcPr.insert(0, tcBrd)
+
+    def set_cell_border(cell, sides, color="B8932A", sz="18"):
+        # Convertir left/right → start/end pour OOXML strict
+        _map = {"left": "start", "right": "end"}
+        tc = cell._tc
         tcPr = tc.find(qn("w:tcPr"))
         if tcPr is None:
             tcPr = OxmlElement("w:tcPr"); tc.insert(0, tcPr)
         tcBrd = tcPr.find(qn("w:tcBorders"))
         if tcBrd is None:
-            tcBrd = OxmlElement("w:tcBorders"); tcPr.append(tcBrd)
+            tcBrd = OxmlElement("w:tcBorders")
+            shd = tcPr.find(qn("w:shd"))
+            if shd is not None:
+                shd.addprevious(tcBrd)
+            else:
+                tcPr.insert(0, tcBrd)
         for side in sides:
-            el = OxmlElement(f"w:{side}")
+            side_xml = _map.get(side, side)
+            for old in tcBrd.findall(qn(f"w:{side_xml}")): tcBrd.remove(old)
+            el = OxmlElement(f"w:{side_xml}")
             el.set(qn("w:val"), "single")
             el.set(qn("w:sz"), sz)
             el.set(qn("w:color"), color)
-            for old in tcBrd.findall(qn(f"w:{side}")): tcBrd.remove(old)
             tcBrd.append(el)
 
-    def set_no_border(tbl):
-        tbl_pr = tbl._tbl.find(qn("w:tblPr"))
-        if tbl_pr is None:
-            tbl_pr = OxmlElement("w:tblPr"); tbl._tbl.insert(0, tbl_pr)
-        tbl_brd = OxmlElement("w:tblBorders")
-        for side in ["top","left","bottom","right","insideH","insideV"]:
+    def tbl_no_border(tbl):
+        """
+        Supprime toutes les bordures du tableau.
+        Ordre OOXML correct dans tblPr : tblStyle → tblW → jc → tblBorders → tblLook
+        python-docx insère jc via tbl.alignment AVANT notre appel,
+        donc on insère tblBorders à la fin — puis on le repositionne après jc.
+        """
+        tblPr = tbl._tbl.find(qn("w:tblPr"))
+        if tblPr is None:
+            tblPr = OxmlElement("w:tblPr"); tbl._tbl.insert(0, tblPr)
+        for old in tblPr.findall(qn("w:tblBorders")): tblPr.remove(old)
+        tblBrd = OxmlElement("w:tblBorders")
+        for side in ["top","start","bottom","end","insideH","insideV"]:
             el = OxmlElement(f"w:{side}")
             el.set(qn("w:val"), "none")
-            tbl_brd.append(el)
-        for old in tbl_pr.findall(qn("w:tblBorders")): tbl_pr.remove(old)
-        tbl_pr.append(tbl_brd)
+            tblBrd.append(el)
+        # Insérer tblBorders APRÈS jc (ou à la fin si jc absent)
+        jc = tblPr.find(qn("w:jc"))
+        tblLook = tblPr.find(qn("w:tblLook"))
+        if tblLook is not None:
+            tblLook.addprevious(tblBrd)   # juste avant tblLook = après jc
+        elif jc is not None:
+            jc.addnext(tblBrd)
+        else:
+            tblPr.append(tblBrd)
 
-    def para(text, font_name="EB Garamond", size=10, bold=False, italic=False,
-             color=None, align=WD_ALIGN_PARAGRAPH.CENTER,
-             space_before=0, space_after=0):
+    def add_run_in_cell(cell, text, font="Calibri", size=10, bold=False,
+                        italic=False, color=None, align=WD_ALIGN_PARAGRAPH.CENTER,
+                        space_before=0, space_after=0, clear_first=False):
+        if clear_first:
+            for p in cell.paragraphs: p._element.getparent().remove(p._element)
+        p = cell.add_paragraph()
+        p.alignment = align
+        p.paragraph_format.space_before = Pt(space_before)
+        p.paragraph_format.space_after  = Pt(space_after)
+        r = p.add_run(text)
+        r.font.name  = font
+        r.font.size  = Pt(size)
+        r.font.bold  = bold
+        r.font.italic = italic
+        r.font.color.rgb = color if color else INK
+        return p
+
+    def add_para(text, font="Calibri", size=10, bold=False, italic=False,
+                 color=None, align=WD_ALIGN_PARAGRAPH.CENTER,
+                 space_before=0, space_after=0):
         p = doc.add_paragraph()
         p.alignment = align
         p.paragraph_format.space_before = Pt(space_before)
         p.paragraph_format.space_after  = Pt(space_after)
-        if text:
-            run = p.add_run(text)
-            run.font.name     = font_name
-            run.font.size     = Pt(size)
-            run.font.bold     = bold
-            run.font.italic   = italic
-            run.font.color.rgb = color if color else INK
+        r = p.add_run(text)
+        r.font.name   = font
+        r.font.size   = Pt(size)
+        r.font.bold   = bold
+        r.font.italic = italic
+        r.font.color.rgb = color if color else INK
         return p
 
-    def spacer(pts=3):
-        p = doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(0)
-        p.paragraph_format.space_after  = Pt(0)
-        p.paragraph_format.line_spacing = Pt(pts)
+    # ── PAGE A4 marges 0 (même que CV SIRIKY) ────────────────────
+    doc.sections[0].start_type   = WD_SECTION.CONTINUOUS
+    doc.sections[0].top_margin    = Cm(0)
+    doc.sections[0].bottom_margin = Cm(0)
+    doc.sections[0].left_margin   = Cm(0)
+    doc.sections[0].right_margin  = Cm(0)
 
-    def divider_diamonds():
-        """Ligne de séparation avec diamants — ◆ ◇ ◆"""
-        p = doc.add_paragraph()
-        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p.paragraph_format.space_before = Pt(3)
-        p.paragraph_format.space_after  = Pt(3)
-        run = p.add_run("─" * 18 + "  ◇  ◆  ◇  " + "─" * 18)
-        run.font.name      = "EB Garamond"
-        run.font.size      = Pt(9)
-        run.font.color.rgb = GOLD
+    PAGE_W = Inches(11400 / 1440)   # 11400 DXA = largeur utile A4
 
-    def page_border(doc):
-        """Double bordure dorée sur la page."""
-        sect  = doc.sections[0]
-        sectPr = sect._sectPr
-        for old in sectPr.findall(qn("w:pgBorders")):
-            sectPr.remove(old)
-        pgBorders = OxmlElement("w:pgBorders")
-        pgBorders.set(qn("w:offsetFrom"), "page")
-        pgBorders.set(qn("w:display"), "firstPage")
-        for side in ["top","left","bottom","right"]:
-            b = OxmlElement(f"w:{side}")
-            b.set(qn("w:val"),   "double")
-            b.set(qn("w:sz"),    "24")
-            b.set(qn("w:space"), "24")
-            b.set(qn("w:color"), "B8932A")
-            pgBorders.append(b)
-        sectPr.append(pgBorders)
-
-    # ── BORDURE PAGE ─────────────────────────────────────────────
-    page_border(doc)
-
-    # ── MARGES ───────────────────────────────────────────────────
-    sect = doc.sections[0]
-    sect.top_margin    = Cm(1.8)
-    sect.bottom_margin = Cm(1.5)
-    sect.left_margin   = Cm(2.0)
-    sect.right_margin  = Cm(2.0)
-
-    # ══ 1. DRAPEAU CI ════════════════════════════════════════════
+    # ════════════════════════════════════════════════════════════
+    # 1. BANDEAU DRAPEAU CI — 3 colonnes pleine largeur
+    #    Orange (F77F00) | Blanc (FFFFFF) | Vert (009A44)
+    #    Hauteur fine : 0.35 cm
+    # ════════════════════════════════════════════════════════════
     tbl_flag = doc.add_table(rows=1, cols=3)
     tbl_flag.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_no_border(tbl_flag)
-    for i, c in enumerate(["F77F00","FFFFFF","009A44"]):
-        tbl_flag.columns[i].width = Cm(1.8)
-        set_cell_bg(tbl_flag.cell(0,i), c)
-        cell = tbl_flag.cell(0,i)
-        cell.paragraphs[0].paragraph_format.space_before = Pt(0)
-        cell.paragraphs[0].paragraph_format.space_after  = Pt(0)
-        cell.height = Cm(0.2)
-    spacer(3)
+    tbl_no_border(tbl_flag)
+    flag_w = Inches(11400 / 1440 / 3)
+    for i, color_hex in enumerate([ORANGE_CI, "FFFFFF", GREEN_CI]):
+        col_cell = tbl_flag.cell(0, i)
+        col_cell.width = flag_w
+        set_cell_bg(col_cell, color_hex)
+        remove_all_borders(col_cell)
+        set_cell_margins(col_cell, top=110, bottom=110, left=0, right=0)
+        for p in col_cell.paragraphs:
+            p.paragraph_format.space_before = Pt(0)
+            p.paragraph_format.space_after  = Pt(0)
 
-    # ══ 2. BLOC INSTITUTION ══════════════════════════════════════
-    spacer(2)
-    para("RÉPUBLIQUE DE CÔTE D'IVOIRE",
-         font_name="Calibri", size=7, bold=True, color=GOLD, space_after=1)
-    _nom_ecole = etablissement if etablissement and etablissement not in ("—","Non précisé","") else "Établissement"
-    para(_nom_ecole,
-         font_name="Calibri", size=14, bold=True, color=INK, space_after=1)
+    # ════════════════════════════════════════════════════════════
+    # 2. BLOC EN-TÊTE — fond bleu foncé (même couleur que CV)
+    #    République · Établissement · Filière/Matière · Classe · Année
+    # ════════════════════════════════════════════════════════════
+    tbl_header = doc.add_table(rows=1, cols=1)
+    tbl_header.alignment = WD_TABLE_ALIGNMENT.CENTER
+    tbl_no_border(tbl_header)
+    cell_h = tbl_header.cell(0, 0)
+    cell_h.width = PAGE_W
+    set_cell_bg(cell_h, BLEU_FONCE)
+    remove_all_borders(cell_h)
+    set_cell_margins(cell_h, top=200, bottom=160, left=400, right=400)
 
-    # Filière ou matière
-    if filiere and filiere not in ("—","Non précisée",""):
-        para(f"Filière  ·  {filiere}",
-             font_name="Calibri", size=8, bold=True, color=GOLD, space_after=1)
-    elif matiere and matiere not in ("—","Non précisée",""):
-        para(f"Matière  ·  {matiere}",
-             font_name="Calibri", size=8, bold=True, color=GOLD, space_after=1)
+    for p in cell_h.paragraphs: p._element.getparent().remove(p._element)
 
-    # Niveau — seulement si non "Adapté automatiquement"
-    if niveau and niveau not in ("—","Non précisé","","Adapté automatiquement au niveau"):
-        para(f"Classe  ·  {niveau}",
-             font_name="Calibri", size=8, bold=False, color=INK_SOFT, space_after=1)
+    # République
+    add_run_in_cell(cell_h, "RÉPUBLIQUE DE CÔTE D'IVOIRE",
+                    font="Calibri", size=7, bold=True, color=GOLD,
+                    space_before=0, space_after=4)
+    # Établissement
+    _etab_txt = etablissement if etablissement and etablissement not in ("—","","Non précisé") else "Établissement"
+    add_run_in_cell(cell_h, _etab_txt,
+                    font="Calibri", size=16, bold=True, color=BLANC,
+                    space_before=0, space_after=4)
+    # Filière ou Matière
+    if filiere and filiere not in ("—","","Non précisée"):
+        add_run_in_cell(cell_h, f"Filière  ·  {filiere}",
+                        font="Calibri", size=9, bold=True, color=GOLD,
+                        space_before=0, space_after=3)
+    elif matiere and matiere not in ("—","","Non précisée"):
+        add_run_in_cell(cell_h, f"Matière  ·  {matiere}",
+                        font="Calibri", size=9, bold=True, color=GOLD,
+                        space_before=0, space_after=3)
+    # Classe
+    if niveau and niveau not in ("—","","Non précisé","Adapté automatiquement au niveau"):
+        add_run_in_cell(cell_h, f"Classe  ·  {niveau}",
+                        font="Calibri", size=9, bold=False, color=BLEU_PALE,
+                        space_before=0, space_after=3)
+    # Année scolaire
+    add_run_in_cell(cell_h, f"Année scolaire  {annee_scolaire or '—'}",
+                    font="Calibri", size=8, italic=True, color=BLEU_CLAIR,
+                    space_before=0, space_after=0)
 
-    para(f"Année scolaire  {annee_scolaire}",
-         font_name="EB Garamond", size=8, italic=True, color=INK_FAINT, space_after=3)
+    # ════════════════════════════════════════════════════════════
+    # 3. ZONE CENTRALE — fond crème, pleine largeur
+    #    Badge ✦ EXPOSÉ ✦ + Parchemin thème + Ornements + Exposants
+    # ════════════════════════════════════════════════════════════
+    tbl_central = doc.add_table(rows=1, cols=1)
+    tbl_central.alignment = WD_TABLE_ALIGNMENT.CENTER
+    tbl_no_border(tbl_central)
+    cell_c = tbl_central.cell(0, 0)
+    cell_c.width = PAGE_W
+    set_cell_bg(cell_c, CREME)
+    remove_all_borders(cell_c)
+    set_cell_margins(cell_c, top=240, bottom=240, left=560, right=560)
 
-    # ══ SÉPARATEUR 1 ═════════════════════════════════════════════
-    divider_diamonds()
-    spacer(2)
+    for p in cell_c.paragraphs: p._element.getparent().remove(p._element)
 
-    # ══ 3. BANDEAU 4 COLONNES : MATIÈRE / CLASSE / ÉTABLISSEMENT / ANNÉE ═
-    tbl_mat = doc.add_table(rows=1, cols=7)
-    tbl_mat.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_no_border(tbl_mat)
-    widths = [Cm(3.5), Cm(0.2), Cm(3.0), Cm(0.2), Cm(3.8), Cm(0.2), Cm(2.8)]
-    for i, w in enumerate(widths):
-        tbl_mat.columns[i].width = w
+    # — Badge EXPOSÉ —
+    add_run_in_cell(cell_c, "✦   E X P O S É   ✦",
+                    font="Calibri", size=11, bold=True, color=GOLD,
+                    space_before=0, space_after=10)
 
-    def mat_cell(col, label, value):
-        c = tbl_mat.cell(0, col)
-        c.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-        for p in c.paragraphs: p._element.getparent().remove(p._element)
-        p_lbl = c.add_paragraph(label)
-        p_lbl.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_lbl.paragraph_format.space_before = Pt(0)
-        p_lbl.paragraph_format.space_after  = Pt(1)
-        r_lbl = p_lbl.runs[0]
-        r_lbl.font.name = "Calibri"; r_lbl.font.size = Pt(6)
-        r_lbl.font.bold = True; r_lbl.font.color.rgb = GOLD
-        p_val = c.add_paragraph(value)
-        p_val.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_val.paragraph_format.space_before = Pt(0)
-        p_val.paragraph_format.space_after  = Pt(0)
-        r_val = p_val.runs[0]
-        r_val.font.name = "Calibri"; r_val.font.size = Pt(10)
-        r_val.font.bold = True; r_val.font.color.rgb = INK
+    # — Séparateur diamants —
+    p_sep1 = cell_c.add_paragraph()
+    p_sep1.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_sep1.paragraph_format.space_before = Pt(0)
+    p_sep1.paragraph_format.space_after  = Pt(10)
+    r_sep1 = p_sep1.add_run("─" * 16 + "  ◇  ◆  ◇  " + "─" * 16)
+    r_sep1.font.name = "Calibri"; r_sep1.font.size = Pt(9)
+    r_sep1.font.color.rgb = GOLD
 
-    _mat_val = matiere if matiere not in ("—","","Non précisée") else "—"
-    _niv_val = niveau  if niveau  not in ("—","","Non précisé","Adapté automatiquement au niveau") else "—"
-    mat_cell(0, "MATIÈRE",       _mat_val)
-    mat_cell(2, "CLASSE",        _niv_val)
-    mat_cell(4, "ÉTABLISSEMENT", _nom_ecole)
-    mat_cell(6, "ANNÉE",         annee_scolaire if annee_scolaire else "—")
-    for col in [1, 3, 5]:
-        set_cell_borders(tbl_mat.cell(0, col), ["left"], "C9A440", "3")
-
-    spacer(4)
-    divider_diamonds()
-    spacer(3)
-
-    # ══ 4. BADGE EXPOSÉ ══════════════════════════════════════════
-    p_badge = doc.add_paragraph()
-    p_badge.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_badge.paragraph_format.space_before = Pt(2)
-    p_badge.paragraph_format.space_after  = Pt(6)
-    r_b = p_badge.add_run("✦   E X P O S É   ✦")
-    r_b.font.name = "Calibri"; r_b.font.size = Pt(10)
-    r_b.font.bold = True; r_b.font.color.rgb = GOLD
-
-    # ══ 5. PARCHEMIN HORIZONTAL — THÈME ══════════════════════════
-    # Simulé via un tableau avec fond doré pâle + bordures dorées épaisses
+    # — Parchemin : THÈME (tableau 3 lignes dans la cellule centrale) —
     titre_text = titre_expose.upper() if titre_expose else "TITRE DE L'EXPOSÉ"
-    if   len(titre_text) <= 35:  titre_pt = 22
-    elif len(titre_text) <= 60:  titre_pt = 18
-    elif len(titre_text) <= 90:  titre_pt = 14
-    else:                         titre_pt = 12
+    if   len(titre_text) <= 35:  titre_pt = 20
+    elif len(titre_text) <= 60:  titre_pt = 16
+    elif len(titre_text) <= 90:  titre_pt = 13
+    else:                         titre_pt = 11
 
-    tbl_parchemin = doc.add_table(rows=3, cols=1)
-    tbl_parchemin.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_no_border(tbl_parchemin)
-    tbl_parchemin.columns[0].width = Cm(15.0)
+    # On ne peut pas faire un tableau dans une cellule avec python-docx
+    # → on simule le parchemin avec des paragraphes bordés dans la cellule
+    # Ligne haut dorée
+    p_parch_top = cell_c.add_paragraph()
+    p_parch_top.paragraph_format.space_before = Pt(0)
+    p_parch_top.paragraph_format.space_after  = Pt(0)
+    r_pt = p_parch_top.add_run("─" * 80)
+    r_pt.font.name = "Calibri"; r_pt.font.size = Pt(1)
+    r_pt.font.color.rgb = GOLD
 
-    # Ligne haut — filet doré épais
-    c_top = tbl_parchemin.cell(0, 0)
-    set_cell_bg(c_top, "F9F2E2")
-    set_cell_borders(c_top, ["top","left","right"], "B8932A", "18")
-    p_top = c_top.paragraphs[0]
-    p_top.paragraph_format.space_before = Pt(0)
-    p_top.paragraph_format.space_after  = Pt(0)
+    # Label T H È M E
+    add_run_in_cell(cell_c, "T  H  È  M  E",
+                    font="Calibri", size=7, bold=True, color=GOLD,
+                    space_before=8, space_after=5)
 
-    # Ligne centrale — thème
-    c_mid = tbl_parchemin.cell(1, 0)
-    set_cell_bg(c_mid, "F9F2E2")
-    set_cell_borders(c_mid, ["left","right"], "B8932A", "18")
-    for p in c_mid.paragraphs: p._element.getparent().remove(p._element)
-    # Label "Thème"
-    p_lbl_t = c_mid.add_paragraph("T H È M E")
-    p_lbl_t.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_lbl_t.paragraph_format.space_before = Pt(6)
-    p_lbl_t.paragraph_format.space_after  = Pt(4)
-    r_lbl_t = p_lbl_t.runs[0]
-    r_lbl_t.font.name = "Calibri"; r_lbl_t.font.size = Pt(7)
-    r_lbl_t.font.bold = True; r_lbl_t.font.color.rgb = GOLD
-    # Titre
-    p_titre = c_mid.add_paragraph(titre_text)
-    p_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_titre.paragraph_format.space_before = Pt(0)
-    p_titre.paragraph_format.space_after  = Pt(6)
-    r_t = p_titre.runs[0]
-    r_t.font.name = "Calibri"; r_t.font.size = Pt(titre_pt)
-    r_t.font.bold = True; r_t.font.color.rgb = INK
+    # Titre de l'exposé
+    add_run_in_cell(cell_c, titre_text,
+                    font="Calibri", size=titre_pt, bold=True, color=INK,
+                    space_before=0, space_after=10)
 
-    # Ligne bas — filet doré épais
-    c_bot = tbl_parchemin.cell(2, 0)
-    set_cell_bg(c_bot, "F9F2E2")
-    set_cell_borders(c_bot, ["bottom","left","right"], "B8932A", "18")
-    p_bot = c_bot.paragraphs[0]
-    p_bot.paragraph_format.space_before = Pt(0)
-    p_bot.paragraph_format.space_after  = Pt(0)
+    # Ligne bas dorée
+    p_parch_bot = cell_c.add_paragraph()
+    p_parch_bot.paragraph_format.space_before = Pt(0)
+    p_parch_bot.paragraph_format.space_after  = Pt(12)
+    r_pb = p_parch_bot.add_run("─" * 80)
+    r_pb.font.name = "Calibri"; r_pb.font.size = Pt(1)
+    r_pb.font.color.rgb = GOLD
 
-    spacer(4)
+    # — Ornement —
+    add_run_in_cell(cell_c, "✦  ◆  ✦  ◆  ✦",
+                    font="Calibri", size=10, color=GOLD_LIGHT,
+                    space_before=0, space_after=16)
 
-    # ══ ORNEMENT ══════════════════════════════════════════════════
-    p_orn = doc.add_paragraph()
-    p_orn.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p_orn.paragraph_format.space_before = Pt(2)
-    p_orn.paragraph_format.space_after  = Pt(4)
-    r_orn = p_orn.add_run("✦  ◆  ✦  ◆  ✦")
-    r_orn.font.name = "EB Garamond"; r_orn.font.size = Pt(10)
-    r_orn.font.color.rgb = GOLD_LIGHT
+    # — Label Présenté par —
+    add_run_in_cell(cell_c, "—  Présenté par  —",
+                    font="Calibri", size=11, bold=True, color=GOLD,
+                    space_before=0, space_after=10)
 
-    # ══ 6. GRILLE 4 COLONNES — EXPOSANTS ═════════════════════════
-    spacer(4)
-    para("— Présenté par —",
-         font_name="Calibri", size=11, bold=True, color=GOLD,
-         space_before=4, space_after=6)
-
+    # — Grille 4 colonnes exposants (dans la cellule centrale via nested table) —
+    # python-docx ne supporte pas les tableaux imbriqués directement
+    # → on affiche les noms en 2 lignes de texte centrées dans la cellule
     noms_list = noms_exposants if isinstance(noms_exposants, list) else [noms_exposants]
-    while len(noms_list) < 8:
-        noms_list.append("")
+    noms_list = [n for n in noms_list if n]  # supprimer les vides
 
     ROLES = ["Chef de groupe", "Rapporteur", "Recherche", "Mise en page",
              "Présentation orale", "Secrétaire", "Illustrations", "Correction"]
 
-    nb_cols = 4
-    nb_rows = 2
-    tbl_exp = doc.add_table(rows=nb_rows, cols=nb_cols)
-    tbl_exp.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_no_border(tbl_exp)
-    col_w = Cm(3.8)
-    for c in range(nb_cols):
-        tbl_exp.columns[c].width = col_w
-
-    for idx in range(8):
-        row = idx // nb_cols
-        col = idx % nb_cols
-        cell = tbl_exp.cell(row, col)
-        for p in cell.paragraphs: p._element.getparent().remove(p._element)
-
-        p_num = cell.add_paragraph(f"{idx+1:02d}")
-        p_num.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        p_num.paragraph_format.space_before = Pt(2)
-        p_num.paragraph_format.space_after  = Pt(0)
-        r_num = p_num.runs[0]
-        r_num.font.name = "Calibri"; r_num.font.size = Pt(8)
-        r_num.font.bold = True; r_num.font.color.rgb = GOLD
-
-        nom = noms_list[idx] if idx < len(noms_list) else ""
-        p_nom = cell.add_paragraph(nom if nom else "—")
-        p_nom.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        p_nom.paragraph_format.space_before = Pt(0)
-        p_nom.paragraph_format.space_after  = Pt(0)
-        r_nom = p_nom.runs[0]
-        r_nom.font.name = "Calibri"; r_nom.font.size = Pt(11)
-        r_nom.font.bold = True; r_nom.font.color.rgb = INK
-
+    for idx, nom in enumerate(noms_list[:8]):
         role = ROLES[idx] if idx < len(ROLES) else ""
-        p_role = cell.add_paragraph(role)
-        p_role.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        p_role.paragraph_format.space_before = Pt(0)
-        p_role.paragraph_format.space_after  = Pt(4)
-        r_role = p_role.runs[0]
-        r_role.font.name = "EB Garamond"; r_role.font.size = Pt(8)
-        r_role.font.italic = True; r_role.font.color.rgb = INK_FAINT
+        p_nom_exp = cell_c.add_paragraph()
+        p_nom_exp.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p_nom_exp.paragraph_format.space_before = Pt(1)
+        p_nom_exp.paragraph_format.space_after  = Pt(1)
+        # Numéro doré
+        r_idx = p_nom_exp.add_run(f"{idx+1:02d}  ")
+        r_idx.font.name = "Calibri"; r_idx.font.size = Pt(8)
+        r_idx.font.bold = True; r_idx.font.color.rgb = GOLD
+        # Nom en noir
+        r_n = p_nom_exp.add_run(nom)
+        r_n.font.name = "Calibri"; r_n.font.size = Pt(12)
+        r_n.font.bold = True; r_n.font.color.rgb = INK
+        # Rôle en italique discret
+        if role:
+            r_r = p_nom_exp.add_run(f"  ·  {role}")
+            r_r.font.name = "Calibri"; r_r.font.size = Pt(8)
+            r_r.font.italic = True; r_r.font.color.rgb = INK_FAINT
 
-        set_cell_borders(cell, ["left"], "D4AD52", "6")
+    if not noms_list:
+        add_run_in_cell(cell_c, "—",
+                        font="Calibri", size=12, color=INK_FAINT,
+                        space_before=2, space_after=2)
 
-    spacer(4)
+    # — Séparateur final —
+    p_sep2 = cell_c.add_paragraph()
+    p_sep2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_sep2.paragraph_format.space_before = Pt(14)
+    p_sep2.paragraph_format.space_after  = Pt(0)
+    r_sep2 = p_sep2.add_run("─" * 16 + "  ◇  ◆  ◇  " + "─" * 16)
+    r_sep2.font.name = "Calibri"; r_sep2.font.size = Pt(9)
+    r_sep2.font.color.rgb = GOLD
 
-    # ══ SÉPARATEUR FINAL ══════════════════════════════════════════
-    divider_diamonds()
-    spacer(2)
+    # ════════════════════════════════════════════════════════════
+    # 4. PIED DE PAGE — fond bleu foncé (même que en-tête)
+    #    ANNÉE SCOLAIRE | DATE | GROUPE | NOTE
+    # ════════════════════════════════════════════════════════════
+    tbl_footer2 = doc.add_table(rows=1, cols=1)
+    tbl_footer2.alignment = WD_TABLE_ALIGNMENT.CENTER
+    tbl_no_border(tbl_footer2)
+    cell_f = tbl_footer2.cell(0, 0)
+    cell_f.width = PAGE_W
+    set_cell_bg(cell_f, BLEU_FONCE)
+    remove_all_borders(cell_f)
+    set_cell_margins(cell_f, top=160, bottom=160, left=400, right=400)
 
-    # ══ 7. PIED DE PAGE ══════════════════════════════════════════
-    tbl_footer = doc.add_table(rows=1, cols=7)
-    tbl_footer.alignment = WD_TABLE_ALIGNMENT.CENTER
-    set_no_border(tbl_footer)
-    fw = [Cm(3.5), Cm(0.15), Cm(3.8), Cm(0.15), Cm(2.5), Cm(0.15), Cm(2.2)]
-    for i, w in enumerate(fw):
-        tbl_footer.columns[i].width = w
+    for p in cell_f.paragraphs: p._element.getparent().remove(p._element)
 
-    def footer_cell(col, label, value):
-        c = tbl_footer.cell(0, col)
-        c.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-        for p in c.paragraphs: p._element.getparent().remove(p._element)
-        p_lbl = c.add_paragraph(label)
-        p_lbl.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_lbl.paragraph_format.space_before = Pt(0)
-        p_lbl.paragraph_format.space_after  = Pt(1)
-        r_l = p_lbl.runs[0]
+    date_auj = datetime.now().strftime("%d/%m/%Y")
+
+    # Labels dorés
+    p_labels = cell_f.add_paragraph()
+    p_labels.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_labels.paragraph_format.space_before = Pt(0)
+    p_labels.paragraph_format.space_after  = Pt(2)
+    for label, sep in [("ANNÉE SCOLAIRE","    │    "),("DATE","    │    "),("GROUPE","    │    "),("NOTE","")]:
+        r_l = p_labels.add_run(label)
         r_l.font.name = "Calibri"; r_l.font.size = Pt(6)
         r_l.font.bold = True; r_l.font.color.rgb = GOLD
-        p_val = c.add_paragraph(value)
-        p_val.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        p_val.paragraph_format.space_before = Pt(0)
-        p_val.paragraph_format.space_after  = Pt(0)
-        r_v = p_val.runs[0]
-        r_v.font.name = "EB Garamond"; r_v.font.size = Pt(9)
-        r_v.font.color.rgb = INK_SOFT
+        if sep:
+            r_s = p_labels.add_run(sep)
+            r_s.font.name = "Calibri"; r_s.font.size = Pt(6)
+            r_s.font.color.rgb = GOLD_LIGHT
 
-    from datetime import datetime
-    date_aujourd_hui = datetime.now().strftime("%d/%m/%Y")
-    footer_cell(0, "ANNÉE SCOLAIRE",       annee_scolaire if annee_scolaire else "—")
-    footer_cell(2, "DATE DE PRÉSENTATION", date_aujourd_hui)
-    footer_cell(4, "GROUPE",               "—")
-    footer_cell(6, "NOTE",                 "— / 20")
-    for col in [1, 3, 5]:
-        set_cell_borders(tbl_footer.cell(0, col), ["left"], "C9A440", "3")
+    # Valeurs blanches
+    p_vals = cell_f.add_paragraph()
+    p_vals.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    p_vals.paragraph_format.space_before = Pt(0)
+    p_vals.paragraph_format.space_after  = Pt(0)
+    annee_txt = annee_scolaire if annee_scolaire else "—"
+    for val, sep in [(annee_txt,"      │      "),(date_auj,"      │      "),("—","      │      "),("— / 20","")]:
+        r_v = p_vals.add_run(val)
+        r_v.font.name = "Calibri"; r_v.font.size = Pt(10)
+        r_v.font.bold = True; r_v.font.color.rgb = BLANC
+        if sep:
+            r_s = p_vals.add_run(sep)
+            r_s.font.name = "Calibri"; r_s.font.size = Pt(8)
+            r_s.font.color.rgb = GOLD_LIGHT
 
-    spacer(2)
+    # ── Correction bug python-docx : zoom sans attribut percent ─────
+    try:
+        from docx.oxml.ns import qn as _qn
+        from docx.oxml import OxmlElement as _OE
+        settings_part = doc.settings.element
+        for z in settings_part.findall(_qn("w:zoom")):
+            if z.get(_qn("w:percent")) is None:
+                z.set(_qn("w:percent"), "100")
+    except Exception:
+        pass
+
     return doc
 
 def creer_docx(contenu, service, client_nom):
@@ -8730,19 +8774,107 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                                         _logo_ecole = None
                                         if hasattr(st.session_state, "logo_ecole_path") and st.session_state.logo_ecole_path:
                                             _logo_ecole = st.session_state.logo_ecole_path
-                                        # Créer un nouveau doc avec la page de garde
-                                        _doc_pdg = _DocPDG()
-                                        _doc_pdg = creer_page_garde_expose(
-                                            _doc_pdg,
-                                            titre_expose=_titre,
-                                            noms_exposants=_noms if _noms else [],
-                                            matiere=_mat or "—",
-                                            annee_scolaire=_annee,
-                                            filiere=_fil or "—",
-                                            niveau=_niv or "—",
-                                            etablissement=_etab or "",
-                                            logo_ecole_path=_logo_ecole
-                                        )
+                                        # ════════════════════════════════════════════════
+                                        # PAGE DE GARDE — injection dans le template Word
+                                        # Python lit le template, remplace les données,
+                                        # Gemini ne touche PAS à la mise en forme.
+                                        # Données injectées :
+                                        #   → THEME       (titre de l'exposé)
+                                        #   → Matière     (matière scolaire)
+                                        #   → Année scolaire
+                                        #   → Noms 1- à 7- (liste des exposants)
+                                        # ════════════════════════════════════════════════
+                                        import zipfile as _zf, os as _os
+                                        from lxml import etree as _etree
+                                        from io import BytesIO as _BytesPDG2
+                                        import re as _re_pdg2
+
+                                        _TEMPLATE_PATH = "page_de_Garde_public.docx"
+                                        _pdg_buf = _BytesPDG2()
+                                        _W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+
+                                        def _pdg_get_text(elem):
+                                            return ''.join(t.text or '' for t in elem.iter(f'{{{_W_NS}}}t'))
+
+                                        # Lire le XML du template
+                                        with _zf.ZipFile(_TEMPLATE_PATH, 'r') as _zin:
+                                            _xml_bytes = _zin.read('word/document.xml')
+
+                                        _pdg_tree = _etree.fromstring(_xml_bytes)
+
+                                        # Parcourir toutes les zones de texte flottantes
+                                        for _txbx in _pdg_tree.findall(f'.//{{{_W_NS}}}txbxContent'):
+                                            _txt = _pdg_get_text(_txbx).strip()
+
+                                            # ── Zone THEME : ─────────────────────────
+                                            # para[0] = "THEME :" (fixe)
+                                            # para[1] = vide → on y met le titre
+                                            if 'THEME' in _txt and ':' in _txt:
+                                                _paras = _txbx.findall(f'.//{{{_W_NS}}}p')
+                                                if len(_paras) >= 2:
+                                                    _p1 = _paras[1]
+                                                    _runs = _p1.findall(f'{{{_W_NS}}}r')
+                                                    if _runs:
+                                                        _t = _runs[-1].find(f'{{{_W_NS}}}t')
+                                                        if _t is not None:
+                                                            _t.text = _titre
+                                                    else:
+                                                        # Créer un run
+                                                        _r = _etree.SubElement(_p1, f'{{{_W_NS}}}r')
+                                                        _rPr = _etree.SubElement(_r, f'{{{_W_NS}}}rPr')
+                                                        _sz = _etree.SubElement(_rPr, f'{{{_W_NS}}}sz')
+                                                        _sz.set(f'{{{_W_NS}}}val', '24')
+                                                        _t = _etree.SubElement(_r, f'{{{_W_NS}}}t')
+                                                        _t.text = _titre
+
+                                            # ── Zone Matière + Année scolaire ────────
+                                            elif 'Matière' in _txt and 'Année scolaire' in _txt:
+                                                for _p in _txbx.findall(f'.//{{{_W_NS}}}p'):
+                                                    _pt = _pdg_get_text(_p)
+                                                    _runs = _p.findall(f'{{{_W_NS}}}r')
+                                                    if 'Matière' in _pt and len(_runs) >= 2:
+                                                        # runs[-1] = valeur de la matière
+                                                        _t = _runs[-1].find(f'{{{_W_NS}}}t')
+                                                        if _t is not None:
+                                                            _t.text = _mat or "—"
+                                                    elif 'Année scolaire' in _pt and len(_runs) >= 2:
+                                                        # Vider les runs intermédiaires (espaces),
+                                                        # mettre l'année dans le dernier run
+                                                        for _r in _runs[1:-1]:
+                                                            _t = _r.find(f'{{{_W_NS}}}t')
+                                                            if _t is not None: _t.text = ''
+                                                        _t = _runs[-1].find(f'{{{_W_NS}}}t')
+                                                        if _t is not None:
+                                                            _t.text = _annee
+
+                                            # ── Zone liste noms 1- à 7- ──────────────
+                                            elif '1-' in _txt and '2-' in _txt:
+                                                for _p in _txbx.findall(f'.//{{{_W_NS}}}p'):
+                                                    _pt = _pdg_get_text(_p).strip()
+                                                    _m = _re_pdg2.match(r'^(\d+)-', _pt)
+                                                    if _m:
+                                                        _num = int(_m.group(1))
+                                                        _nom = _noms[_num - 1] if _num - 1 < len(_noms) else ''
+                                                        _runs = _p.findall(f'{{{_W_NS}}}r')
+                                                        if _runs:
+                                                            _t = _runs[-1].find(f'{{{_W_NS}}}t')
+                                                            if _t is not None:
+                                                                _t.text = f'{_num}- {_nom}' if _nom else f'{_num}-'
+                                                                _t.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
+
+                                        # Écrire le XML modifié dans un BytesIO
+                                        _xml_out = _etree.tostring(_pdg_tree, xml_declaration=True, encoding='UTF-8', standalone=True)
+                                        with _zf.ZipFile(_TEMPLATE_PATH, 'r') as _zin:
+                                            with _zf.ZipFile(_pdg_buf, 'w', _zf.ZIP_DEFLATED) as _zout:
+                                                for _item in _zin.infolist():
+                                                    if _item.filename == 'word/document.xml':
+                                                        _zout.writestr(_item, _xml_out)
+                                                    else:
+                                                        _zout.writestr(_item, _zin.read(_item.filename))
+                                        _pdg_buf.seek(0)
+
+                                        # Charger le doc page de garde
+                                        _doc_pdg = _DocPDG(_pdg_buf)
                                         # Ajouter saut de page puis le contenu principal
                                         from docx.oxml import OxmlElement as _OEpdg
                                         from docx.oxml.ns import qn as _qnpdg
