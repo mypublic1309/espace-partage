@@ -1344,22 +1344,22 @@ Chaque exercice teste une compétence différente : mémoriser → comprendre �
 
 ━━━ 6ème / 5ème ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-EXERCICE 1 — VRAI / FAUX simple (2 pts)
+EXERCICE 1 — VRAI / FAUX simple
   Tableau : N° | Affirmations | V | F — l'élève coche, pas de justification exigée
   Thèmes : définitions basiques, propriétés simples, vrai/faux du cours
   NE PAS mettre de calculs ici.
 
-EXERCICE 2 — QCM TABLEAU A/B/C (2-3 pts)
+EXERCICE 2 — QCM TABLEAU A/B/C
   Tableau : N° | Affirmations incomplètes | A | B | C
   "Une seule réponse est juste. Recopie le numéro suivi de la lettre de la bonne réponse."
   3 à 4 lignes. Distracteurs = erreurs simples fréquentes à ce niveau.
 
-EXERCICE 3 — TEXTE À TROUS ou QUESTIONS COURTES (2-3 pts)
+EXERCICE 3 — TEXTE À TROUS ou QUESTIONS COURTES
   Option A : "Recopie et complète avec les mots suivants : [liste de mots]"
   Option B : 3 questions courtes (Définir / Citer / Calculer directement)
   Option C : Schéma à légender (SVT uniquement — liste de termes à placer)
 
-EXERCICE 4 — PROBLÈME SIMPLE CONTEXTE IVOIRIEN (3-4 pts)
+EXERCICE 4 — PROBLÈME SIMPLE CONTEXTE IVOIRIEN
   Mise en situation courte et accessible (marché, maison, jardin ivoirien...)
   3 sous-questions max : 1- lecture données → 2- calcul simple → 3- conclusion
   Données chiffrées simples, opérations de base
@@ -1368,28 +1368,28 @@ EXERCICE 4 — PROBLÈME SIMPLE CONTEXTE IVOIRIEN (3-4 pts)
 
 STRUCTURE EXACTE observée sur vrais devoirs ivoiriens 3ème (Collège Sainte Famille, Merlan-Adjamé...) :
 
-EXERCICE 1 — VRAI / FAUX avec instruction de justification (2-3 pts)
+EXERCICE 1 — VRAI / FAUX avec instruction de justification
   Consigne exacte : "Écris sur ta feuille de copie le numéro de chacune des affirmations
   ci-dessous et fait suivre par V si l'affirmation est vraie ou F si elle est fausse.
   JUSTIFIE si fausse. Exemple : 5-F"
   5 affirmations dans un tableau : N° | Affirmations | [espace réponse]
   Thèmes : propriétés du chapitre, définitions, théorèmes
 
-EXERCICE 2 — QCM TABLEAU A/B/C ou A/B/C/D (3 pts)
+EXERCICE 2 — QCM TABLEAU A/B/C ou A/B/C/D
   Consigne exacte : "Pour chacune des affirmations contenues dans le tableau ci-dessous,
   une seule des réponses proposées est juste. Recopie le numéro de la ligne suivi de
   la lettre de la réponse juste."
   Tableau : N° | Affirmations | A | B | C (ou A | B | C | D)
   4 à 5 lignes. Distracteurs = erreurs classiques de 3ème ivoirien.
 
-EXERCICE 3 — CONSTRUCTION GÉOMÉTRIQUE (3 pts)
+EXERCICE 3 — CONSTRUCTION GÉOMÉTRIQUE
   Observé réel : "L'unité de longueur est le centimètre. Le segment ci-dessous n'est pas
   en vraie grandeur. On donne le segment [EF] tel que EF = 7 cm."
   Dessin schématique du segment E___F fourni
   Questions : 1- Reproduis le segment sur ta feuille / 2- Construis le point M tel que EM = (3/5)EF
   Peut aussi être : construction de triangle, de cercle, de médiatrice, de bissectrice
 
-EXERCICE 4 — CALCUL ALGÉBRIQUE PUR (4 pts)
+EXERCICE 4 — CALCUL ALGÉBRIQUE PUR
   Observé réel : Expression E = (x-3)² + 4(x-3) et R = (2x-1)(x+1)
   1) Justifie que E = (x-3)(x+1)
   2) Détermine les valeurs de x pour lesquelles R existe
@@ -1397,7 +1397,7 @@ EXERCICE 4 — CALCUL ALGÉBRIQUE PUR (4 pts)
   4) Calcule la valeur numérique de R pour x = -1
   Pas de mise en situation. Calcul algébrique direct : factoriser, simplifier, calculer.
 
-EXERCICE 5 — GÉOMÉTRIE ANALYTIQUE / VECTEURS / TRIGONOMÉTRIE (4 pts)
+EXERCICE 5 — GÉOMÉTRIE ANALYTIQUE / VECTEURS / TRIGONOMÉTRIE
   Observé réel : Repère orthonormé (O,I,J), points E(6;5) F(2;-3) G(-4;0) EG=5√5
   1) a. Place les points / b. Construis le triangle
   2) Vérifie par calcul que les vecteurs FE et FG ont pour coordonnées (4;8) et (-6;3)
@@ -1406,7 +1406,7 @@ EXERCICE 5 — GÉOMÉTRIE ANALYTIQUE / VECTEURS / TRIGONOMÉTRIE (4 pts)
      c. Déduis-en un encadrement de mes EGF par deux entiers consécutifs
         → Fournir une table trigonométrique : tableau a° | cos a° | sin a° avec 4-5 valeurs réelles
 
-EXERCICE 6 — PROBLÈME CONTEXTE IVOIRIEN COMPLEXE (4 pts)
+EXERCICE 6 — PROBLÈME CONTEXTE IVOIRIEN COMPLEXE
   Observé réel : "Pour la fête de fin d'année, le président de la coopérative du collège
   Sainte Famille prend contact avec deux restaurants de Bouaké."
   Restaurant A : 1000F/repas + 2000F transport | Restaurant B : 950F/repas + 3000F taxi
@@ -1419,18 +1419,18 @@ EXERCICE 6 — PROBLÈME CONTEXTE IVOIRIEN COMPLEXE (4 pts)
 
 STRUCTURE TYPE LYCÉE (basée sur vrais devoirs ivoiriens + BAC blanc) :
 
-EXERCICE 1 — VRAI/FAUX AVEC JUSTIFICATION (2-3 pts)
+EXERCICE 1 — VRAI/FAUX AVEC JUSTIFICATION
   "Écris V si l'affirmation est vraie, F si fausse. JUSTIFIE les affirmations fausses."
   4 à 6 affirmations sur le cours. Justification exigée = 1 ligne de raisonnement.
   NE PAS mettre de calculs ici.
 
-EXERCICE 2 — QCM 4 RÉPONSES A/B/C/D (3-4 pts)
+EXERCICE 2 — QCM 4 RÉPONSES A/B/C/D
   Format : tableau N° | Affirmations | A | B | C | D
   "Pour chaque affirmation, 4 réponses sont proposées, une seule est exacte."
   "Écris sur ta copie le numéro + la lettre correspondant à la bonne réponse."
   4 à 6 lignes, distracteurs = erreurs de raisonnement fréquentes au lycée
 
-EXERCICE 3 — APPLICATION DIRECTE DU COURS (3-5 pts)
+EXERCICE 3 — APPLICATION DIRECTE DU COURS
   Selon matière :
   → MATHS/PC : calculs guidés, formules à appliquer, démonstration courte
   → SVT : légender schéma + questions de cours
@@ -1438,7 +1438,7 @@ EXERCICE 3 — APPLICATION DIRECTE DU COURS (3-5 pts)
   → LETTRES : questions sur texte court fourni (vocabulaire, grammaire, sens)
   Sous-questions numérotées 1) 2) 3) avec complexité croissante
 
-EXERCICE 4 — PROBLÈME COMPLEXE / ÉTUDE DE CAS (5-8 pts)
+EXERCICE 4 — PROBLÈME COMPLEXE / ÉTUDE DE CAS
   Mise en situation détaillée + données (tableau, graphique décrit, texte support)
   Questions en parties A et B, ou numérotées 1. 2. 3. avec sous-questions a) b) c)
   Contexte CI : entreprise ivoirienne, données économiques CI, expérience de labo lycée CI
@@ -1448,14 +1448,14 @@ EXERCICE 4 — PROBLÈME COMPLEXE / ÉTUDE DE CAS (5-8 pts)
 
 Structure proche du vrai BAC ivoirien MENET-FP :
 
-EXERCICE 1 — VRAI/FAUX (2 pts) — court, 4 affirmations max
-EXERCICE 2 — QCM 4 RÉPONSES A/B/C/D (3-4 pts) — 4-6 questions
-EXERCICE 3 — PROBLÈME STRUCTURÉ (5-8 pts)
+EXERCICE 1 — VRAI/FAUX — court, 4 affirmations max
+EXERCICE 2 — QCM 4 RÉPONSES A/B/C/D — 4-6 questions
+EXERCICE 3 — PROBLÈME STRUCTURÉ
   Parties A / B / C clairement titrées
   A = définitions/rappels de cours
   B = application et calculs
   C = analyse/synthèse/démonstration
-EXERCICE 4 — PROBLÈME DE SYNTHÈSE ou COMMENTAIRE DE DOCUMENT (5-8 pts)
+EXERCICE 4 — PROBLÈME DE SYNTHÈSE ou COMMENTAIRE DE DOCUMENT
   Document support (texte, tableau de données, graphique décrit)
   Questions d'exploitation, interprétation, rédaction structurée
   Dernière question obligatoirement ouverte
@@ -1467,7 +1467,7 @@ EXERCICE 4 — PROBLÈME DE SYNTHÈSE ou COMMENTAIRE DE DOCUMENT (5-8 pts)
 ✅ JAMAIS de mise en situation complexe en Exercice 1 ou 2
 ✅ Les exercices 1 et 2 sont TOUJOURS fermés (V/F, QCM, tableau)
 ✅ Les exercices 3+ peuvent être ouverts ou semi-ouverts
-✅ Chaque exercice a son barème clairement indiqué : ## EXERCICE N : (X points)
+✅ Chaque exercice a son barème clairement indiqué : ## EXERCICE N :
 ✅ Numérotation cohérente : 1- 2- 3- puis 1.1- 1.2- ou a) b) c) selon niveau
 ✅ Contextes réalistes dans les problèmes (noms, villes, monnaies, produits) — ivoiriens si pertinent pour la matière, internationaux sinon
 ✅ Données chiffrées précises et réalistes (jamais de "x valeur" vague)
@@ -1505,65 +1505,114 @@ POLICE : Times New Roman (serif) — comme tous les vrais sujets ivoiriens
 MARGES WORD (###MARGES### pour le moteur python-docx) :
   ###MARGES### haut=2cm bas=2cm gauche=2.5cm droite=2cm
 
-━━━ B. STRUCTURE EN-TÊTE EXACTE (à reproduire fidèlement) ━━━━━━━━
+━━━ B. STRUCTURE EN-TÊTE EXACTE — MARQUEUR ###ENTETE_DEVOIR### ━━━━
 
-L'en-tête suit TOUJOURS ce modèle observé sur les vrais sujets CI :
+⚠️ RÈGLE ABSOLUE : L'en-tête du devoir est ENTIÈREMENT géré par Python.
+Tu dois UNIQUEMENT émettre le bloc marqueur ci-dessous avec les données brutes.
+Python construit lui-même le tableau 2-colonnes, le cadre titre, et la mention italique.
+NE PAS écrire l'en-tête en texte libre. UNIQUEMENT le bloc marqueur.
 
-╔══ LIGNE 1 (optionnelle) : source/institution ══╗
-  Texte centré petit italique : "APFC Bouaké 2 — Devoirs régionaux des UP 2026"
-  → dans le document : paragraphe 10pt italique centré, couleur gris foncé
-╚════════════════════════════════════════════════╝
+MODÈLE EXACT À ÉMETTRE (adapte les valeurs selon la demande client) :
 
-LIGNE 2 : titre du devoir + durée (disposition côte à côte)
-  Gauche : "DEVOIR RÉGIONAUX DES UP" ou "DEVOIR DE [MATIÈRE]" en MAJUSCULES gras 11pt
-  Droite : "Durée : 02 heures" gras 11pt
-  → utiliser un tableau invisible 2 colonnes pour aligner gauche/droite
+###ENTETE_DEVOIR###
+ETABLISSEMENT=Collège Sainte Famille de Bouaké
+DISCIPLINE=CE PHYSIQUE-CHIMIE
+CLASSE=2ndC
+ANNEE=2025-2026
+DATE=21/04/2026
+DUREE=2H
+TITRE_DEVOIR=DEVOIR DE NIVEAU N°1  3ᵉ Trimestre
+MENTION=Cette épreuve comporte trois (03) pages numérotées 1/4 et 2/4 La calculatrice scientifique est autorisée.
+###FIN_ENTETE###
 
-LIGNE 3 : date (si connue)
-  Gauche : "20 janvier 2026 à 14 heures" — 11pt normal
-  → Si date non précisée par le client : omettre cette ligne
+RÈGLES D'ADAPTATION :
+- ETABLISSEMENT : nom complet de l'école (ou laisser vide si non précisé)
+- DISCIPLINE : matière abrégée (CE MATHS, CE PHYSIQUE-CHIMIE, CE SVT, CE HG, CE FRANÇAIS...)
+- CLASSE : niveau exact (2ndC, 3ème, Terminale D, CM2...)
+- ANNEE : si non précisée → année en cours (2025-2026)
+- DATE : si non précisée → laisser vide (le champ sera omis)
+- DUREE : durée officielle selon le niveau (1H, 2H, 3H)
+- TITRE_DEVOIR : "DEVOIR DE NIVEAU N°1 1er Trimestre" / "DEVOIR DE NIVEAU N°1 3ᵉ Trimestre" / "COMPOSITION DU 1er TRIMESTRE" / "DEVOIR SURVEILLÉ N°2"...
+- MENTION : mention calculatrice + nombre de pages (adapter selon matière)
 
-CADRE TITRE MATIÈRE (obligatoire — c'est la signature visuelle des vrais sujets) :
-  ###TITRE_CADRE### MATHÉMATIQUES
-  →→→ En python-docx : paragraphe centré dans un cadre/bordure rectangulaire
-       Police 18pt, MAJUSCULES, gras, Times New Roman
-       Bordure : rectangle fin noir autour du texte
-       Espacement avant/après : 6pt
+APRÈS le bloc ###ENTETE_DEVOIR### : NE PAS mettre de ligne séparatrice ════.
+La séparation vient AVANT le premier exercice.
 
-LIGNE NIVEAU :
-  "NIVEAU : SECONDE C" ou "Classe : Terminale D" — 13pt gras centré
+SOUS-EXERCICE (quand un exercice a 2 matières comme Chimie + Physique) :
+  ###SOUS_EXERCICE### CHIMIE
+  [contenu chimie...]
+  ###SOUS_EXERCICE### PHYSIQUE
+  [contenu physique...]
 
-MENTIONS RÉGLEMENTAIRES (1-2 lignes italique centré) :
-  "Cette épreuve comporte deux (02) pages numérotées 1/2 et 2/2"
-  "Seule la calculatrice scientifique non graphique est autorisée." (si applicable)
-  "Documents non autorisés." ou "Tous documents autorisés." selon type
-
-LIGNE SÉPARATRICE après l'en-tête :
+LIGNE SÉPARATRICE entre exercices :
   ════════════════════════════════════════════════════════════════
 
 ━━━ C. FORMAT DES EXERCICES (observation directe des sujets CI) ━━━
 
 TITRE D'EXERCICE — format exact :
-  **EXERCICE 1 : (2 points)**
-  → En python-docx : Heading 2, Times New Roman 12pt, GRAS + SOULIGNÉ, noir
+  ## EXERCICE 1 — Niveau : Facile
+  → JAMAIS mettre de points/barème dans le titre — ex: JAMAIS "EXERCICE 1" ni "(X pts)"
+  → Le barème est laissé entièrement au professeur — Nova ne met PAS de points
+  → Toujours inclure "— Niveau : [niveau]" à la fin du titre, séparé par un tiret long
+  → En python-docx : Times New Roman 12pt, GRAS uniquement, noir — PAS de soulignement
   → NE PAS mettre de couleur bleue — les vrais sujets sont en noir
-  → Espacement avant l'exercice : 10pt / après le titre : 4pt
+  → NE PAS mettre de deux-points après le numéro : "EXERCICE 1" et non "EXERCICE 1 :"
+  → Espacement avant l'exercice : 14pt / après le titre : 4pt
+
+NIVEAUX DE DIFFICULTÉ PAR EXERCICE (progression obligatoire) :
+  Les exercices vont toujours du plus facile au plus difficile — l'élève gagne confiance avant d'affronter le difficile.
+
+  PHYSIQUE-CHIMIE (4 exercices) :
+    Ex 1 → Niveau : Facile         (restitution pure, aucun calcul, cours direct)
+    Ex 2 → Niveau : Moyen          (application guidée, calculs simples avec formules données)
+    Ex 3 → Niveau : Difficile      (circuit, schéma, caractéristique, raisonnement)
+    Ex 4 → Niveau : Approfondissement  (synthèse, oscilloscope, optique, nucléaire)
+
+  MATHÉMATIQUES — Collège (4 exercices) :
+    Ex 1 → Niveau : Facile         (Vrai/Faux, définitions, reconnaissance)
+    Ex 2 → Niveau : Moyen          (QCM, calcul direct)
+    Ex 3 → Niveau : Difficile      (problème guidé, géométrie)
+    Ex 4 → Niveau : Approfondissement  (problème contextualisé FCFA/CI complet)
+
+  MATHÉMATIQUES — Lycée (5 exercices) :
+    Ex 1 → Niveau : Facile         (Vrai/Faux avec ou sans justification)
+    Ex 2 → Niveau : Facile/Moyen   (QCM, reconnaissance)
+    Ex 3 → Niveau : Moyen          (application directe du cours)
+    Ex 4 → Niveau : Difficile      (étude de fonction, géométrie analytique, stats)
+    Ex 5 → Niveau : Approfondissement  (problème de synthèse contextualisé CI)
+
+  SVT / HG / FRANÇAIS / ECM / ANGLAIS :
+    Ex 1 → Niveau : Facile
+    Ex 2 → Niveau : Moyen
+    Ex 3 → Niveau : Difficile  (ou Approfondissement si c'est le dernier)
+
+  RÈGLE ABSOLUE : ne jamais mettre "Difficile" ou "Approfondissement" en premier exercice.
+  L'élève doit toujours commencer par quelque chose d'accessible.
 
 CONSIGNE — toujours en paragraphe normal après le titre :
   → 11pt Times New Roman, interligne 1.15
   → Commence par une phrase complète : "Écris sur ta copie...", "Pour chacun des..."
   → PAS de liste à puces pour la consigne elle-même
 
-NUMÉROTATION DES QUESTIONS :
-  → Niveau 1 : 1) 2) 3) 4)  — ou  1. 2. 3. 4.
-  → Niveau 2 : 1-a) 1-b) 2-a) 2-b)  — JAMAIS a) b) seuls sans numéro parent
-  → Niveau 3 (rare) : 1-a-i) 1-a-ii)
+NUMÉROTATION DES QUESTIONS (style officiel ivoirien — observé sur vrais sujets CI) :
+  → Niveau 1 : 1.  2.  3.  4.   (point après le chiffre, PAS de parenthèse)
+  → Niveau 2 : 1.1  1.2  2.1  2.2  2.3  (chiffre parent + point + sous-chiffre, SANS parenthèse)
+  → Niveau 3 (rare) : 1.1.1  1.1.2
+  → JAMAIS : 1-a)  1-b)  a)  b)  — ces formes ne correspondent pas aux vrais sujets CI
   → Chaque sous-question sur sa propre ligne, indentée de 0.5cm
+  → Exemple correct :
+      1. Dis ce que représentent 200 mg/L.
+      2. Détermine :
+      2.1 la concentration molaire volumique de la solution ;
+      2.2 la masse du soluté utilisée par jour.
 
 LIGNES DE RÉPONSE ÉLÈVE :
-  → Lignes vides : _______________________________________________ (30+ underscores)
-  → Minimum 2 lignes pour les questions courtes, 5+ lignes pour les rédactions
-  → Pour les calculs longs : 4-6 lignes vides
+  → PAR DÉFAUT : AUCUNE ligne vide dans les devoirs de Physique-Chimie et Mathématiques.
+    Les vrais sujets CI ne comportent pas de lignes de réponse — l'élève répond sur sa copie.
+  → EXCEPTION uniquement si le client demande explicitement "avec lignes de réponse" ou "cahier d'élève" :
+    Lignes vides : _______________________________________________ (30+ underscores)
+    Minimum 2 lignes pour questions courtes, 5+ pour rédactions, 4-6 pour calculs longs.
+  → FRANÇAIS expression écrite et HG composition : toujours avec lignes vides (voir sections dédiées).
 
 SÉPARATEUR ENTRE EXERCICES :
   ════════════════════════════════════════════════════════════════
@@ -1607,67 +1656,294 @@ TABLEAU DONNÉES (problème, exercice contextuel) :
 RÈGLE TABLEAU : Un tableau NE DOIT JAMAIS être coupé entre deux pages.
   Si risque de coupure → ---SAUT_DE_PAGE--- AVANT le tableau.
 
-━━━ E. MISE EN PAGE SPÉCIFIQUE PAR MATIÈRE ━━━━━━━━━━━━━━━━━━━━━━━
+━━━ E. MISE EN PAGE UNIVERSELLE PAR MATIÈRE ━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ RÈGLE UNIVERSELLE — ###ENTETE_DEVOIR### ET ###SOUS_EXERCICE### :
+  • ###ENTETE_DEVOIR### s'applique à TOUS les sujets de TOUTES les matières.
+    Python construit entièrement l'en-tête (tableau 2-colonnes, titre encadré, mention italique).
+    Adapte ETABLISSEMENT, DISCIPLINE, CLASSE, ANNEE, DATE, DUREE, TITRE_DEVOIR, MENTION
+    selon la demande client.
+
+  • ###SOUS_EXERCICE### s'applique à TOUTES les matières qui ont des sous-parties dans un exercice.
+    Ex PC : CHIMIE + PHYSIQUE
+    Ex SVT : PARTIE A — Génétique + PARTIE B — Physiologie
+    Ex Maths : PARTIE ALGÈBRE + PARTIE GÉOMÉTRIE
+    Ex HG : HISTOIRE + GÉOGRAPHIE
+    → JAMAIS utiliser ### ou ## pour des sous-parties — toujours ###SOUS_EXERCICE###
+
+  • EXCEPTION : FRANÇAIS EXPRESSION ÉCRITE (rédaction libre, récit, lettre, argumentation)
+    → PAS de ###SOUS_EXERCICE### pour la production écrite
+    → La consigne suffit, suivie des lignes vides ___________ en nombre précis
 
 ── MATHÉMATIQUES ──────────────────────────────────────────────────
-  Structure typique observée (2 pages) :
-  PAGE 1 :
-  • Ex 1 (2-3 pts) : Vrai/Faux tableau — 4 affirmations (pas de justif collège, avec justif lycée)
-  • Ex 2 (2-3 pts) : QCM tableau — 4 réponses A/B/C/D — 4 à 5 lignes
-  • Ex 3 (5-8 pts) : Problème géométrique OU algébrique avec figure décrite à droite
-    → La figure est décrite textuellement : "Soit le cube ABCDEFGH représenté ci-contre"
-    → Le schéma ASCII ou la description suffit — Nova ne dessine pas mais décrit
-  PAGE 2 (---SAUT_DE_PAGE---) :
-  • Ex 4 (6 pts) : Étude de fonction — graphe décrit ou données fournies
-    → Notation sous-questions : 1) Par lecture : / 1-a) / 1-b) / 2-a) / 2-b)
-  • Ex 5 (5 pts) : Problème contextualisé CI (FCFA, marchés, bâtiments...)
-  Total : 20 points répartis sur 5 exercices progressifs
+  ⚠️ RÈGLE FONDAMENTALE : adapte CHAQUE exercice au niveau de classe réel.
+  Un devoir de 6ème et un devoir de Terminale C sont COMPLÈTEMENT différents.
+  Ne génère JAMAIS des exercices trop faciles pour un lycéen ni trop durs pour un collégien.
+  Varie les types d'exercices à chaque génération — ne répète pas toujours le même format.
+
+  PROGRESSION GÉNÉRALE (du plus facile au plus difficile) :
+  Ex 1 → Restitution / Reconnaissance (facile, cours direct)
+  Ex 2 → Application simple (calcul direct, formule connue)
+  Ex 3 → Problème guidé (plusieurs étapes, raisonnement)
+  Ex 4 → Analyse / Approfondissement (plus complexe, plusieurs sous-questions)
+  Ex 5 (lycée uniquement) → Synthèse contextualisée CI (modélisation + résolution complète)
+
+  ── Collège 6ème ────────────────────────────────────────────────
+  Notions : entiers, décimaux, fractions, périmètre, aire, angles, symétrie
+  Ex 1 : Vrai/Faux OU calcul mental OU compléter un tableau de nombres
+  Ex 2 : Calcul direct sur fractions/décimaux OU périmètre/aire figure simple
+  Ex 3 : Problème contextualisé marché Bouaké/Abidjan (FCFA, pesée, partage)
+  Ex 4 : Géométrie (tracer, calculer, justifier) OU statistiques simples (tableau, diagramme)
+  ❌ JAMAIS : équations, algèbre, Pythagore, fonctions
+
+  ── Collège 5ème ────────────────────────────────────────────────
+  Notions : proportionnalité, pourcentages, Thalès (intro), statistiques, fractions avancées
+  Ex 1 : Vrai/Faux sur proportionnalité/pourcentages OU QCM
+  Ex 2 : Calcul de pourcentage OU tableau de proportionnalité (prix marché, recette, vitesse)
+  Ex 3 : Thalès simple OU problème de proportionnalité contextualisé CI
+  Ex 4 : Statistiques (moyenne, médiane, diagramme) OU problème à plusieurs étapes
+
+  ── Collège 4ème ────────────────────────────────────────────────
+  Notions : équations 1er degré, systèmes simples, Pythagore, cercle, angles
+  Ex 1 : Vrai/Faux sur Pythagore/équations OU QCM
+  Ex 2 : Résolution d'équation OU calcul Pythagore direct
+  Ex 3 : Problème géométrique guidé (triangle rectangle, cercle, construction)
+  Ex 4 : Système d'équations OU problème contextualisé CI (construction, terrain)
+
+  ── Collège 3ème / BEPC ─────────────────────────────────────────
+  Notions : fonctions affines, inéquations, géométrie dans l'espace, stats (σ, médiane)
+  Ex 1 : Vrai/Faux avec justification OU QCM 4 réponses
+  Ex 2 : Fonction affine (tableau de valeurs, graphe décrit, pente, ordonnée à l'origine)
+  Ex 3 : Inéquation OU géométrie dans l'espace (volume, patron)
+  Ex 4 : Statistiques (moyenne pondérée, médiane, σ) OU problème de synthèse BEPC
+
+  ── Lycée 2nde ──────────────────────────────────────────────────
+  Notions : fonctions numériques (affine, carré, valeur absolue), probabilités, statistiques (σ)
+  Ex 1 : Vrai/Faux AVEC justification OU QCM 4 réponses (erreurs courantes en distracteurs)
+  Ex 2 : Fonction affine/carré — tableau de valeurs, sens de variation, extremum
+         OU probabilités discrètes simples (dé, urne, arbre)
+  Ex 3 : Étude de fonction (signe, variations, tableau, courbe décrite textuellement)
+         OU statistiques (moyenne, variance, σ, interprétation)
+  Ex 4 : Problème de synthèse — modélisation d'une situation réelle CI avec une fonction
+         (bénéfice, coût, population, distance) + résolution + interprétation
+
+  ── Lycée 1ère ──────────────────────────────────────────────────
+  Notions : dérivées, suites, trigo (cos/sin/tan), limites de suites
+  Ex 1 : Vrai/Faux avec justification OU QCM sur dérivées/trigo
+  Ex 2 : Calcul de dérivée OU suite arithmétique/géométrique (terme général, somme)
+  Ex 3 : Étude complète de fonction avec dérivée (variations, extrema, tableau)
+         OU problème de trigonométrie (résolution d'équation trigo, valeurs remarquables)
+  Ex 4 : Problème de synthèse — suite modélisant une situation CI (épargne, démographie)
+         OU fonction avec étude complète + interprétation économique/physique
+
+  ── Lycée Terminale C/D ─────────────────────────────────────────
+  Notions : intégrales, ln/exp, dénombrement, probabilités continues (loi normale)
+  Ex 1 : Vrai/Faux AVEC justification (notions ln/exp/intégrale) OU QCM 4 réponses
+  Ex 2 : Calcul intégrale OU étude de fonction ln/exp (domaine, limites, dérivée, variations)
+  Ex 3 : Dénombrement (arrangements, combinaisons, permutations) OU probabilités (loi normale, binomiale)
+  Ex 4 : Problème complexe — modélisation CI (croissance démographique, capitalisation FCFA,
+         décroissance radioactive) + étude complète + interprétation + conclusion
+  Ex 5 : Synthèse BAC — sujet complet multi-notions avec barème détaillé
+
+  RÈGLES COMMUNES MATHS :
+  → Contexte obligatoire CI : FCFA, marchés (cacao, anacarde, riz, attiéké), villes (Abidjan, Bouaké,
+    Yamoussoukro, San-Pédro), construction, transport, agriculture
+  → Figures géométriques : décrire textuellement — "Soit le triangle ABC rectangle en B, AB=3cm, BC=4cm"
+  → Graphes : donner tableau de valeurs + décrire l'allure — Nova ne dessine pas
+  → ###FORMULE### pour toute formule utilisée dans un calcul
+  → SOUS-SECTIONS si mixte : ###SOUS_EXERCICE### ALGÈBRE / GÉOMÉTRIE / STATISTIQUES
 
 ── PHYSIQUE-CHIMIE ────────────────────────────────────────────────
-  Structure typique observée (2 pages) :
-  PAGE 1 :
-  • Ex 1 (2-4 pts) : Vrai/Faux OU QCM — notions du cours
-  • Ex 2 (4-6 pts) : Application directe des formules — calculs guidés étape par étape
-    → Format : Données → On cherche → Application → Calcul → Résultat
-    → Chaque étape de calcul sur une ligne séparée
-  PAGE 2 :
-  • Ex 3 (6-8 pts) : Problème complet avec plusieurs parties A / B / C
-    → Chaque partie introduite par : ### Partie A — [Titre]
-    → Sous-questions 1-a) 1-b) 2-a) 2-b)
-  Formules TOUJOURS encadrées avec ###FORMULE### avant application numérique :
-    ###FORMULE### pH = -log([H_{{3}}O^{{+}}])
-    Application : pH = -log(0,05) = 1,30
-    Résultat : **pH = 1,30** (gras, encadré)
+  ⚠️ RÈGLE FONDAMENTALE : adapte chaque exercice au niveau réel de la classe.
+  Un devoir de 4ème et un devoir de Tle D sont COMPLÈTEMENT différents.
+  Varie les contextes et types à chaque génération — ne répète jamais toujours oscilloscope ou NaCl.
 
-── HISTOIRE-GÉOGRAPHIE ────────────────────────────────────────────
-  Structure typique observée (2 pages) :
-  PAGE 1 :
-  • Ex 1 (5 pts) : Restitution des connaissances — 5 questions courtes numérotées
-    Lignes de réponse : 1-2 lignes chacune
-  • Ex 2 (7 pts) : Analyse de document(s) RÉELS et RÉDIGÉS
-    → RÈGLE ABSOLUE : le Document A et Document B sont rédigés INTÉGRALEMENT
-    → Document texte = 6-10 lignes de contenu historique/géo précis
-    → Document tableau = tableau de données chiffrées réelles (population, PIB, superficie...)
-    → Source fictive réaliste : "Source : Manuel d'Histoire-Géographie 2nde, MENET-FP, 2023 (adapté)"
-  PAGE 2 :
-  • Ex 3 (8 pts) : Rédaction structurée / Synthèse / Composition
-    → Consigne longue avec 3 points obligatoires à traiter
-    → 15-20 lignes vides pour la réponse élève
-    → Barème détaillé : "3 pts structure/méthode + 5 pts fond/contenu"
+  PROGRESSION GÉNÉRALE (du plus facile au plus difficile) :
+  Ex 1 → Restitution cours pur (2 disciplines mélangées : CHIMIE + PHYSIQUE)
+  Ex 2 → Application guidée avec contexte ivoirien (calculs simples, données fournies)
+  Ex 3 → Approfondissement (schéma, graphe, circuit, raisonnement)
+  Ex 4 → Synthèse (situation réelle complexe, plusieurs notions liées)
 
-── SVT (Sciences de la Vie et de la Terre) ────────────────────────
-  Structure typique observée :
-  • Texte dense 10-10.5pt, interligne serré 1.0-1.1
-  • Textes à trous avec ___ dans le corps du texte même
-  • QCM avec lettres : a) b) c) d) sous chaque question (pas en tableau)
-  • Schémas décrits textuellement avec numéros à légender
-  • Questions d'observation, d'interprétation, d'argumentation
+  ── Collège 4ème / 3ème ─────────────────────────────────────────
+  CHIMIE notions : corps purs/mélanges, dissolution, filtration, distillation, atomes/molécules,
+                   tableau périodique simplifié, ions courants (Na+, Cl-, Cu2+, Fe2+/3+)
+  PHYSIQUE notions : courant électrique, circuit simple, tension/intensité, conducteurs ohmiques,
+                     loi d'Ohm, résistance, dipôles (pile, lampe, interrupteur, résistance)
 
-── FRANÇAIS ───────────────────────────────────────────────────────
-  Structure typique :
-  • Texte support en italique ou entre guillemets, puis questions
-  • Questions I/ II/ III/ avec sous-questions 1. 2. 3.
-  • Production écrite en dernier avec nombre de lignes précis
+  Ex 1 — CHIMIE : texte à compléter avec liste de mots (corps pur, mélange, atome, ion...)
+         PHYSIQUE : Vrai/Faux sur circuit électrique (dipôle actif/passif, série/parallèle)
+  Ex 2 : Préparation d'une solution saline OU dissolution (masse, concentration massique Cm=m/V)
+         Contexte : infirmerie école, eau potable village CI, eau salée dentiste
+         ###FORMULE### Cm = m/V  |  ###FORMULE### n = m/M
+  Ex 3 : Circuit série simple avec résistance + lampe — loi d'Ohm, calcul U, I, R
+         Description du schéma + questions : U=? I=? R=? P=?
+         ###FORMULE### U = R × I  |  ###FORMULE### P = U × I
+  Ex 4 : Identification d'ions (réactifs, précipités colorés) OU sécurité électrique (fusibles, disjoncteurs)
+         Contexte CI : laboratoire lycée Abidjan, installation électrique village
+
+  ── Lycée 2nde ──────────────────────────────────────────────────
+  CHIMIE notions : solutions aqueuses, concentration molaire, pH, ions, électroneutralité,
+                   réactions chimiques simples, équations bilan
+  PHYSIQUE notions : circuit électrique (dipôles, série/parallèle), loi d'Ohm, résistances,
+                     puissance, énergie, diode simple, conducteur ohmique
+
+  Ex 1 — CHIMIE : texte à trous OU Vrai/Faux sur solutions/ions/pH
+         PHYSIQUE : Vrai/Faux sur dipôles, circuits, conducteur ohmique (observé : 4 propositions)
+  Ex 2 : Problème solution aqueuse — NaCl, HCl, NaOH... (Cm, n, électroneutralité, préparation)
+         Contexte : pharmacie Abidjan, bain de bouche dentiste, eau potable Bouaké
+         ###FORMULE### Cm = n/V  |  ###FORMULE### n = m/M  |  ###FORMULE### C = Cm × M
+  Ex 3 : Circuit avec diode + résistance de protection — caractéristique tension-intensité ASCII
+         Questions dans l'ordre : sens passant/inverse → nature dipôle → tension aux bornes
+         → schéma → calcul résistance protection
+         ###FORMULE### U = R × I  |  ###FORMULE### U_total = U_diode + U_R
+  Ex 4 (VARIER selon génération — NE PAS toujours faire oscilloscope) :
+         • Oscilloscope/onduleur solaire : oscillogramme ASCII + sensibilités + U_max, T, U_eff, f
+         • Panneaux solaires : puissance, rendement, énergie produite par jour
+         • Optique géométrique : lentille convergente, foyer, vergence, construction décrite
+         • Mécanique : vitesse, distance, durée, accélération (contexte transport CI)
+
+  ── Lycée 1ère ──────────────────────────────────────────────────
+  CHIMIE notions : réactions chimiques (acide-base, oxydo-réduction), pH, équations bilan,
+                   stœchiométrie simple, dosages/titrages
+  PHYSIQUE notions : lois de Kirchhoff, ponts diviseurs, puissance/énergie, optique (lentilles),
+                     mécanique (MRU, MRUA, chute libre)
+
+  Ex 1 — CHIMIE : QCM sur réactions acide-base OU Vrai/Faux avec justification sur pH/titrages
+         PHYSIQUE : Vrai/Faux avec justification sur optique OU mécanique
+  Ex 2 : Dosage/titrage acide-base (HCl + NaOH) OU calcul stœchiométrique
+         Contexte : laboratoire lycée, contrôle qualité eau CI, industrie agroalimentaire
+         ###FORMULE### n_acide = n_base à l'équivalence
+  Ex 3 (VARIER) :
+         • Lentille convergente : construction décrite, calcul vergence, distance focale, grandissement
+         • Mécanique MRUA : chute libre, freinage voiture CI, lancer vertical
+         • Kirchhoff : maille, nœud, calcul courant dans circuit complexe
+  Ex 4 : Synthèse complexe — plusieurs notions liées
+         Contexte CI : centrale électrique Soubré, usine chimique Abidjan, véhicule électrique
+
+  ── Lycée Terminale D / C ────────────────────────────────────────
+  CHIMIE notions : cinétique chimique, équilibres, constante d'équilibre Ka/Kb, pKa,
+                   chimie organique (alcanes, alcènes, alcools, acides carboxyliques),
+                   réactions nucléaires (fission, fusion, radioactivité)
+  PHYSIQUE notions : circuit RLC, oscillations, ondes (son, lumière), mécanique avancée
+                     (moment cinétique, satellite, pendule), relativité (intro BAC)
+
+  Ex 1 — CHIMIE : Vrai/Faux AVEC justification sur chimie organique OU cinétique/équilibre
+         PHYSIQUE : QCM 4 réponses sur oscillations OU ondes OU mécanique avancée
+  Ex 2 (VARIER) :
+         • Cinétique : calcul vitesse de réaction, temps de demi-réaction, graphe concentration/temps
+         • Chimie organique : identifier famille, nommer composé, écrire réaction
+         • Réaction nucléaire : équation bilan, énergie libérée E=mc², application centrale nucléaire
+  Ex 3 (VARIER) :
+         • Oscillations libres : pendule simple, ressort — T=2π√(L/g), énergie mécanique
+         • Ondes sonores : célérité, fréquence, longueur d'onde, niveau sonore dB
+         • Mécanique satellite : vitesse orbitale, période, énergie mécanique
+         • RLC : résonance, impédance, facteur de qualité
+  Ex 4 : Synthèse BAC — situation réelle complexe CI multi-notions
+         Exemples : centrale nucléaire de Côte d'Ivoire (fictive), satellite météo africain,
+         véhicule électrique ivoirien, analyse spectrale eau du lac Kossou
+         Questions : identifier → calculer → interpréter → conclure → critique scientifique
+
+  RÈGLES COMMUNES PC :
+  → ###SOUS_EXERCICE### CHIMIE / PHYSIQUE obligatoire dans Ex 1
+  → ###FORMULE### pour chaque formule utilisée dans un calcul, TOUJOURS
+  → Données numériques toujours listées explicitement avant les questions
+  → Contexte ivoirien obligatoire : Abidjan, Bouaké, Yamoussoukro, San-Pédro,
+    lac Kossou, barrage de Soubré, SODECI, CIE, hôpitaux CI
+  → Si oscilloscope : oscillogramme ASCII + sensibilité verticale (V/div) + horizontale (ms/div)
+  → Si schéma circuit : description ASCII du montage obligatoire
+
+── SVT — TOUTES CLASSES ────────────────────────────────────────────
+  PROGRESSION OBLIGATOIRE :
+  Ex 1 → RESTITUTION : QCM OU texte à trous OU vrai/faux (cours pur, aucun raisonnement)
+    → Textes à trous dans le corps du texte : "La cellule est limitée par une ___________"
+    → QCM lettres sous chaque question : a) b) c) d) (pas en tableau pour SVT)
+  Ex 2 → ANALYSE DOCUMENT : texte scientifique 80-120 mots + questions
+    → Questions : observer → identifier → expliquer → relier au cours
+    ###SOUS_EXERCICE### Exploitation du document
+    ###SOUS_EXERCICE### Questions de cours liées
+  Ex 3 → SCHÉMA + SYNTHÈSE : schéma numéroté à légender + raisonnement
+    → Schéma décrit avec numéros : "La figure ci-contre représente... Légendez les numéros 1 à 6."
+    → Liste des numéros à placer : "1-___ 2-___ 3-___ 4-___ 5-___ 6-___"
+    → Puis 2-3 questions d'interprétation ou d'argumentation
+
+  SOUS-SECTIONS SVT fréquentes :
+  → ###SOUS_EXERCICE### PARTIE A — Génétique
+  → ###SOUS_EXERCICE### PARTIE B — Physiologie
+  → ###SOUS_EXERCICE### PARTIE C — Écologie
+
+── HISTOIRE-GÉOGRAPHIE — TOUTES CLASSES ──────────────────────────
+  PROGRESSION OBLIGATOIRE :
+  Ex 1 → RESTITUTION : 5 questions courtes numérotées (définir, citer, localiser, dater)
+    → 1-2 lignes de réponse chacune
+    → Jamais de rédaction longue ici
+  Ex 2 → ANALYSE DE DOCUMENT : 1 ou 2 documents rédigés INTÉGRALEMENT + questions
+    ###SOUS_EXERCICE### Document A — [titre] (texte 6-10 lignes rédigé, source fictive réaliste)
+    ###SOUS_EXERCICE### Document B — [titre] (tableau de données chiffrées OU 2e texte)
+    → Questions d'exploitation : identifier → analyser → interpréter → critiquer
+    → RÈGLE ABSOLUE : aucun document vide ou "[insérer texte]" — tout rédigé
+  Ex 3 → COMPOSITION / SYNTHÈSE : sujet rédigé en 15-20 lignes
+    → Consigne avec 3 axes obligatoires à traiter
+    → Lignes vides proportionnelles : 15-20 underscores de 30+ caractères
+    → Barème : "3 pts méthode/structure + 5 pts fond/contenu"
+
+  SOUS-SECTIONS HG (si 2 disciplines dans même exercice) :
+  → ###SOUS_EXERCICE### HISTOIRE
+  → ###SOUS_EXERCICE### GÉOGRAPHIE
+
+── FRANÇAIS — TOUTES CLASSES ──────────────────────────────────────
+  STRUCTURE TYPIQUE (4 exercices/parties) :
+  I. COMPRÉHENSION DE TEXTE (texte support rédigé en italique ou guillemets, 80-200 mots selon niveau)
+     → Questions numérotées 1. 2. 3. 4. sur le sens, le vocabulaire, les idées
+  II. GRAMMAIRE / LANGUE : questions sur nature des mots, fonctions, conjugaison, orthographe
+  III. LEXIQUE / STYLE : synonymes, antonymes, champ lexical, figures de style
+  IV. EXPRESSION ÉCRITE (EXCEPTION — PAS de ###SOUS_EXERCICE###) :
+     → Consigne claire avec type (récit, lettre, argumentation, description), longueur (X lignes)
+     → Lignes vides : ______________ (30+ underscores) × nombre de lignes attendu
+     → Ex : "Raconte en 15 lignes une journée de marché à Bouaké avec ta famille."
+     → Ex : "Rédige une lettre de 20 lignes à ton ami pour lui décrire ton quartier d'Abidjan."
+
+  ⚠️ EXPRESSION ÉCRITE = JAMAIS de sous-sections, jamais de QCM, jamais de tableau
+  Le sujet de rédaction est formulé en 1-3 phrases, suivi des lignes vides. C'est tout.
+
+── ECM / EDHC — TOUTES CLASSES ────────────────────────────────────
+  PROGRESSION OBLIGATOIRE :
+  Ex 1 → RESTITUTION : définitions, droits/devoirs, institutions, symboles nationaux CI
+    → Questions : "Définissez... Citez... Quels sont les 3..."
+  Ex 2 → CAS PRATIQUE : situation-problème ivoirienne + questions d'analyse civique
+    → Contexte : élection, conflit à l'école, problème de santé publique, environnement...
+    ###SOUS_EXERCICE### Analyse de la situation
+    ###SOUS_EXERCICE### Votre avis argumenté
+  Ex 3 → RÉDACTION CIVIQUE : "Rédigez en X lignes votre opinion sur..."
+    → Jamais de ###SOUS_EXERCICE### pour la partie rédaction libre
+
+── ANGLAIS — TOUTES CLASSES ────────────────────────────────────────
+  PROGRESSION OBLIGATOIRE :
+  Ex 1 → COMPRÉHENSION : texte en anglais (80-200 mots selon niveau) + questions
+    → "Read the text and answer the following questions:"
+    ###SOUS_EXERCICE### Reading Comprehension
+    ###SOUS_EXERCICE### Vocabulary
+  Ex 2 → GRAMMAIRE : exercices de structure (fill in the blank, tense, transformation)
+    → "Put the verbs in brackets in the correct tense:"
+  Ex 3 → EXPRESSION ÉCRITE (PAS de ###SOUS_EXERCICE###) :
+    → "Write a paragraph of X words about [sujet lié à la CI / Afrique]"
+
+── ÉCONOMIE / COMPTABILITÉ — BAC B, G ─────────────────────────────
+  PROGRESSION OBLIGATOIRE :
+  Ex 1 → DÉFINITIONS / NOTIONS : définir concepts, citer exemples, compléter tableau
+  Ex 2 → APPLICATION : calculs comptables, écritures journal, bilan partiel
+    ###SOUS_EXERCICE### Enregistrements au journal
+    ###SOUS_EXERCICE### Présentation du bilan
+  Ex 3 → ÉTUDE DE CAS : entreprise ivoirienne fictive + questions progressives
+    ###SOUS_EXERCICE### Analyse de la situation
+    ###SOUS_EXERCICE### Calculs et justifications
+    ###SOUS_EXERCICE### Conclusion et recommandations
+
+── PHILOSOPHIE — Terminale ─────────────────────────────────────────
+  Structure BAC CI : explication de texte + dissertation
+  → Texte philosophique rédigé 150-200 mots (Platon, Descartes, Kant, Sartre, Nkrumah...)
+  → Questions explication : 1. Idée principale / 2. Expliquez le passage / 3. Discutez
+  → Sujet dissertation : problématique formulée + plan suggéré en 2-3 axes
+  → PAS de ###SOUS_EXERCICE### pour la dissertation (format libre structuré)
 
 ━━━ F. MOTEUR DE FORMULES NOVA (inchangé — obligatoire) ━━━━━━━━━━
 
@@ -1949,7 +2225,7 @@ SECTION 3 — ENCYCLOPÉDIE COMPLÈTE : TOUTES CLASSES × TOUTES MATIÈRES
 ── PHILOSOPHIE — BAC A1, A2, et toutes séries en option ─────────────────────────────
   Notions au programme BAC CI : la conscience, la perception, l\'inconscient, le désir, le bonheur, le travail, la technique, l\'art, la vérité, la justice, la liberté, le droit, l\'État, la religion, l\'histoire
   2nde/1ère : introduction à la philosophie, les grandes écoles (Platon, Aristote, Descartes, Kant, Hegel, Marx, Sartre, Camus)
-  Tle A1 BAC : explication de texte (8 pts) + dissertation philosophique (12 pts)
+  Tle A1 BAC : explication de texte + dissertation philosophique
     Ex dissertation : "La liberté est-elle compatible avec l\'existence des lois ?"
     Ex texte : Extrait de Kant, *Critique de la raison pure* — "Qu\'est-ce que les Lumières ?"
     Philosophes africains : Kwame Nkrumah, Cheikh Anta Diop, Marcien Towa, Fabien Eboussi Boulaga
@@ -2203,8 +2479,11 @@ SECTION 7 — 15 RÈGLES ABSOLUES + CORRIGÉ EXHAUSTIF
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 RÈGLE 1  — ZÉRO ZONE VIDE : JAMAIS "[à compléter]", "[...]", "[insérer]" → TOUT intégralement rédigé
-RÈGLE 2  — TOTAL /20 OBLIGATOIRE : répartition cohérente, jamais 18, 19 ou 21 points au total
-RÈGLE 3  — POINTS SUR CHAQUE QUESTION INDIVIDUELLE : "*(1 point)*" ou "*(1,5 pt)*" après chaque question
+RÈGLE 2  — AUCUN BARÈME NI POINTS : Nova ne met JAMAIS de points sur les exercices ni sur les questions.
+  Le barème est laissé entièrement au professeur qui utilisera le sujet.
+  JAMAIS : "EXERCICE 1", "*(1 point)*", "(X pts)", "Total : /20"
+  Le professeur sait mieux que Nova combien vaut chaque question.
+RÈGLE 3  — (supprimée — intégrée dans RÈGLE 2)
 RÈGLE 4  — NOTATION NOVA POUR LES FORMULES :
   Exposants : x^{{2}}, mc^{{2}}, b^{{2}}-4ac  |  Indices : H_{{2}}O, CO_{{2}}, C_{{6}}H_{{12}}O_{{6}}, m_{{1}}
   Grec Unicode : α β γ δ θ λ μ π σ φ ω Ω Δ Σ  |  Opérateurs : × ÷ ± ≤ ≥ ≠ ≈ → ⇌ √ ∞
@@ -2212,14 +2491,23 @@ RÈGLE 4  — NOTATION NOVA POUR LES FORMULES :
   Chimie : 6CO_{{2}}+6H_{{2}}O→C_{{6}}H_{{12}}O_{{6}}+6O_{{2}}  |  pH=-log([H^{{+}}])
   LaTeX inline $...$ aussi accepté et converti automatiquement
 RÈGLE 5  — CONTEXTE IVOIRIEN DANS CHAQUE EXERCICE : noms CI, FCFA, données réelles, auteurs CI
-RÈGLE 6  — GRADATION PROGRESSIVE : Exercice 1 (rappel/restitution) → Exercice 2 (application) → Exercice 3+ (analyse/synthèse)
+RÈGLE 6  — GRADATION PROGRESSIVE OBLIGATOIRE (comme les vrais sujets ivoiriens) :
+  EXERCICE 1 → RAPPEL/RESTITUTION : recopier/compléter, vrai/faux, QCM, questions de cours
+               Niveau cognitif : mémoriser. Aucun calcul. Aucune mise en situation.
+  EXERCICE 2 → APPLICATION GUIDÉE : problème simple avec données chiffrées, formule à appliquer
+               Niveau cognitif : comprendre + appliquer. Données claires, étapes guidées.
+  EXERCICE 3 → APPROFONDISSEMENT : problème à parties multiples, circuit, schéma, contexte complexe
+               Niveau cognitif : analyser. Plusieurs sous-questions imbriquées.
+  EXERCICE 4+ → SYNTHÈSE / ÉTUDE DE CAS : oscillogramme, titrage, étude de fonction, phénomène complexe
+               Niveau cognitif : évaluer + créer. Données à exploiter, raisonnement multi-étapes.
+  ⚠️ JAMAIS mettre un problème complexe en exercice 1. JAMAIS mettre du vrai/faux en exercice 4.
 RÈGLE 7  — CONSIGNES EN GRAS ET PRÉCISES : **Consigne :** + QUOI + COMMENT + COMBIEN
 RÈGLE 8  — DISTRACTORS QCM = ERREURS RÉELLES : fausses réponses = erreurs courantes que font les élèves
 RÈGLE 9  — NIVEAU STRICT : vocabulaire, longueur, complexité EXACTEMENT adaptés au niveau détecté
 RÈGLE 10 — VARIÉTÉ OBLIGATOIRE : jamais le même format deux fois dans un même sujet
 RÈGLE 11 — TEXTE ÉTUDE COMPLET : texte rédigé 150-250 mots, ancré en CI/Afrique, JAMAIS "[insérer texte]"
-RÈGLE 12 — LIGNES DE RÉPONSE PROPORTIONNELLES : 1 pt → 2 lignes / 2 pts → 4 lignes / 3+ pts → 6+ lignes
-RÈGLE 13 — BARÈME SIMPLE : indiquer uniquement les points entre parenthèses après chaque titre d\'exercice. Ex : ## EXERCICE 1 : (3 points) — PAS de tableau récapitulatif, PAS de consignes générales
+RÈGLE 12 — LIGNES DE RÉPONSE : uniquement si le client demande explicitement — sinon aucune ligne vide
+RÈGLE 13 — PAS DE TABLEAU BARÈME : pas de tableau récapitulatif des points, pas de consignes générales sur les points
 RÈGLE 14 — CORRIGÉ SEULEMENT SI DEMANDÉ : n\'inclure le corrigé que si "corrigé/correction" est dans la demande
 RÈGLE 15 — CORRIGÉ EXHAUSTIF (si demandé) :
   • QCM → bonne lettre + explication pourquoi chaque distractor est FAUX
@@ -2229,26 +2517,49 @@ RÈGLE 15 — CORRIGÉ EXHAUSTIF (si demandé) :
   • Ouvertes → éléments de réponse attendus par niveau + points partiels accordables
   • Production écrite → exemple de réponse rédigée + grille d\'évaluation critère par critère
 
-=== STRUCTURE DU DOCUMENT À PRODUIRE ===
+=== STRUCTURE UNIVERSELLE DU DOCUMENT À PRODUIRE ===
 
-[EN-TÊTE SIMPLE UNIQUEMENT — voir Section En-tête ci-dessus]
-[PAS de REPUBLIQUE DE CI, PAS de Nom/Prénom/Salle, PAS de consignes générales, PAS de tableau de répartition des points]
+⚠️ TOUTES LES MATIÈRES sans exception suivent cette structure :
+
+###ENTETE_DEVOIR###
+ETABLISSEMENT=[nom école ou vide]
+DISCIPLINE=[CE MATHS / CE PC / CE SVT / CE HG / CE FRANÇAIS / CE ECM / CE ANGLAIS / ...]
+CLASSE=[2ndC / 3ème / Terminale D / CM2 / ...]
+ANNEE=[2025-2026]
+DATE=[si précisée, sinon laisser vide]
+DUREE=[1H / 2H / 3H selon niveau]
+TITRE_DEVOIR=[DEVOIR DE NIVEAU N°1  3ᵉ Trimestre / COMPOSITION DU 1er TRIMESTRE / DEVOIR SURVEILLÉ N°2 / ...]
+MENTION=[Cette épreuve comporte X pages numérotées. La calculatrice scientifique est autorisée. / Documents non autorisés.]
+###FIN_ENTETE###
+
+## EXERCICE 1 :
+[Consigne + contenu — avec ###SOUS_EXERCICE### si sous-parties]
+
+════════════════════════════════════════════════════════════════
+
+## EXERCICE 2 :
+[Consigne + contenu]
 
 ---SAUT_DE_PAGE---
 
-[EXERCICES COMPLETS ICI — séparés par ════════════════════════════════════════════════════════]
+## EXERCICE 3 :
+[Contenu page 2]
 
-[SI CORRIGÉ DEMANDÉ — inclure après ---SAUT_DE_PAGE--- :]
+════════════════════════════════════════════════════════════════
 
+## EXERCICE 4 :
+[Contenu page 2]
+
+[SI CORRIGÉ DEMANDÉ — après ---SAUT_DE_PAGE--- :]
 ## ✦ CORRIGÉ OFFICIEL — [Matière] — [Niveau]
-**⚠️ STRICTEMENT RÉSERVÉ AU PROFESSEUR — Ne pas photocopier pour les élèves**
-**Barème indicatif — des points de mérite peuvent être accordés pour les démarches partielles correctes**
 
-### ✦ Exercice 1 — [Titre] — Corrigé détaillé
-[Pour chaque question : réponse complète + justification + points accordés]
-
-### ✦ Exercice 2 — [Titre] — Corrigé détaillé
-[Pour les calculs : toutes les étapes + formules + unités + résultat encadré]
+RÈGLES ABSOLUES :
+• PAS de REPUBLIQUE DE CI en en-tête (Python le gère si besoin)
+• PAS de Nom/Prénom/Salle/Numéro de table
+• PAS de tableau récapitulatif des points
+• PAS de consignes générales avant les exercices
+• ════ AVANT chaque exercice sauf le premier
+• ---SAUT_DE_PAGE--- entre page 1 et page 2, JAMAIS précédé d'un ════
 
 ⚠️ RAPPELS FINAUX AVANT GÉNÉRATION — VÉRIFIER AVANT D'ÉCRIRE LA PREMIÈRE LIGNE :
 
@@ -4015,50 +4326,58 @@ def creer_docx(contenu, service, client_nom):
             section.left_margin   = Cm(2.5)
             section.right_margin  = Cm(2.0)
 
-    # ── NUMÉROTATION X/Y EN BAS DE PAGE (exposés uniquement) ─────
-    if IS_EXPOSE:
-        def _add_page_numbers(section):
+    # ── NUMÉROTATION X/Y EN BAS DE PAGE (exposés + examens) ─────
+    if IS_EXPOSE or IS_EXAMEN:
+        def _add_page_numbers(section, is_exam=False):
             from docx.oxml import OxmlElement as _OE
             from docx.oxml.ns import qn as _qn
             from docx.shared import RGBColor as _RC, Pt as _Pt
             footer = section.footer
             footer.is_linked_to_previous = False
-            # Vider le footer
             for p in footer.paragraphs:
                 p._element.getparent().remove(p._element)
             p_f = footer.add_paragraph()
             p_f.alignment = WD_ALIGN_PARAGRAPH.CENTER
             p_f.paragraph_format.space_before = _Pt(0)
             p_f.paragraph_format.space_after  = _Pt(0)
+            # Couleur : doré pour exposé, noir pour examen
+            _color = _RC(0x00, 0x00, 0x00) if is_exam else _RC(0xB8, 0x93, 0x2A)
             def _fld(instr):
-                """Crée un champ Word (PAGE ou NUMPAGES)"""
                 r = p_f.add_run()
-                r.font.name = "Calibri"; r.font.size = _Pt(9)
-                r.font.color.rgb = _RC(0xB8, 0x93, 0x2A)  # doré
+                r.font.name = "Times New Roman" if is_exam else "Calibri"
+                r.font.size = _Pt(10 if is_exam else 9)
+                r.italic = is_exam
+                r.font.color.rgb = _color
                 fldChar_begin = _OE("w:fldChar")
                 fldChar_begin.set(_qn("w:fldCharType"), "begin")
                 r._r.append(fldChar_begin)
                 r2 = p_f.add_run()
-                r2.font.name = "Calibri"; r2.font.size = _Pt(9)
-                r2.font.color.rgb = _RC(0xB8, 0x93, 0x2A)
+                r2.font.name = "Times New Roman" if is_exam else "Calibri"
+                r2.font.size = _Pt(10 if is_exam else 9)
+                r2.italic = is_exam
+                r2.font.color.rgb = _color
                 instrText = _OE("w:instrText")
                 instrText.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
                 instrText.text = f" {instr} "
                 r2._r.append(instrText)
                 r3 = p_f.add_run()
-                r3.font.name = "Calibri"; r3.font.size = _Pt(9)
-                r3.font.color.rgb = _RC(0xB8, 0x93, 0x2A)
+                r3.font.name = "Times New Roman" if is_exam else "Calibri"
+                r3.font.size = _Pt(10 if is_exam else 9)
+                r3.italic = is_exam
+                r3.font.color.rgb = _color
                 fldChar_end = _OE("w:fldChar")
                 fldChar_end.set(_qn("w:fldCharType"), "end")
                 r3._r.append(fldChar_end)
             _fld("PAGE")
-            sep = p_f.add_run(" / ")
-            sep.font.name = "Calibri"; sep.font.size = _Pt(9)
-            sep.font.color.rgb = _RC(0xB8, 0x93, 0x2A)
+            sep = p_f.add_run("/")
+            sep.font.name = "Times New Roman" if is_exam else "Calibri"
+            sep.font.size = _Pt(10 if is_exam else 9)
+            sep.italic = is_exam
+            sep.font.color.rgb = _color
             _fld("NUMPAGES")
 
         for _sect in doc.sections:
-            _add_page_numbers(_sect)
+            _add_page_numbers(_sect, is_exam=IS_EXAMEN)
 
     style = doc.styles["Normal"]
     style.font.name = "Times New Roman" if IS_EXAMEN else "Arial"
@@ -4148,13 +4467,13 @@ def creer_docx(contenu, service, client_nom):
                     if child.tag.endswith('}spacing') or child.tag == 'spacing':
                         pPr.remove(child)
                 spacing = _OEh("w:spacing")
-                spacing.set(_qnh("w:before"), "120")   # 6pt avant exercice
-                spacing.set(_qnh("w:after"),  "40")    # 2pt après titre
+                spacing.set(_qnh("w:before"), "280")   # 14pt avant exercice (vrai sujet CI)
+                spacing.set(_qnh("w:after"),  "60")    # 3pt après titre
                 pPr.append(spacing)
             except Exception:
                 pass
-        fix_heading_examen("Heading 1", 14, underline=True)   # EXERCICE N°
-        fix_heading_examen("Heading 2", 12, underline=True)   # Sous-exercice
+        fix_heading_examen("Heading 1", 14, underline=False)  # EXERCICE N° — gras seul, pas souligné
+        fix_heading_examen("Heading 2", 12, underline=False)  # Sous-exercice — gras seul
         fix_heading_examen("Heading 3", 11, underline=False)  # Partie A/B/C
         fix_heading_examen("Heading 4", 11, underline=False)  # Document A/B
     else:
@@ -4526,6 +4845,163 @@ def creer_docx(contenu, service, client_nom):
             run_break._r.append(br)
             i += 1
             continue
+        # ── MARQUEUR EN-TÊTE DEVOIR IVOIRIEN — Python construit tout ──────────
+        # Syntaxe multiligne :
+        #   ###ENTETE_DEVOIR###
+        #   ETABLISSEMENT=Collège Sainte Famille de Bouaké
+        #   DISCIPLINE=CE PHYSIQUE-CHIMIE
+        #   CLASSE=2ndC
+        #   ANNEE=2025-2026
+        #   DATE=21/04/2026
+        #   DUREE=2H
+        #   TITRE_DEVOIR=DEVOIR DE NIVEAU N°1  3ᵉ Trimestre
+        #   MENTION=Cette épreuve comporte trois (03) pages...
+        #   ###FIN_ENTETE###
+        if l.strip() == "###ENTETE_DEVOIR###":
+            i += 1
+            params_entete = {}
+            while i < len(lignes) and lignes[i].strip() != "###FIN_ENTETE###":
+                lp = lignes[i].strip()
+                if "=" in lp:
+                    cle, _, val = lp.partition("=")
+                    params_entete[cle.strip()] = val.strip()
+                i += 1
+            i += 1  # sauter ###FIN_ENTETE###
+
+            from docx.oxml import OxmlElement as _OEeh
+            from docx.oxml.ns import qn as _qneh
+            from docx.shared import Cm as _Cmeh
+
+            # ── BLOC 1 : Tableau 2 colonnes invisible (gauche : établissement | droite : année/date/durée)
+            tbl_hdr = doc.add_table(rows=1, cols=2)
+            tbl_hdr.style = "Table Grid"
+            # Supprimer toutes les bordures
+            tbl_el = tbl_hdr._tbl
+            tblPr = tbl_el.find(_qneh("w:tblPr"))
+            if tblPr is None:
+                tblPr = _OEeh("w:tblPr")
+                tbl_el.insert(0, tblPr)
+            tblBorders = _OEeh("w:tblBorders")
+            for _side in ["top","left","bottom","right","insideH","insideV"]:
+                _b = _OEeh(f"w:{_side}")
+                _b.set(_qneh("w:val"), "single")
+                _b.set(_qneh("w:sz"), "12")       # bordure 1.5pt — style vrai sujet CI
+                _b.set(_qneh("w:space"), "0")
+                _b.set(_qneh("w:color"), "000000")  # noir
+                tblBorders.append(_b)
+            tblPr.append(tblBorders)
+
+            cell_g = tbl_hdr.cell(0, 0)
+            cell_d = tbl_hdr.cell(0, 1)
+            # Largeurs : 60% gauche / 40% droite
+            for _c, _w in [(cell_g, _Cmeh(9.5)), (cell_d, _Cmeh(6.5))]:
+                _c._tc.get_or_add_tcPr()
+                tcW = _OEeh("w:tcW")
+                tcW.set(_qneh("w:w"), str(int(_w.cm * 567)))
+                tcW.set(_qneh("w:type"), "dxa")
+                _c._tc.tcPr.append(tcW)
+
+            # Colonne gauche : Établissement + Discipline + Classe
+            def _eh_para(cell, txt, bold=False, size=10, align=WD_ALIGN_PARAGRAPH.LEFT):
+                p_e = cell.add_paragraph()
+                p_e.alignment = align
+                p_e.paragraph_format.space_before = Pt(0)
+                p_e.paragraph_format.space_after  = Pt(1)
+                r_e = p_e.add_run(txt)
+                r_e.font.name = "Times New Roman"
+                r_e.font.size = Pt(size)
+                r_e.bold = bold
+                r_e.font.color.rgb = RC(0, 0, 0)
+                return p_e
+
+            # Vider le paragraphe auto dans les cellules
+            for _cell in [cell_g, cell_d]:
+                for _pp in _cell.paragraphs:
+                    _pp._element.getparent().remove(_pp._element)
+
+            etab = params_entete.get("ETABLISSEMENT", "")
+            disc = params_entete.get("DISCIPLINE", "")
+            classe = params_entete.get("CLASSE", "")
+            annee = params_entete.get("ANNEE", "")
+            date_d = params_entete.get("DATE", "")
+            duree = params_entete.get("DUREE", "")
+
+            if etab:  _eh_para(cell_g, etab, bold=True, size=10)
+            if disc:  _eh_para(cell_g, disc, bold=False, size=10)
+            if classe: _eh_para(cell_g, f"CLASSE : {classe}", bold=False, size=10)
+
+            if annee:  _eh_para(cell_d, f"ANNEE SCOLAIRE  {annee}", bold=False, size=10, align=WD_ALIGN_PARAGRAPH.RIGHT)
+            if date_d: _eh_para(cell_d, f"Date : {date_d}", bold=False, size=10, align=WD_ALIGN_PARAGRAPH.RIGHT)
+            if duree:  _eh_para(cell_d, f"Durée : {duree}", bold=False, size=10, align=WD_ALIGN_PARAGRAPH.RIGHT)
+
+            doc.add_paragraph("")  # petit espace
+
+            # ── BLOC 2 : Titre du devoir encadré centré ──────────────
+            titre_dv = params_entete.get("TITRE_DEVOIR", "DEVOIR DE NIVEAU").upper()
+            p_tdr = doc.add_paragraph()
+            p_tdr.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_tdr.paragraph_format.space_before = Pt(6)
+            p_tdr.paragraph_format.space_after  = Pt(4)
+            pPr_tdr = p_tdr._p.get_or_add_pPr()
+            pBdr_tdr = _OEeh("w:pBdr")
+            for _sn in ["top","bottom","left","right"]:
+                _se = _OEeh(f"w:{_sn}")
+                _se.set(_qneh("w:val"), "single")
+                _se.set(_qneh("w:sz"), "12")
+                _se.set(_qneh("w:space"), "6")
+                _se.set(_qneh("w:color"), "000000")
+                pBdr_tdr.append(_se)
+            pPr_tdr.append(pBdr_tdr)
+            r_tdr = p_tdr.add_run(titre_dv)
+            r_tdr.font.name = "Times New Roman"
+            r_tdr.font.size = Pt(14)
+            r_tdr.bold = True
+            r_tdr.font.color.rgb = RC(0, 0, 0)
+
+            # ── BLOC 3 : Mention réglementaire en italique centré ────
+            mention = params_entete.get("MENTION", "")
+            if mention:
+                p_men = doc.add_paragraph()
+                p_men.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                p_men.paragraph_format.space_before = Pt(4)
+                p_men.paragraph_format.space_after  = Pt(6)
+                r_men = p_men.add_run(mention)
+                r_men.font.name = "Times New Roman"
+                r_men.font.size = Pt(10)
+                r_men.italic = True
+                r_men.font.color.rgb = RC(0, 0, 0)
+
+            continue
+
+        # ── MARQUEUR SOUS-EXERCICE (CHIMIE / PHYSIQUE / etc.) ────────
+        # Syntaxe : ###SOUS_EXERCICE### CHIMIE
+        if l.strip().startswith("###SOUS_EXERCICE###"):
+            texte_se = l.strip().replace("###SOUS_EXERCICE###", "").strip()
+            from docx.oxml import OxmlElement as _OEse
+            from docx.oxml.ns import qn as _qnse
+            p_se = doc.add_paragraph()
+            p_se.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p_se.paragraph_format.space_before = Pt(12)  # espace généreux avant
+            p_se.paragraph_format.space_after  = Pt(6)
+            # Bordure basse fine pour séparer visuellement
+            pPr_se = p_se._p.get_or_add_pPr()
+            pBdr_se = _OEse("w:pBdr")
+            bot_se = _OEse("w:bottom")
+            bot_se.set(_qnse("w:val"), "single")
+            bot_se.set(_qnse("w:sz"), "6")
+            bot_se.set(_qnse("w:space"), "4")
+            bot_se.set(_qnse("w:color"), "000000")
+            pBdr_se.append(bot_se)
+            pPr_se.append(pBdr_se)
+            r_se = p_se.add_run(texte_se)
+            r_se.font.name = "Times New Roman"
+            r_se.font.size = Pt(12)
+            r_se.bold = True
+            r_se.underline = True
+            r_se.font.color.rgb = RC(0, 0, 0)
+            i += 1
+            continue
+
         # ── MARQUEUR TITRE CADRE — Titre matière encadré (style vrai sujet CI) ──
         if l.strip().startswith("###TITRE_CADRE###"):
             texte_titre_c = l.strip().replace("###TITRE_CADRE###", "").strip().upper()
@@ -4653,7 +5129,7 @@ def creer_docx(contenu, service, client_nom):
             pBdr2 = OxmlElement("w:pBdr")
             bot2 = OxmlElement("w:bottom")
             bot2.set(qn("w:val"), "single")
-            bot2.set(qn("w:sz"), "6" if IS_EXAMEN else "12")   # fin en mode examen
+            bot2.set(qn("w:sz"), "12" if IS_EXAMEN else "12")   # 1.5pt — visible sur vrais sujets CI
             bot2.set(qn("w:space"), "1")
             bot2.set(qn("w:color"), "000000" if IS_EXAMEN else "1F4E79")  # noir examen
             pBdr2.append(bot2)
@@ -4696,6 +5172,9 @@ def creer_docx(contenu, service, client_nom):
             continue
         if l.startswith("## "):
             _htxt = l[3:].strip()
+            # Supprimer la mention "— Niveau : ..." du titre avant affichage
+            if " — Niveau : " in _htxt:
+                _htxt = _htxt.split(" — Niveau : ")[0].strip()
             if _htxt.upper() != _last_heading_txt:
                 p = doc.add_heading(_htxt, level=2)
                 _last_heading_txt = _htxt.upper()
@@ -7132,8 +7611,35 @@ def main_dashboard():
         # ── GRILLE UNIFIÉE : tout le monde choisit un service → Nova IA ──────────
         st.markdown("#### 🛠️ Choisis ton service")
         st.markdown("<div style='color:rgba(255,255,255,0.5);font-size:0.85rem;margin-bottom:12px;'>Clique sur un service pour démarrer 🤖</div>", unsafe_allow_html=True)
-        _cols = st.columns(2)
+
+        # CSS mobile-first pour les boutons de service
+        st.markdown("""
+        <style>
+        /* Boutons service — compacts sur mobile */
+        div[data-testid="stButton"].nova-svc-btn > button {
+            font-size: 0.82rem !important;
+            padding: 6px 10px !important;
+            min-height: 38px !important;
+            height: auto !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+        }
+        @media (max-width: 640px) {
+            div[data-testid="stButton"].nova-svc-btn > button {
+                font-size: 0.78rem !important;
+                padding: 5px 8px !important;
+                min-height: 34px !important;
+            }
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+        _cols = st.columns(2, gap="small")
         for _i, _svc in enumerate(TOUS_SERVICES):
+            st.markdown('<div class="nova-svc-btn">', unsafe_allow_html=True)
             with _cols[_i % 2]:
                 if st.button(_svc, key=f"pick_svc_{_i}", use_container_width=True):
                     _service_court = _svc.split(" ", 1)[-1] if " " in _svc else _svc
@@ -7172,6 +7678,7 @@ def main_dashboard():
                         st.session_state["service_choisi"] = _svc
                         st.session_state["view"] = "nova_ia"
                         st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
         service = st.session_state.get("service_choisi", TOUS_SERVICES[0])
         SERVICE_SAISIE = "📊 Data & Excel Analytics"
@@ -7726,7 +8233,7 @@ Tu es un expert du système éducatif ivoirien (MENET-FP). Tu connais parfaiteme
 - Pas de QCM — uniquement questions ouvertes et problèmes
 
 RÈGLES GÉNÉRALES POUR TOUS LES NIVEAUX :
-- Chaque exercice : ## EXERCICE N : (X points)
+- Chaque exercice : ## EXERCICE N :
 - Données toujours précises avec vrais chiffres
 - Contextes ivoiriens authentiques : noms ivoiriens, villes CI (Abidjan, Bouaké, Yamoussoukro...), produits locaux (cacao, café, anacarde...), monnaie FCFA
 - NE JAMAIS inventer une structure générique — colle au vrai format du niveau
@@ -8774,95 +9281,73 @@ Si DEVOIR_COMPLET → Vrai devoir ivoirien COMPLET : applique EXACTEMENT la Sect
                                         _logo_ecole = None
                                         if hasattr(st.session_state, "logo_ecole_path") and st.session_state.logo_ecole_path:
                                             _logo_ecole = st.session_state.logo_ecole_path
-                                        # ════════════════════════════════════════════════
-                                        # PAGE DE GARDE — injection dans le template Word
-                                        # Python lit le template, remplace les données,
-                                        # Gemini ne touche PAS à la mise en forme.
-                                        # Données injectées :
-                                        #   → THEME       (titre de l'exposé)
-                                        #   → Matière     (matière scolaire)
-                                        #   → Année scolaire
-                                        #   → Noms 1- à 7- (liste des exposants)
-                                        # ════════════════════════════════════════════════
-                                        import zipfile as _zf, os as _os
+                                        # Créer la page de garde depuis le template Word original
+                                        import zipfile as _zf, shutil as _sh, os as _os
                                         from lxml import etree as _etree
                                         from io import BytesIO as _BytesPDG2
-                                        import re as _re_pdg2
 
                                         _TEMPLATE_PATH = "page_de_Garde_public.docx"
                                         _pdg_buf = _BytesPDG2()
-                                        _W_NS = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 
-                                        def _pdg_get_text(elem):
-                                            return ''.join(t.text or '' for t in elem.iter(f'{{{_W_NS}}}t'))
-
-                                        # Lire le XML du template
+                                        # Lire le template
                                         with _zf.ZipFile(_TEMPLATE_PATH, 'r') as _zin:
                                             _xml_bytes = _zin.read('word/document.xml')
 
                                         _pdg_tree = _etree.fromstring(_xml_bytes)
+                                        _W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 
-                                        # Parcourir toutes les zones de texte flottantes
-                                        for _txbx in _pdg_tree.findall(f'.//{{{_W_NS}}}txbxContent'):
+                                        def _pdg_get_text(elem):
+                                            return ''.join(t.text or '' for t in elem.iter(f'{{{_W}}}t'))
+
+                                        # Remplacer les données dans les zones de texte
+                                        for _txbx in _pdg_tree.findall(f'.//{{{_W}}}txbxContent'):
                                             _txt = _pdg_get_text(_txbx).strip()
 
-                                            # ── Zone THEME : ─────────────────────────
-                                            # para[0] = "THEME :" (fixe)
-                                            # para[1] = vide → on y met le titre
+                                            # Zone THEME :
                                             if 'THEME' in _txt and ':' in _txt:
-                                                _paras = _txbx.findall(f'.//{{{_W_NS}}}p')
+                                                _paras = _txbx.findall(f'.//{{{_W}}}p')
                                                 if len(_paras) >= 2:
                                                     _p1 = _paras[1]
-                                                    _runs = _p1.findall(f'{{{_W_NS}}}r')
+                                                    _runs = _p1.findall(f'{{{_W}}}r')
                                                     if _runs:
-                                                        _t = _runs[-1].find(f'{{{_W_NS}}}t')
-                                                        if _t is not None:
-                                                            _t.text = _titre
+                                                        _t = _runs[-1].find(f'{{{_W}}}t')
+                                                        if _t is not None: _t.text = _titre
                                                     else:
-                                                        # Créer un run
-                                                        _r = _etree.SubElement(_p1, f'{{{_W_NS}}}r')
-                                                        _rPr = _etree.SubElement(_r, f'{{{_W_NS}}}rPr')
-                                                        _sz = _etree.SubElement(_rPr, f'{{{_W_NS}}}sz')
-                                                        _sz.set(f'{{{_W_NS}}}val', '24')
-                                                        _t = _etree.SubElement(_r, f'{{{_W_NS}}}t')
+                                                        _r = _etree.SubElement(_p1, f'{{{_W}}}r')
+                                                        _t = _etree.SubElement(_r, f'{{{_W}}}t')
                                                         _t.text = _titre
 
-                                            # ── Zone Matière + Année scolaire ────────
+                                            # Zone Matière + Année scolaire
                                             elif 'Matière' in _txt and 'Année scolaire' in _txt:
-                                                for _p in _txbx.findall(f'.//{{{_W_NS}}}p'):
+                                                import re as _re_pdg2
+                                                for _p in _txbx.findall(f'.//{{{_W}}}p'):
                                                     _pt = _pdg_get_text(_p)
-                                                    _runs = _p.findall(f'{{{_W_NS}}}r')
+                                                    _runs = _p.findall(f'{{{_W}}}r')
                                                     if 'Matière' in _pt and len(_runs) >= 2:
-                                                        # runs[-1] = valeur de la matière
-                                                        _t = _runs[-1].find(f'{{{_W_NS}}}t')
-                                                        if _t is not None:
-                                                            _t.text = _mat or "—"
+                                                        _t = _runs[-1].find(f'{{{_W}}}t')
+                                                        if _t is not None: _t.text = _mat or "—"
                                                     elif 'Année scolaire' in _pt and len(_runs) >= 2:
-                                                        # Vider les runs intermédiaires (espaces),
-                                                        # mettre l'année dans le dernier run
-                                                        for _r in _runs[1:-1]:
-                                                            _t = _r.find(f'{{{_W_NS}}}t')
-                                                            if _t is not None: _t.text = ''
-                                                        _t = _runs[-1].find(f'{{{_W_NS}}}t')
-                                                        if _t is not None:
-                                                            _t.text = _annee
+                                                        _t = _runs[-1].find(f'{{{_W}}}t')
+                                                        if _t is not None: _t.text = _annee
 
-                                            # ── Zone liste noms 1- à 7- ──────────────
+                                            # Zone liste noms 1- 2- ... 7-
                                             elif '1-' in _txt and '2-' in _txt:
-                                                for _p in _txbx.findall(f'.//{{{_W_NS}}}p'):
+                                                import re as _re_pdg3
+                                                for _p in _txbx.findall(f'.//{{{_W}}}p'):
                                                     _pt = _pdg_get_text(_p).strip()
-                                                    _m = _re_pdg2.match(r'^(\d+)-', _pt)
+                                                    _m = _re_pdg3.match(r'^(\d+)-', _pt)
                                                     if _m:
                                                         _num = int(_m.group(1))
                                                         _nom = _noms[_num - 1] if _num - 1 < len(_noms) else ''
-                                                        _runs = _p.findall(f'{{{_W_NS}}}r')
+                                                        _runs = _p.findall(f'{{{_W}}}r')
                                                         if _runs:
-                                                            _t = _runs[-1].find(f'{{{_W_NS}}}t')
+                                                            _t = _runs[-1].find(f'{{{_W}}}t')
                                                             if _t is not None:
-                                                                _t.text = f'{_num}- {_nom}' if _nom else f'{_num}-'
-                                                                _t.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
+                                                                _t.text = f'{_num}- {_nom}'
+                                                                if _t.text[-1] == ' ':
+                                                                    _t.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
 
-                                        # Écrire le XML modifié dans un BytesIO
+                                        # Écrire le XML modifié dans un BytesIO zip
                                         _xml_out = _etree.tostring(_pdg_tree, xml_declaration=True, encoding='UTF-8', standalone=True)
                                         with _zf.ZipFile(_TEMPLATE_PATH, 'r') as _zin:
                                             with _zf.ZipFile(_pdg_buf, 'w', _zf.ZIP_DEFLATED) as _zout:
