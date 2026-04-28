@@ -1642,11 +1642,17 @@ TABLEAU QCM (Exercice à choix multiples) — modèle EXACT observé :
 TABLEAU VRAI/FAUX — modèle EXACT observé :
 | N° | Affirmation | V | F | Justification (si fausse) |
 |----|-------------|---|---|---------------------------|
-| 1  | [texte]     | □ | □ | ___________________________|
+| 1  | [texte affirmation complète rédigée] | ☐ | ☐ | |
+| 2  | [texte affirmation complète rédigée] | ☐ | ☐ | |
+| 3  | [texte affirmation complète rédigée] | ☐ | ☐ | |
+| 4  | [texte affirmation complète rédigée] | ☐ | ☐ | |
+| 5  | [texte affirmation complète rédigée] | ☐ | ☐ | |
   → Colonne N° : 0.8cm centré
-  → Colonne Affirmation : ~9cm, aligné gauche
-  → Colonnes V/F : 1cm chacune, centré, avec case □
-  → Colonne Justification : reste de la largeur
+  → Colonne Affirmation : ~8.5cm, aligné gauche — rédige l'affirmation complète directement dans la cellule
+  → Colonnes V/F : 1.2cm chacune, centré — utilise ☐ (U+2610) et non □ ni [ ]
+  → Colonne Justification : ~3.5cm — laisser vide (l\'élève écrit sur la copie)
+  → JAMAIS de lignes ___ dans le tableau — l\'élève répond sur copie
+  → La colonne Affirmation peut contenir des symboles Unicode (², √, Δ...)
 
 TABLEAU DONNÉES (problème, exercice contextuel) :
   → 2 colonnes : Grandeur | Valeur
@@ -2989,6 +2995,11 @@ Si la demande contient des mots comme : "reproduis", "recopie", "mets en Word", 
 → Commence DIRECTEMENT par le titre et les données. Aucune phrase d'introduction.
 
 Le document est livré directement au client — il ne doit rien avoir à compléter ou reformater."""
+
+        elif "Modifier" in service and "Fichier" in service:
+            # Le prompt est déjà entièrement construit dans main_dashboard et passé via `description`.
+            # Ici on le reprend tel quel — il contient toutes les instructions Nova + la demande client.
+            prompt = description
 
         elif "Excel" in service or "Data" in service:
             prompt = f"""Tu es un expert Excel et Data Analytics africain francophone.
@@ -5239,11 +5250,12 @@ def creer_docx(contenu, service, client_nom):
                 # Largeurs adaptées selon mode et nombre de colonnes
                 if IS_EXAMEN:
                     col_widths_map = {
-                        2: [1.0, 13.0],                          # N° | Affirmation
-                        3: [0.8, 9.0, 4.2],                      # N° | Affirmation | V F Justif
-                        4: [0.8, 4.8, 3.0, 3.0, 2.4],            # N° | Énoncé | A | B | C
-                        5: [0.7, 5.5, 2.0, 2.0, 2.0, 2.0],       # N° | Énoncé | A | B | C | D (QCM)
-                        6: [0.7, 5.0, 1.8, 1.8, 1.8, 1.8, 1.1],  # N° | Énoncé | A|B|C|D + points
+                        2: [1.0, 13.0],                            # N° | Affirmation (VF simple 2 col)
+                        3: [0.8, 9.5, 3.7],                        # N° | Affirmation | V/F groupé
+                        4: [0.8, 7.5, 1.2, 1.2],                   # N° | Affirmation | V | F (sans justif)
+                        5: [0.8, 8.5, 1.2, 1.2, 3.5],              # N° | Affirmation | V | F | Justification
+                        6: [0.7, 5.5, 2.0, 2.0, 2.0, 2.0],         # N° | Énoncé | A | B | C | D (QCM 4 réponses)
+                        7: [0.7, 5.0, 1.8, 1.8, 1.8, 1.8, 1.2],   # N° | Énoncé | A|B|C|D + points
                     }
                 else:
                     col_widths_map = {
@@ -5261,13 +5273,18 @@ def creer_docx(contenu, service, client_nom):
                 for r_idx, row_data in enumerate(table_lines):
                     row_obj = table.add_row()
                     is_header = (r_idx == 0)
-                    row_obj.height = DocxCm(0.9 if is_header else 1.5)
+                    # ── HAUTEUR : auto pour les lignes de données (évite coupure de texte long)
+                    # En-tête : hauteur minimale fixe ; données : hauteur automatique
                     from docx.oxml.ns import qn as _qn
                     from docx.oxml import OxmlElement as _OE
                     trPr = row_obj._tr.get_or_add_trPr()
                     trHeight = _OE("w:trHeight")
-                    trHeight.set(_qn("w:val"), str(int((0.9 if is_header else 1.5) * 567)))
-                    trHeight.set(_qn("w:hRule"), "exact")
+                    if is_header:
+                        trHeight.set(_qn("w:val"), str(int(0.85 * 567)))
+                        trHeight.set(_qn("w:hRule"), "atLeast")  # min 0.85cm, peut grandir
+                    else:
+                        trHeight.set(_qn("w:val"), str(int(1.1 * 567)))
+                        trHeight.set(_qn("w:hRule"), "atLeast")  # hauteur minimale, auto si texte long
                     trPr.append(trHeight)
 
                     for c_idx, cell_text in enumerate(row_data):
@@ -5305,22 +5322,48 @@ def creer_docx(contenu, service, client_nom):
                             tcPr.append(shd)
 
                         para = cell.paragraphs[0]
-                        # Centrage : N° (col 0) et colonnes de réponses courtes toujours centrées
+                        # Centrage horizontal :
+                        # - col 0 (N°) toujours centré
+                        # - colonnes V/F/réponses courtes (c_idx >= 2 sauf col Justification) centrées
+                        # - col Affirmation/Énoncé (c_idx == 1) toujours LEFT
                         if IS_EXAMEN:
-                            is_short_col = c_idx == 0 or (n_cols >= 4 and c_idx >= 2)
+                            # Tableau VF 5 col : col 2 (V), col 3 (F) centrés ; col 4 (Justif) LEFT
+                            if n_cols == 5:
+                                is_short_col = c_idx in [0, 2, 3]
+                            else:
+                                is_short_col = c_idx == 0 or (n_cols >= 4 and c_idx >= 2)
                             para.alignment = WD_ALIGN_PARAGRAPH.CENTER if is_short_col else WD_ALIGN_PARAGRAPH.LEFT
                         else:
                             para.alignment = WD_ALIGN_PARAGRAPH.CENTER if c_idx in [0, n_cols-1] else WD_ALIGN_PARAGRAPH.LEFT
                         para.paragraph_format.space_before = Pt(2)
-                        para.paragraph_format.space_after = Pt(2)
-                        # Nettoyer le LaTeX dans les cellules (ex: $\text{kg}$, $m^3$...)
+                        para.paragraph_format.space_after  = Pt(2)
+
+                        # Centrage vertical de toutes les cellules
+                        from docx.oxml import OxmlElement as _OEv
+                        from docx.oxml.ns import qn as _qnv
+                        vAlign = _OEv("w:vAlign")
+                        vAlign.set(_qnv("w:val"), "center")
+                        tcPr.append(vAlign)
+
+                        # Nettoyer le LaTeX dans les cellules
                         cell_text_clean = nettoyer_latex_complet(cell_text)
-                        ajouter_formule_dans_run(
-                            para, cell_text_clean,
-                            bold=is_header,
-                            size=10 if IS_EXAMEN else 10,
-                            color=(0xFF, 0xFF, 0xFF) if is_header else None
-                        )
+
+                        # Cases à cocher ☐ et □ : police Segoe UI Symbol pour affichage fiable
+                        CASE_CHARS = {"☐", "□", "☑", "✓", "✗"}
+                        if cell_text_clean.strip() in CASE_CHARS or all(c in CASE_CHARS | {" "} for c in cell_text_clean.strip()):
+                            r_case = para.add_run(cell_text_clean.strip())
+                            r_case.font.name = "Segoe UI Symbol"
+                            r_case.font.size  = Pt(11)
+                            r_case.bold       = False
+                            if is_header:
+                                r_case.font.color.rgb = RC(0xFF, 0xFF, 0xFF)
+                        else:
+                            ajouter_formule_dans_run(
+                                para, cell_text_clean,
+                                bold=is_header,
+                                size=10 if IS_EXAMEN else 10,
+                                color=(0xFF, 0xFF, 0xFF) if is_header else None
+                            )
 
                 doc.add_paragraph("")
             continue
@@ -7532,6 +7575,7 @@ def main_dashboard():
         "📄 Création Word (depuis zéro)",
         "📋 Rapport de Stage IA",
         "📊 Data & Excel Analytics",
+        "📎 Modifier mon Fichier (Word / Excel / PPT)",
     ]
 
     with tab1:
@@ -8580,16 +8624,122 @@ RÈGLES GÉNÉRALES POUR TOUS LES NIVEAUX :
                 "Très urgent — dans 1 heure",
             ], key="mf_urgence")
             _mf_nom = mf_fichier.name if mf_fichier else "Aucun fichier"
-            prompt = f"""FICHE MODIFICATION FICHIER :
-📎 FICHIER         : {_mf_nom}
-🛠️ MODIFICATION    : {mf_type_modif}
-⏱️ DÉLAI           : {mf_urgence}
-✍️ INSTRUCTIONS    :
-{mf_instructions.strip() or "(aucune instruction)"}
-NOTE : fichier original joint via lien ci-dessous.
-"""
+            _ext_fichier = _mf_nom.rsplit(".", 1)[-1].upper() if "." in _mf_nom else "INCONNU"
+            prompt = f"""Tu es NOVA MODIFIER — l'expert Nova Platform chargé d'analyser la demande du client et de produire un document Word restructuré et amélioré, prêt à livrer.
+
+════════════════════════════════════════
+DEMANDE CLIENT
+════════════════════════════════════════
+📎 FICHIER SOURCE   : {_mf_nom} ({_ext_fichier})
+🛠️ TYPE DE MODIF    : {mf_type_modif}
+✍️ INSTRUCTIONS     :
+{mf_instructions.strip() or "(aucune instruction spécifique — applique les meilleures pratiques)"}
+
+════════════════════════════════════════
+TON RÔLE — LIRE ATTENTIVEMENT
+════════════════════════════════════════
+Tu es l'intermédiaire intelligent entre le client et Python (le moteur Nova).
+Python est capable de créer des documents Word parfaits — titres, tableaux, listes, mise en page,
+polices, couleurs, sauts de page, etc. — mais il a besoin que TU lui fourniSSES le contenu
+sous forme structurée avec les bonnes balises.
+
+TON TRAVAIL :
+1. Comprendre ce que le client veut faire sur son fichier
+2. Produire le CONTENU COMPLET du document modifié, structuré avec les balises Nova
+3. Python appliquera automatiquement toute la mise en page
+
+TU NE GÈRES PAS : polices, couleurs, marges, tailles — Python s'en charge.
+TU GÈRES : contenu, structure, logique, corrections, ajouts, restructuration.
+
+════════════════════════════════════════
+RÈGLES DE FORMATAGE NOVA — OBLIGATOIRES
+════════════════════════════════════════
+Ces balises sont converties automatiquement en vrai formatage Word par Python :
+
+TITRES :
+  # Titre principal      → H1 Word (une seule fois, en tête)
+  ## Titre de section    → H2 Word
+  ### Sous-titre         → H3 Word
+  #### Micro-titre       → H4 Word
+
+TEXTE :
+  Paragraphe normal      → texte justifié 11pt
+  **mot**                → gras dans Word
+  - item                 → puce Word
+  1. item                → liste numérotée Word
+  ---SAUT_DE_PAGE---     → vrai saut de page Word
+
+TABLEAUX :
+  | Col1 | Col2 | Col3 |
+  |------|------|------|
+  | val  | val  | val  |
+  → Tableau Word avec en-tête coloré et lignes alternées automatiquement
+
+SÉPARATEURS :
+  ════════════════════  → trait épais entre grandes parties
+  ────────────────────  → trait fin entre sous-sections
+
+INTERDIT ABSOLU :
+  ✗ LaTeX ($formule$, \\frac, \\omega...)
+  ✗ HTML (<br>, <b>, <div>...)
+  ✗ Sections vides ou placeholders "[À compléter]"
+  ✗ Commentaires méta comme "Note : voir page 3" ou "Section à personnaliser"
+
+════════════════════════════════════════
+RÈGLES PAR TYPE DE MODIFICATION
+════════════════════════════════════════
+
+① CORRECTION / AMÉLIORATION DU CONTENU :
+  → Corrige les fautes, améliore les tournures, renforce les arguments
+  → Conserve EXACTEMENT la structure originale (mêmes titres, même ordre)
+  → Ne supprime aucune section sans raison explicite du client
+  → Signale les passages reformulés avec **[amélioré]** après le titre de section
+
+② MISE EN FORME / DESIGN PROFESSIONNEL :
+  → Restructure avec les balises # ## ### pour une hiérarchie claire
+  → Ajoute des séparateurs ════ entre les grandes parties
+  → Transforme les listes en tirets en "- item" pour puces Word propres
+  → Si le client a des données brutes → les mettre en tableau
+
+③ AJOUT DE CONTENU :
+  → Intègre les nouvelles données demandées naturellement dans le flux existant
+  → Indique clairement avec **[AJOUTÉ]** au titre de la section nouvelle
+  → Ne modifie pas les sections existantes sauf si demandé
+
+④ RESTRUCTURATION COMPLÈTE :
+  → Réorganise logiquement : Introduction → Développement → Conclusion
+  → Crée une hiérarchie claire avec # ## ###
+  → Conserve tout le contenu original, rien ne disparaît
+
+⑤ CORRECTION ORTHOGRAPHIQUE / GRAMMATICALE :
+  → Corrige uniquement les fautes, sans changer le fond
+  → Conserve le style et le ton du client
+  → Ne reformule pas si la phrase est correcte
+
+⑥ TRADUCTION :
+  → Traduis fidèlement sans adapter ni résumer
+  → Conserve EXACTEMENT la structure, les titres, les tableaux
+  → Garde les noms propres, termes techniques et chiffres intacts
+
+⑦ EXTRACTION / RÉORGANISATION :
+  → Si le client veut un tableau depuis des données → crée le tableau exact
+  → Si le client veut une liste → formate en "- item" propre
+  → Ne paraphrase pas, reproduis les données exactes
+
+⑧ AUTRE MODIFICATION :
+  → Analyse les instructions du client et applique le bon traitement
+  → En cas de doute, applique la règle la plus conservative (ne rien supprimer)
+
+════════════════════════════════════════
+INSTRUCTION FINALE
+════════════════════════════════════════
+Produis le document COMPLET du début à la fin.
+Ne laisse aucune section vide. Ne dis pas "le reste du document reste inchangé".
+Si le fichier source n'est pas lisible directement, base-toi sur les instructions du client
+pour reconstituer et améliorer le document tel qu'il te l'a décrit.
+Le document livré doit être utilisable immédiatement, sans rien à compléter."""
             if mf_fichier and mf_instructions.strip():
-                st.success("✅ Demande complète — notre équipe s'en charge")
+                st.success("✅ Demande complète — génération IA en cours")
             else:
                 if not mf_fichier: st.warning("⚠️ Importez votre fichier")
                 if not mf_instructions.strip(): st.warning("⚠️ Décrivez les modifications souhaitées")
