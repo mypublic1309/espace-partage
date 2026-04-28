@@ -1972,6 +1972,26 @@ RÈGLE TABLEAU : Un tableau NE DOIT JAMAIS être coupé entre deux pages.
   ✗ Blocs markdown : ``` ~~~ ```markdown
   ✗ Document cité sans contenu rédigé
   ✗ Tableau coupé entre deux pages
+  ✗ Notation texte brut pour symboles mathématiques : JAMAIS x^2, sqrt(delta), sqrt(x), R^2, Delta, alpha — utilise les vrais caractères Unicode
+
+⑤ RÈGLE UNICODE OBLIGATOIRE — SYMBOLES MATHÉMATIQUES :
+  Tu n'utilises JAMAIS de notation texte brut pour représenter des symboles mathématiques dans le texte courant et le corrigé.
+  Tu utilises TOUJOURS les vrais caractères Unicode :
+
+  PUISSANCES    : x² y³ a⁴  → jamais x^2 ou x^{{2}} hors bloc ###FORMULE###
+  RACINES       : √Δ  √2  √(b²-4ac)  → jamais sqrt(delta) ni sqrt(x)
+  LETTRES GREC  : Δ α β γ θ λ π ω σ φ Σ Ω  → jamais Delta, alpha, beta, omega...
+  APPARTENANCE  : ∈ ∉ ℝ ℕ ℤ ℚ ∅ ∪ ∩  → jamais "appartient", R, N, Z, "ensemble vide"
+  OPÉRATEURS    : × ÷ ± ≤ ≥ ≠ ≈ → ⟺ ⟹ ∞  → jamais <=, >=, ->, <=>
+  INDICES TEXTO : H₂O CO₂ x₁ x₂  → dans le texte courant uniquement (_{} réservé à ###FORMULE###)
+
+  RÈGLE CORRIGÉ : TOUTES les étapes de calcul du corrigé DOIVENT utiliser ces symboles Unicode.
+  ✓ CORRECT  : "Δ = b² - 4ac = (-20)² - 4×1×50 = 400 - 200 = 200 > 0"
+  ✓ CORRECT  : "x₁ = (20 - √200) / 2 = (20 - 10√2) / 2 ≈ 2,93 ans"
+  ✗ INTERDIT : "delta = b^2 - 4ac" ou "x1 = (20 - sqrt(200)) / 2"
+
+  DANS ###FORMULE### : utilise la notation ^{{}} _{{}} comme prévu — Python gère le rendu Word.
+  DANS LE TEXTE COURANT ET LE CORRIGÉ : utilise directement ² ³ √ Δ α β — Word les affiche tels quels.
 
 SYMBOLES DISPONIBLES :
   Grecs   : α β γ δ ε θ λ μ π σ τ φ ω | Δ Σ Π Ω
@@ -4793,14 +4813,21 @@ def creer_docx(contenu, service, client_nom):
             r'|\^([^\s{_^*/+\-=(),\[\]])'            # exposant court ^x (1 car non-espace)
             r'|_{([^}]+)}'                           # indice long    _{abc}
             r'|_([^\s{_^*/+\-=(),\[\]])'             # indice court   _x (1 car non-espace)
+            r'|(√\([^)]+\))'                         # racine avec parenthèse √(expr)
+            r'|(√[^\s+\-=×÷±≤≥≠,;:)\]}\n]{1,10})'  # racine courte √Δ √2 √200
         )
 
-        def _run(text, sup=False, sub=False, bd=False, sz=None):
+        def _run(text, sup=False, sub=False, bd=False, sz=None, math_font=False):
             text = sanitize_xml(text)
             if not text:
                 return None
             r = p.add_run(text)
-            r.font.name  = "Times New Roman" if IS_EXAMEN else "Arial"
+            # Police : Cambria Math pour exposants/indices/racines en mode examen
+            # (meilleur rendu des symboles mathématiques dans Word)
+            if IS_EXAMEN and (sup or sub or math_font):
+                r.font.name = "Cambria Math"
+            else:
+                r.font.name = "Times New Roman" if IS_EXAMEN else "Arial"
             r.font.size  = Pt(sz if sz else (max(7, size - 2) if (sup or sub) else size))
             r.bold       = bd
             if sup: r.font.superscript = True
@@ -4818,6 +4845,8 @@ def creer_docx(contenu, service, client_nom):
                 _run(m.group(2) or m.group(3), sup=True, bd=bold)
             elif m.group(4) or m.group(5):        # indice
                 _run(m.group(4) or m.group(5), sub=True, bd=bold)
+            elif m.group(6) or m.group(7):        # racine √(expr) ou √x
+                _run(m.group(6) or m.group(7), bd=bold, math_font=True)
             last = m.end()
         if last < len(texte):
             _run(texte[last:], bd=bold)
@@ -5083,7 +5112,7 @@ def creer_docx(contenu, service, client_nom):
                 side_el.set(_qnf("w:color"), "2E75B6")
                 pBdr_f.append(side_el)
             pPr_f.append(pBdr_f)
-            # Texte formule en Arial 13pt gras bleu foncé avec exposants réels
+            # Texte formule en Cambria Math 13pt gras (meilleur rendu symboles maths Word)
             ajouter_formule_dans_run(p_f, texte_f, bold=True, size=13,
                                      color=(0x1F, 0x4E, 0x79))
             i += 1
