@@ -1989,7 +1989,7 @@ RÈGLE TABLEAU : Un tableau NE DOIT JAMAIS être coupé entre deux pages.
   LETTRES GREC  : Δ α β γ θ λ π ω σ φ Σ Ω  → jamais Delta, alpha, beta, omega...
   APPARTENANCE  : ∈ ∉ ℝ ℕ ℤ ℚ ∅ ∪ ∩  → jamais "appartient", R, N, Z, "ensemble vide"
   OPÉRATEURS    : × ÷ ± ≤ ≥ ≠ ≈ → ⟺ ⟹ ∞  → jamais <=, >=, ->, <=>
-  INDICES TEXTO : H₂O CO₂ x₁ x₂  → dans le texte courant uniquement (_{} réservé à ###FORMULE###)
+  INDICES TEXTO : H₂O CO₂ x₁ x₂  → dans le texte courant uniquement (_{{}} réservé à ###FORMULE###)
 
   RÈGLE CORRIGÉ : TOUTES les étapes de calcul du corrigé DOIVENT utiliser ces symboles Unicode.
   ✓ CORRECT  : "Δ = b² - 4ac = (-20)² - 4×1×50 = 400 - 200 = 200 > 0"
