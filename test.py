@@ -5757,9 +5757,35 @@ if "show_mode_modal" not in st.session_state:
 
 if st.session_state["current_user"] is None:
     stored_user = st.query_params.get("user_id")
-    if stored_user and stored_user in st.session_state["db"]["users"]:
-        st.session_state["current_user"] = stored_user
+    if stored_user:
+        # ── CAS 1 : uid trouvé dans le cache db ───────────────────
+        if stored_user in st.session_state["db"]["users"]:
+            st.session_state["current_user"] = stored_user
+        else:
+            # ── CAS 2 : uid présent dans l'URL mais pas dans le cache
+            # (cache vide au démarrage ou load_db raté) →
+            # lookup ciblé direct sur Supabase (1 seule ligne, ultra rapide)
+            try:
+                _rows = supabase.table("users").select("uid").eq("uid", stored_user).execute().data
+                if _rows:
+                    # Utilisateur confirmé en base → recharger db complète
+                    st.session_state["db"] = load_db()
+                    st.session_state["current_user"] = stored_user
+                else:
+                    # uid introuvable en base → URL corrompue ou expirée → on nettoie
+                    st.query_params.clear()
+                    components.html("""
+                        <script>
+                        localStorage.removeItem('nova_user_id');
+                        localStorage.removeItem('nova_user_ts');
+                        localStorage.removeItem('nova_user');
+                        </script>
+                    """, height=1)
+            except Exception:
+                # Supabase injoignable → on connecte quand même pour ne pas bloquer le client
+                st.session_state["current_user"] = stored_user
     else:
+        # ── CAS 3 : pas d'uid dans l'URL → lire localStorage et rediriger
         components.html("""
             <script>
             (function() {
@@ -7449,6 +7475,80 @@ def main_dashboard():
             if st.button("✕ Fermer", key="close_premium"):
                 st.session_state["show_premium_modal"] = False
                 st.rerun()
+
+    # ── AUTO-TRAITEMENT DEMANDES CLOUDFLARE (sans délai — contenu déjà généré) ──
+    try:
+        _cf_demandes = supabase.table("demandes").select("*").eq("source", "cloudflare").eq("status", "cf_pret").execute().data or []
+        _now_cf = datetime.now()
+
+        _SERVICES_CF = [
+            "Exposé scolaire complet IA",
+            "Rapport de Stage IA",
+            "CV & Lettre de Motivation",
+            "Fiche de Cours Professeur IA",
+            "Excel & Data Analytics",
+            "Création de Sujets & Examens",
+            "Création Word (depuis zéro)",
+            "Affiches & Reçus",
+            "Modifier mon Fichier",
+            "Conversion & PDF",
+            "OCR — Numérisation",
+        ]
+
+        for _cf in _cf_demandes:
+            _cf_id      = _cf.get("id", "")
+            _cf_service = _cf.get("service", "")
+            _cf_uid     = _cf.get("uid", "")
+            _cf_wa      = _cf.get("whatsapp", "")
+            _cf_contenu = _cf.get("contenu_genere", "")
+
+            # Ignorer si contenu vide ou déjà traité
+            if not _cf_contenu or _cf_contenu.startswith("❌"):
+                continue
+
+            # Chercher le nom du service même sans emoji prefix
+            _service_match = any(s in _cf_service for s in _SERVICES_CF)
+            if not _service_match:
+                continue
+
+            # Créer le docx depuis le contenu déjà généré par Cloudflare
+            try:
+                _cf_buf = creer_docx(_cf_contenu, _cf_service, _cf_uid)
+            except Exception as _e_cf:
+                supabase.table("config").upsert({
+                    "key": f"cf_error_{_cf_id}",
+                    "value": f"creer_docx: {str(_e_cf)[:200]}"
+                }).execute()
+                continue
+
+            _cf_nom = f"{_cf_uid}_{_cf_service[:20].strip()}_cf.docx".replace(" ", "_").replace("/", "-")
+
+            # Upload Supabase Storage
+            _cf_url = upload_fichier_client(_cf_uid, _cf_id, _cf_buf, _cf_nom)
+            if not _cf_url or _cf_url.startswith("ERREUR"):
+                supabase.table("config").upsert({
+                    "key": f"cf_error_{_cf_id}",
+                    "value": f"Upload: {_cf_url}"
+                }).execute()
+                continue
+
+            # Sauvegarder lien + marquer traitée + supprimer
+            save_lien(_cf_uid, _cf_service, _cf_url, _now_cf.strftime("%d/%m/%Y"))
+            supabase.table("demandes").update({"status": "auto_done"}).eq("id", _cf_id).execute()
+            delete_demande(_cf_id)
+
+            # Notifier admin
+            _cf_email = st.session_state["db"]["users"].get(_cf_uid, {}).get("email", "")
+            notifier_livraison_gemini(_cf_uid, _cf_wa, _cf_email, _cf_service, _cf_nom, demande_complete=_cf.get("description", ""))
+
+    except Exception as _e_cf_global:
+        try:
+            supabase.table("config").upsert({
+                "key": "cf_auto_last_error",
+                "value": f"{type(_e_cf_global).__name__}: {str(_e_cf_global)[:300]}"
+            }).execute()
+        except:
+            pass
 
     # ── VÉRIFICATION AUTO-REPLY GRATUIT (tourne à chaque refresh) ──────
     # ── AUTO-REPLY PLAN GRATUIT — tourne pour TOUS les visiteurs ──
