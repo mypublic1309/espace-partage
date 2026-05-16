@@ -2824,11 +2824,30 @@ RÈGLES SPÉCIALES — LIRE ATTENTIVEMENT
 ════════════════════════════════════════════════
 
 ① PROFIL PROFESSIONNEL — OBLIGATOIRE, toujours présent, toujours à la 1ère personne :
-   Rédige 3 à 5 phrases à la première personne ("je suis", "je maîtrise", "je m'engage"...).
-   Modèle de style à suivre :
-   "Titulaire d'un BTS en Finance-Comptabilité, je suis passionné(e) par [domaine]. Doté(e) de [qualités],
-   je maîtrise [compétences clés]. Fort(e) de [X] ans d'expérience en [secteur], je m'engage à contribuer
-   efficacement au développement de toute structure qui m'accueillera."
+   Rédige 2 à 4 phrases fluides à la première personne.
+   IMPORTANT : tu rédiges UNIQUEMENT le texte du profil — pas de mise en forme, pas de gras, pas de tirets.
+   Python applique automatiquement le style visuel. Ton seul rôle : un texte percutant et naturel.
+
+   STYLE À RESPECTER — inspire-toi de ces deux exemples réels (adapte au profil du client) :
+
+   Exemple 1 (profil avec expérience) :
+   "Titulaire d'un BTS en Ressources Humaines et Communication, je dispose d'une solide expérience
+   en gestion de la relation client acquise lors de stages en assurance vie. Rigoureuse, organisée
+   et dotée d'un excellent sens du contact, je souhaite mettre mes compétences au service d'une
+   entreprise dynamique."
+
+   Exemple 2 (profil débutant / première expérience) :
+   "Jeune candidate motivée et sérieuse, titulaire du CEP et du BEPC (niveau Seconde), à la recherche
+   d'une première opportunité dans le secteur de la boulangerie. Dotée d'une grande capacité
+   d'apprentissage, d'un sens de l'organisation et d'une bonne volonté de travail, je souhaite
+   acquérir de l'expérience pratique et contribuer activement au bon fonctionnement d'un établissement."
+
+   RÈGLES DU PROFIL :
+   → Commence par le diplôme/niveau ou une qualité forte du candidat
+   → Mentionne le domaine ou secteur visé
+   → Termine par une phrase de motivation claire et personnalisée
+   → Accorde bien le genre (masculin/féminin) selon les infos du client
+   → N'utilise JAMAIS de Markdown (pas de **, pas de *, pas de #)
 
 ② EXPÉRIENCES PROFESSIONNELLES — toujours placé APRÈS le PROFIL PROFESSIONNEL, jamais avant.
 
@@ -2923,13 +2942,56 @@ Missions principales :
 # LETTRE DE MOTIVATION
 (génère cette section UNIQUEMENT si le client a demandé la lettre ou les deux)
 
-Objet : Candidature au poste de [poste visé]
+════════════════════════════════════════════════════════════
+STRUCTURE OBLIGATOIRE — utilise EXACTEMENT ces balises Nova
+Python les lit mot pour mot pour mettre en page la lettre.
+NE PAS écrire autre chose que le contenu après chaque balise.
+════════════════════════════════════════════════════════════
 
-[Paragraphe 1 — ACCROCHE : phrase d'ouverture percutante, connaissance du secteur.]
+>>>NOM<<< [Prénom Nom du candidat — tel que fourni]
+>>>TEL<<< [Numéro(s) de téléphone]
+>>>LIEU_DATE<<< [Ville], le [date du jour en toutes lettres]
+>>>OBJET<<< Candidature au poste de [poste visé]
 
-[Paragraphe 2 — PARCOURS ET VALEUR : compétences clés en lien avec le poste, exemples concrets.]
+>>>SALUTATION<<< Madame, Monsieur,
 
-[Paragraphe 3 — MOTIVATION ET CONCLUSION : intérêt pour l'entreprise, disponibilité, demande d'entretien, formule de politesse complète.]"""
+>>>PARA<<<
+[Paragraphe 1 — ACCROCHE : phrase d'ouverture percutante, intérêt pour le poste et le secteur.]
+
+>>>PARA<<<
+[Paragraphe 2 — VALEUR : qualités, compétences clés, aptitudes en lien direct avec le poste. Phrases longues et fluides.]
+
+>>>PARA<<<
+[Paragraphe 3 — MOTIVATION : apport à l'entreprise, engagement, disponibilité pour entretien.]
+
+>>>PARA<<<
+[Paragraphe 4 — DISPONIBILITÉ : disponible pour un entretien, remerciement, formule d'invitation.]
+
+>>>FORMULE<<< Dans l'attente de votre réponse, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
+
+>>>SIGNATURE<<< [Prénom Nom du candidat]
+
+════════════════════════════════════════════════════════════
+RÈGLES DE RÉDACTION DE LA LETTRE
+════════════════════════════════════════════════════════════
+- Rédige chaque >>>PARA<<< en UN SEUL bloc de texte continu (pas de saut de ligne à l'intérieur).
+- Phrases longues, fluides et professionnelles — inspire-toi du style de cet exemple réel :
+
+  Exemple >>>PARA<<< 1 :
+  "C'est avec un vif intérêt que je me permets de vous soumettre ma candidature pour un poste de
+  vendeuse au sein de votre boulangerie. Passionnée par le commerce et la relation client, je suis
+  convaincue que mon profil correspond aux exigences de ce poste."
+
+  Exemple >>>PARA<<< 2 :
+  "Dynamique, souriante et dotée d'un excellent sens du contact, je place la satisfaction client
+  au cœur de mes priorités. Je suis parfaitement capable d'accueillir et de conseiller la clientèle
+  avec professionnalisme, de gérer les encaissements avec rigueur, et de veiller en permanence à la
+  propreté et à la mise en valeur de l'espace de vente."
+
+- Adapte le ton et les compétences au secteur du client (commerce, santé, BTP, IT...).
+- NE PAS utiliser de Markdown (pas de **, *, #).
+- NE PAS inventer de nom d'entreprise si non fourni — écrire 'votre établissement'.
+- La >>>FORMULE<<< est FIXE — recopie-la telle quelle."""
 
         elif "Création Word" in service:
             prompt = f"""Tu es un expert en rédaction de documents Word professionnels pour Nova Platform. Le client te décrit ce qu'il veut et tu produis le document COMPLET, structuré et prêt à l'emploi.
@@ -3819,14 +3881,13 @@ def creer_docx(contenu, service, client_nom):
         from docx.oxml import OxmlElement
         from docx.shared import Inches
 
-        # ── Couleurs (identiques au modèle JS SIRIKY) ──────────────
-        BLEU_FONCE = "1A3A5C"   # fond colonne gauche + en-tête
-        BLEU_TITRE = "0070C0"   # titres de missions colonne droite
-        BLEU_SEC   = "1565A8"   # titres de sections colonne droite
-        BLANC      = "FFFFFF"
-        NOIR       = "1A1A2E"
-        BLEU_CLAIR = "A8D4F5"   # sous-titre en-tête
-        BLEU_PALE  = "D0E8FF"   # contacts en-tête
+        # ── Couleurs ─────────────────────────────────────────────────
+        BLEU_FONCE = "1F3864"   # fond en-tête
+        BLEU_MED   = "2E75B6"   # titres de sections + poste exp
+        BLEU_CLAIR = "BDD7EE"   # titre professionnel en-tête (italique)
+        GRIS_BG    = "D9D9D9"   # bande contacts
+        GRIS_TXT   = "595959"   # dates italique
+        _sz = 0  # offset taille : sera recalculé après parsing
 
         def hex_to_rgb(h):
             h = h.lstrip("#")
@@ -3852,128 +3913,25 @@ def creer_docx(contenu, service, client_nom):
                 tcBorders.append(border)
             tcPr.append(tcBorders)
 
-        # ── GAUCHE : Times New Roman, blanc ────────────────────────
-        def g_heading(cell, text):
-            """Titre de section colonne gauche : TNR 12pt blanc gras souligné"""
-            p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(14)
-            p.paragraph_format.space_after  = Pt(6)
-            run = p.add_run(text.upper())
-            run.font.name  = "Times New Roman"
-            run.font.size  = Pt(12)
-            run.bold       = True
-            run.underline  = True
-            run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+        def set_cell_margins(cell, top, bottom, left, right):
+            tc = cell._tc
+            tcPr = tc.get_or_add_tcPr()
+            tcMar = OxmlElement("w:tcMar")
+            for side, val in [("top", top), ("bottom", bottom),
+                               ("left", left), ("right", right)]:
+                el = OxmlElement(f"w:{side}")
+                el.set(qn("w:w"), str(val))
+                el.set(qn("w:type"), "dxa")
+                tcMar.append(el)
+            tcPr.append(tcMar)
 
-        def g_text(cell, text, bold=False):
-            """Texte simple colonne gauche : TNR 10pt blanc"""
-            p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(2)
-            p.paragraph_format.space_after  = Pt(2)
-            run = p.add_run(text)
-            run.font.name  = "Times New Roman"
-            run.font.size  = Pt(10)
-            run.bold       = bold
-            run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+        # ── Marges page : top=0.5 cm, bas=2.54 cm, g/d=1.91 cm ──────
+        doc.sections[0].top_margin    = Cm(0.5)
+        doc.sections[0].bottom_margin = Cm(2.54)
+        doc.sections[0].left_margin   = Cm(1.91)
+        doc.sections[0].right_margin  = Cm(1.91)
 
-        def g_bullet(cell, text):
-            """Bullet colonne gauche : TNR 10pt blanc avec • manuel"""
-            p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(2)
-            p.paragraph_format.space_after  = Pt(2)
-            p.paragraph_format.left_indent  = Pt(10)
-            r1 = p.add_run("• ")
-            r1.font.name = "Times New Roman"
-            r1.font.size = Pt(10)
-            r1.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
-            r2 = p.add_run(text)
-            r2.font.name = "Times New Roman"
-            r2.font.size = Pt(10)
-            r2.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
-
-        def g_space(cell):
-            p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(4)
-            p.paragraph_format.space_after  = Pt(4)
-
-        # ── DROITE : Arial, noir + bleu pour missions ───────────────
-        def d_heading(cell, text):
-            """Titre de section colonne droite : Arial 12pt bleu gras souligné"""
-            p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(16)
-            p.paragraph_format.space_after  = Pt(6)
-            run = p.add_run(text.upper())
-            run.font.name  = "Arial"
-            run.font.size  = Pt(12)
-            run.bold       = True
-            run.underline  = True
-            r, g, b = hex_to_rgb(BLEU_SEC)
-            run.font.color.rgb = RGBColor(r, g, b)
-
-        def d_text(cell, text, bold=False, size=11):
-            """Texte normal colonne droite : Arial 11pt noir justifié"""
-            p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(2)
-            p.paragraph_format.space_after  = Pt(2)
-            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            run = p.add_run(text)
-            run.font.name  = "Arial"
-            run.font.size  = Pt(size)
-            run.bold       = bold
-            run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
-
-        def d_bullet(cell, text):
-            """Bullet colonne droite : Arial 10pt noir avec • manuel"""
-            p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(2)
-            p.paragraph_format.space_after  = Pt(2)
-            p.paragraph_format.left_indent  = Pt(10)
-            r1 = p.add_run("• ")
-            r1.font.name = "Arial"
-            r1.font.size = Pt(10)
-            r1.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
-            r2 = p.add_run(text)
-            r2.font.name = "Arial"
-            r2.font.size = Pt(10)
-            r2.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
-
-        def d_mission(cell, titre, explication=""):
-            """Titre mission BLEU gras + explication NOIR sur même ligne"""
-            p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(5)
-            p.paragraph_format.space_after  = Pt(3)
-            p.paragraph_format.left_indent  = Pt(8)
-            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            r_b = p.add_run(titre + " : ")
-            r_b.font.name  = "Arial"
-            r_b.font.size  = Pt(10)
-            r_b.bold       = True
-            r_b.font.color.rgb = RGBColor(0x00, 0x70, 0xC0)
-            if explication:
-                r_n = p.add_run(explication)
-                r_n.font.name  = "Arial"
-                r_n.font.size  = Pt(10)
-                r_n.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
-
-        def d_sous_titre(cell, text):
-            """Sous-titre de poste : Arial 11pt bleu gras souligné"""
-            p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(10)
-            p.paragraph_format.space_after  = Pt(4)
-            run = p.add_run(text)
-            run.font.name  = "Arial"
-            run.font.size  = Pt(11)
-            run.bold       = True
-            run.underline  = True
-            r, g, b = hex_to_rgb(BLEU_SEC)
-            run.font.color.rgb = RGBColor(r, g, b)
-
-        def d_space(cell):
-            p = cell.add_paragraph()
-            p.paragraph_format.space_before = Pt(4)
-            p.paragraph_format.space_after  = Pt(4)
-
-        # ── PARSER le contenu Gemini ────────────────────────────────
+        # ── PARSER le contenu Gemini ──────────────────────────────────
         import re as _re
         lignes = contenu.split("\n")
         sections = {}
@@ -3994,6 +3952,8 @@ def creer_docx(contenu, service, client_nom):
             "LOISIRS":                                   "sports",
             "CENTRES D'INTÉRÊT":                         "interets",
             "CENTRES D'INTERET":                         "interets",
+            "QUALITÉS":                                  "qualites",
+            "QUALITES":                                  "qualites",
             "LETTRE DE MOTIVATION":                      "lettre",
         }
 
@@ -4017,11 +3977,11 @@ def creer_docx(contenu, service, client_nom):
         if section_courante and buffer_lignes:
             sections[section_courante] = "\n".join(buffer_lignes).strip()
 
-        # ── Extraire nom + contacts depuis INFORMATIONS PERSONNELLES ─
-        infos_raw  = sections.get("infos", "")
-        profil_raw = sections.get("profil", "")
-        titre_raw  = sections.get("titre", "").strip().lstrip("-•").strip()
-        nom_cv     = client_nom or "Candidat"
+        # ── Extraire nom + contacts ───────────────────────────────────
+        infos_raw     = sections.get("infos", "")
+        profil_raw    = sections.get("profil", "")
+        titre_raw     = sections.get("titre", "").strip().lstrip("-•").strip()
+        nom_cv        = client_nom or "Candidat"
         contact_email = ""
         contact_tel   = ""
         contact_ville = ""
@@ -4038,237 +3998,275 @@ def creer_docx(contenu, service, client_nom):
                 contact_ville = l.split(":")[-1].strip() if ":" in l else l
 
         parts_contact = []
-        if contact_email: parts_contact.append(f"✉  {contact_email}")
-        if contact_tel:   parts_contact.append(f"☎  {contact_tel}")
         if contact_ville: parts_contact.append(f"📍  {contact_ville}")
-        contact_cv = "   │   ".join(parts_contact)
+        if contact_tel:   parts_contact.append(f"☎  {contact_tel}")
+        if contact_email: parts_contact.append(f"✉  {contact_email}")
+        contact_cv = "   |   ".join(parts_contact)
 
-        # ══════════════════════════════════════════════════════════
-        # CONSTRUCTION DU DOCUMENT
-        # Dimensions IDENTIQUES au modèle JS SIRIKY :
-        #   Page A4      : 11906 × 16838 DXA, marges 0 sauf bas 400 DXA
-        #   En-tête      : largeur 11400 DXA = Inches(7.92)
-        #                  marges internes : top=200 bottom=160 left=400 right=400 DXA
-        #   COL_G        : 3600 DXA = Inches(2.50)
-        #                  marges : top=200 bottom=200 left=280 right=220 DXA
-        #   COL_D        : 7800 DXA = Inches(5.42)
-        #                  marges : top=200 bottom=200 left=320 right=200 DXA
-        #   NOM          : size 52 demi-pts = Pt(26), bold, blanc, centré
-        #   Titre pro    : size 22 demi-pts = Pt(11), bleu clair A8D4F5
-        #   Contacts     : size 19 demi-pts = Pt(9.5), bleu pâle D0E8FF
-        # Conversion DXA→Cm : 1 DXA = 0.0353 cm
-        # ══════════════════════════════════════════════════════════
-        doc.sections[0].top_margin    = Cm(0)
-        doc.sections[0].bottom_margin = Cm(400 * 0.0353)  # 400 DXA ≈ 1.41 cm
-        doc.sections[0].left_margin   = Cm(0)
-        doc.sections[0].right_margin  = Cm(0)
+        # ══════════════════════════════════════════════════════════════
+        # HELPERS NOVA CV — nouveau template colonne unique
+        # ══════════════════════════════════════════════════════════════
 
-        # Largeurs (1 DXA = 914.4 EMU, python-docx utilise des EMU pour .width)
-        # On passe par Inches car 1 inch = 1440 DXA
-        PAGE_W  = Inches(11400 / 1440)  # 11400 DXA = Inches(7.917)
-        COL_G_W = Inches(3600  / 1440)  # 3600  DXA = Inches(2.500)
-        COL_D_W = Inches(7800  / 1440)  # 7800  DXA = Inches(5.417)
+        def add_section_title(doc, text):
+            """Titre de section : Calibri 12pt bleu moyen gras MAJ, bordure inférieure bleue."""
+            p = doc.add_paragraph()
+            p.paragraph_format.space_before = Pt(14)
+            p.paragraph_format.space_after  = Pt(6)
+            pPr = p._p.get_or_add_pPr()
+            pBdr = OxmlElement("w:pBdr")
+            bottom = OxmlElement("w:bottom")
+            bottom.set(qn("w:val"), "single")
+            bottom.set(qn("w:sz"), "14")
+            bottom.set(qn("w:space"), "2")
+            bottom.set(qn("w:color"), BLEU_MED)
+            pBdr.append(bottom)
+            pPr.append(pBdr)
+            run = p.add_run(text.upper())
+            run.font.name = "Arial"
+            run.font.size = Pt(12 + _sz)
+            run.bold = True
+            r, g, b = hex_to_rgb(BLEU_MED)
+            run.font.color.rgb = RGBColor(r, g, b)
 
-        # Marges internes des cellules en EMU (python-docx OxmlElement tcMar)
-        # 1 DXA = 914.4 EMU  → on stocke en DXA pour les XML
-        # python-docx n'expose pas les marges de cellule via API,
-        # on les injecte en XML directement
-        def set_cell_margins(cell, top, bottom, left, right):
-            """Marges internes de cellule en DXA (comme JS margins en DXA/20)."""
-            tc = cell._tc
-            tcPr = tc.get_or_add_tcPr()
-            tcMar = OxmlElement("w:tcMar")
-            for side, val in [("top", top), ("bottom", bottom),
-                               ("left", left), ("right", right)]:
-                el = OxmlElement(f"w:{side}")
-                el.set(qn("w:w"), str(val))
-                el.set(qn("w:type"), "dxa")
-                tcMar.append(el)
-            tcPr.append(tcMar)
+        def add_body_text(doc, text, bold=False, italic=False, color=None, size=11):
+            p = doc.add_paragraph()
+            p.paragraph_format.space_before = Pt(2)
+            p.paragraph_format.space_after  = Pt(2)
+            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            run = p.add_run(text)
+            run.font.name  = "Arial"
+            run.font.size  = Pt(size)
+            run.bold       = bold
+            run.italic     = italic
+            if color:
+                r, g, b = hex_to_rgb(color)
+                run.font.color.rgb = RGBColor(r, g, b)
+            else:
+                run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
 
-        # ════════════════════════════════════════════════════════
-        # 1. EN-TÊTE PLEINE LARGEUR (fond bleu foncé)
-        #    NOM → TITRE PRO → CONTACTS
-        #    Marges internes : top=200 bottom=160 left=400 right=400 DXA
-        # ════════════════════════════════════════════════════════
+        def add_bullet(doc, text, size=11):
+            p = doc.add_paragraph()
+            p.paragraph_format.space_before = Pt(2)
+            p.paragraph_format.space_after  = Pt(2)
+            p.paragraph_format.left_indent  = Pt(14)
+            r1 = p.add_run("• ")
+            r1.font.name = "Arial"; r1.font.size = Pt(size)
+            r1.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
+            r2 = p.add_run(text)
+            r2.font.name = "Arial"; r2.font.size = Pt(size)
+            r2.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
+
+        def add_mission(doc, titre, explication=""):
+            """Titre mission bleu gras + explication noire."""
+            p = doc.add_paragraph()
+            p.paragraph_format.space_before = Pt(4)
+            p.paragraph_format.space_after  = Pt(2)
+            p.paragraph_format.left_indent  = Pt(10)
+            p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+            r_b = p.add_run(titre + " : ")
+            r_b.font.name = "Arial"; r_b.font.size = Pt(11 + _sz); r_b.bold = True
+            r_b.font.color.rgb = RGBColor(*hex_to_rgb(BLEU_MED))
+            if explication:
+                r_n = p.add_run(explication)
+                r_n.font.name = "Arial"; r_n.font.size = Pt(11 + _sz)
+                r_n.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
+
+        # ── Détecter profil court → +1pt sur toutes les tailles ──────
+        _total_lines = sum(1 for l in contenu.split("\n") if l.strip())
+        _sz = 1 if _total_lines < 45 else 0
+
+        # ══════════════════════════════════════════════════════════════
+        # 1. EN-TÊTE — fond bleu foncé #1F3864
+        #    NOM grand blanc gras | titre pro italique bleu clair
+        # ══════════════════════════════════════════════════════════════
         tbl_header = doc.add_table(rows=1, cols=1)
         tbl_header.style = "Table Grid"
         cell_h = tbl_header.cell(0, 0)
         set_cell_bg(cell_h, BLEU_FONCE)
         remove_cell_borders(cell_h)
-        cell_h.width = PAGE_W
-        set_cell_margins(cell_h, top=200, bottom=160, left=400, right=400)
+        set_cell_margins(cell_h, top=220, bottom=200, left=400, right=400)
 
-        # Vider le paragraphe vide par défaut
         for p in cell_h.paragraphs:
             for run in p.runs:
                 run.clear()
 
-        # NOM : size 52 demi-pts = Pt(26), spacing after=60 DXA→Pt(3)
         p_nom = cell_h.paragraphs[0]
         p_nom.alignment = WD_ALIGN_PARAGRAPH.CENTER
         p_nom.paragraph_format.space_before = Pt(0)
-        p_nom.paragraph_format.space_after  = Pt(3)
+        p_nom.paragraph_format.space_after  = Pt(4)
         r_nom = p_nom.add_run(nom_cv.upper())
-        r_nom.font.name = "Arial"
-        r_nom.font.size = Pt(26)   # = size 52 demi-pts
-        r_nom.bold = True
+        r_nom.font.name = "Arial"; r_nom.font.size = Pt(25 + _sz); r_nom.bold = True
         r_nom.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
-        # TITRE PROFESSIONNEL : size 22 demi-pts = Pt(11), bleu clair A8D4F5, spacing after=80
         if titre_raw:
             p_titre = cell_h.add_paragraph()
             p_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
             p_titre.paragraph_format.space_before = Pt(0)
-            p_titre.paragraph_format.space_after  = Pt(4)
+            p_titre.paragraph_format.space_after  = Pt(0)
             r_titre = p_titre.add_run(titre_raw)
-            r_titre.font.name = "Arial"
-            r_titre.font.size = Pt(11)   # = size 22 demi-pts
-            r, g, b = hex_to_rgb(BLEU_CLAIR)   # A8D4F5
-            r_titre.font.color.rgb = RGBColor(r, g, b)
+            r_titre.font.name = "Arial"; r_titre.font.size = Pt(12 + _sz); r_titre.italic = True
+            r_titre.font.color.rgb = RGBColor(*hex_to_rgb(BLEU_CLAIR))
 
-        # CONTACTS : size 19 demi-pts = Pt(9.5), bleu pâle D0E8FF
+        # ══════════════════════════════════════════════════════════════
+        # 2. BANDE GRISE — contacts centrés
+        # ══════════════════════════════════════════════════════════════
         if contact_cv:
-            p_contact = cell_h.add_paragraph()
+            tbl_contact = doc.add_table(rows=1, cols=1)
+            tbl_contact.style = "Table Grid"
+            cell_c = tbl_contact.cell(0, 0)
+            set_cell_bg(cell_c, GRIS_BG)
+            remove_cell_borders(cell_c)
+            set_cell_margins(cell_c, top=100, bottom=100, left=200, right=200)
+            for p in cell_c.paragraphs:
+                for run in p.runs:
+                    run.clear()
+            p_contact = cell_c.paragraphs[0]
             p_contact.alignment = WD_ALIGN_PARAGRAPH.CENTER
             p_contact.paragraph_format.space_before = Pt(0)
             p_contact.paragraph_format.space_after  = Pt(0)
             r_contact = p_contact.add_run(contact_cv)
-            r_contact.font.name = "Arial"
-            r_contact.font.size = Pt(9.5)   # = size 19 demi-pts
-            r, g, b = hex_to_rgb(BLEU_PALE)   # D0E8FF
-            r_contact.font.color.rgb = RGBColor(r, g, b)
+            r_contact.font.name = "Arial"; r_contact.font.size = Pt(10 + _sz)
+            r_contact.font.color.rgb = RGBColor(0x40, 0x40, 0x40)
 
-        # ════════════════════════════════════════════════════════
-        # 2. CORPS : tableau 2 colonnes
-        #    COL_G : 3600 DXA, marges top=200 bot=200 left=280 right=220
-        #    COL_D : 7800 DXA, marges top=200 bot=200 left=320 right=200
-        # ════════════════════════════════════════════════════════
-        tbl_body = doc.add_table(rows=1, cols=2)
-        tbl_body.style = "Table Grid"
+        # Espace après l'en-tête
+        p_esp = doc.add_paragraph()
+        p_esp.paragraph_format.space_before = Pt(6)
+        p_esp.paragraph_format.space_after  = Pt(0)
 
-        col_g = tbl_body.cell(0, 0)
-        col_d = tbl_body.cell(0, 1)
-        col_g.width = COL_G_W   # 3600 DXA = Inches(2.500)
-        col_d.width = COL_D_W   # 7800 DXA = Inches(5.417)
-
-        set_cell_bg(col_g, BLEU_FONCE)
-        remove_cell_borders(col_g)
-        remove_cell_borders(col_d)
-
-        # Marges internes identiques au modèle JS SIRIKY :
-        # Gauche : margins { top:200, bottom:200, left:280, right:220 }
-        # Droite : margins { top:200, bottom:200, left:320, right:200 }
-        set_cell_margins(col_g, top=200, bottom=200, left=280, right=220)
-        set_cell_margins(col_d, top=200, bottom=200, left=320, right=200)
-
-        # Vider les paragraphes vides par défaut
-        for p in col_g.paragraphs: p._element.getparent().remove(p._element)
-        for p in col_d.paragraphs: p._element.getparent().remove(p._element)
-
-        # ════════════════════════════════════════════════════════
-        # COLONNE GAUCHE
-        # Ordre : FORMATION → COMPÉTENCES → LANGUES → SPORTS & LOISIRS
-        # Times New Roman, blanc sur fond bleu foncé
-        # ════════════════════════════════════════════════════════
-
-        # FORMATION
-        if sections.get("formation"):
-            g_heading(col_g, "Formation")
-            prev_bold_line = ""
-            for line in sections["formation"].split("\n"):
-                l = line.strip().lstrip("-•").strip()
-                if not l:
-                    g_space(col_g)
-                    continue
-                # Première ligne d'un bloc = diplôme (gras), suivante = détail
-                # On détecte si c'est un diplôme (contient un tiret long ou année)
-                if _re.search(r"(BTS|DUT|Licence|Master|BAC|BEPC|BT |CEPE|Doctorat|Ingénieur|CAP|BEP)", l, _re.I):
-                    if prev_bold_line:
-                        g_space(col_g)
-                    g_text(col_g, l, bold=True)
-                    prev_bold_line = l
-                else:
-                    g_text(col_g, l)
-
-        # COMPÉTENCES
-        if sections.get("competences"):
-            g_heading(col_g, "Compétences")
-            for line in sections["competences"].split("\n"):
-                l = line.strip().lstrip("-•").strip()
-                if l:
-                    g_bullet(col_g, l)
-
-        # LANGUES
-        if sections.get("langues"):
-            g_heading(col_g, "Langues")
-            for line in sections["langues"].split("\n"):
-                l = line.strip().lstrip("-•").strip()
-                if l:
-                    g_bullet(col_g, l)
-
-        # SPORTS & LOISIRS
-        if sections.get("sports"):
-            g_heading(col_g, "Sports & Loisirs")
-            for line in sections["sports"].split("\n"):
-                l = line.strip().lstrip("-•").strip()
-                if l:
-                    g_bullet(col_g, l)
-
-        # ════════════════════════════════════════════════════════
-        # COLONNE DROITE
-        # Ordre : PROFIL → EXPÉRIENCES → CENTRES D'INTÉRÊT → INFOS PERSO
-        # Arial, noir. Titres sections = bleu souligné.
-        # Titres missions (>>>BLEU<<<) = bleu gras + explication noire.
-        # ════════════════════════════════════════════════════════
-
-        # PROFIL PROFESSIONNEL
+        # ══════════════════════════════════════════════════════════════
+        # 3. PROFIL PROFESSIONNEL
+        # ══════════════════════════════════════════════════════════════
         if profil_raw:
-            d_heading(col_d, "Profil Professionnel")
+            add_section_title(doc, "Profil Professionnel")
             for line in profil_raw.split("\n"):
                 l = line.strip().lstrip("-•#").strip()
                 if l:
-                    d_text(col_d, l)
+                    add_body_text(doc, l)
 
-        # EXPÉRIENCES PROFESSIONNELLES
+        # ══════════════════════════════════════════════════════════════
+        # 4. EXPÉRIENCES PROFESSIONNELLES
+        #    Poste : bleu gras | Entreprise : noir gras | Date : gris italique
+        # ══════════════════════════════════════════════════════════════
         if sections.get("experiences"):
-            d_heading(col_d, "Expériences Professionnelles")
+            add_section_title(doc, "Expériences Professionnelles")
             for line in sections["experiences"].split("\n"):
                 l = line.strip()
                 if not l:
                     continue
 
                 if l.startswith("###"):
-                    # Sous-titre de poste : Arial 11pt bleu gras souligné
-                    d_sous_titre(col_d, l.lstrip("#").strip())
+                    # Intitulé poste : bleu moyen gras
+                    add_body_text(doc, l.lstrip("#").strip(), bold=True, color=BLEU_MED, size=12)
 
                 elif l.startswith(">>>BLEU<<<"):
-                    # Titre mission bleu + explication noire
                     contenu_bleu = l.replace(">>>BLEU<<<", "").strip()
                     if ":" in contenu_bleu:
                         titre_b, expl = contenu_bleu.split(":", 1)
-                        d_mission(col_d, titre_b.strip(), expl.strip())
+                        add_mission(doc, titre_b.strip(), expl.strip())
                     else:
-                        d_mission(col_d, contenu_bleu)
+                        add_mission(doc, contenu_bleu)
 
                 elif l.lower().startswith("missions"):
-                    # Label "Missions principales :" en noir gras
-                    d_text(col_d, l.rstrip(":") + " :", bold=True)
+                    add_body_text(doc, l.rstrip(":") + " :", bold=True)
+
+                elif _re.search(r"\b(20\d{2})\b", l) and any(sep in l for sep in ["–", "—", " au ", " à "]):
+                    # Dates : gris italique
+                    add_body_text(doc, l.strip("*").strip(), italic=True, color=GRIS_TXT)
 
                 elif l.startswith(("-", "•")):
-                    d_bullet(col_d, l.lstrip("-•").strip())
+                    add_bullet(doc, l.lstrip("-•").strip())
 
                 else:
-                    # Texte de contexte (entreprise, période...)
-                    # Nettoyer les ** résiduels
                     l_clean = l.strip("*").strip()
                     if l_clean:
-                        d_text(col_d, l_clean)
+                        # Ligne entreprise/contexte : noir gras
+                        add_body_text(doc, l_clean, bold=True)
 
-        # CENTRES D'INTÉRÊT
+        # ══════════════════════════════════════════════════════════════
+        # 5. FORMATION
+        # ══════════════════════════════════════════════════════════════
+        if sections.get("formation"):
+            add_section_title(doc, "Formation")
+            for line in sections["formation"].split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if not l:
+                    continue
+                if _re.search(r"(BTS|DUT|Licence|Master|BAC|BEPC|BT |CEPE|Doctorat|Ingénieur|CAP|BEP|CEP)", l, _re.I):
+                    add_body_text(doc, l, bold=True, color=BLEU_MED)
+                else:
+                    add_body_text(doc, l, italic=True, color=GRIS_TXT)
+
+        # ══════════════════════════════════════════════════════════════
+        # 6. COMPÉTENCES
+        # ══════════════════════════════════════════════════════════════
+        if sections.get("competences"):
+            add_section_title(doc, "Compétences Professionnelles")
+            for line in sections["competences"].split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l:
+                    add_bullet(doc, l)
+
+        # ══════════════════════════════════════════════════════════════
+        # 7. LANGUES
+        # ══════════════════════════════════════════════════════════════
+        if sections.get("langues"):
+            add_section_title(doc, "Langues")
+            for line in sections["langues"].split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l:
+                    if ":" in l:
+                        label, niveau = l.split(":", 1)
+                        p = doc.add_paragraph()
+                        p.paragraph_format.space_before = Pt(2)
+                        p.paragraph_format.space_after  = Pt(2)
+                        r1 = p.add_run(label.strip() + " : ")
+                        r1.font.name = "Arial"; r1.font.size = Pt(11 + _sz); r1.bold = True
+                        r1.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
+                        r2 = p.add_run(niveau.strip())
+                        r2.font.name = "Arial"; r2.font.size = Pt(11 + _sz)
+                        r2.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
+                    else:
+                        add_bullet(doc, l)
+
+        # ══════════════════════════════════════════════════════════════
+        # 8. QUALITÉS — sur une ligne avec séparateurs •
+        # ══════════════════════════════════════════════════════════════
+        qualites_raw = sections.get("qualites", "")
+        if qualites_raw:
+            add_section_title(doc, "Qualités")
+            items_q = []
+            for line in qualites_raw.split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l:
+                    # Séparer si la ligne contient déjà des • ou des virgules
+                    for item in _re.split(r"[•,|]", l):
+                        item = item.strip()
+                        if item:
+                            items_q.append(item)
+            if items_q:
+                p_q = doc.add_paragraph()
+                p_q.paragraph_format.space_before = Pt(6)
+                p_q.paragraph_format.space_after  = Pt(6)
+                p_q.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                run_q = p_q.add_run("  •  ".join(items_q))
+                run_q.font.name = "Arial"; run_q.font.size = Pt(11 + _sz)
+                run_q.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
+
+        # ══════════════════════════════════════════════════════════════
+        # 9. SPORTS & LOISIRS
+        # ══════════════════════════════════════════════════════════════
+        if sections.get("sports"):
+            add_section_title(doc, "Sports & Loisirs")
+            for line in sections["sports"].split("\n"):
+                l = line.strip().lstrip("-•").strip()
+                if l:
+                    add_bullet(doc, l)
+
+        # ══════════════════════════════════════════════════════════════
+        # 10. CENTRES D'INTÉRÊT
+        # ══════════════════════════════════════════════════════════════
         if sections.get("interets"):
-            d_space(col_d)
-            d_heading(col_d, "Centres d'Intérêt")
+            add_section_title(doc, "Centres d'Intérêt")
             for line in sections["interets"].split("\n"):
                 l = line.strip().lstrip("-•").strip()
                 if not l:
@@ -4277,17 +4275,19 @@ def creer_docx(contenu, service, client_nom):
                     contenu_bleu = l.replace(">>>BLEU<<<", "").strip()
                     if ":" in contenu_bleu:
                         titre_b, expl = contenu_bleu.split(":", 1)
-                        d_mission(col_d, titre_b.strip(), expl.strip())
+                        add_mission(doc, titre_b.strip(), expl.strip())
                     else:
-                        d_mission(col_d, contenu_bleu)
+                        add_mission(doc, contenu_bleu)
                 else:
-                    d_bullet(col_d, l)
+                    add_bullet(doc, l)
 
-        # INFORMATIONS PERSONNELLES (date de naissance, situation familiale, résidence, téléphone)
-        # On utilise en priorité infos_compl (section dédiée), sinon on filtre infos
+        # ══════════════════════════════════════════════════════════════
+        # 11. INFORMATIONS PERSONNELLES COMPLÉMENTAIRES
+        # ══════════════════════════════════════════════════════════════
         infos_compl_raw = sections.get("infos_compl", "")
         source_infos = infos_compl_raw if infos_compl_raw else infos_raw
-        CHAMPS_PERSO = ["situation familiale", "résidence", "residence", "téléphone", "telephone", "date de naissance"]
+        CHAMPS_PERSO = ["situation familiale", "résidence", "residence",
+                        "téléphone", "telephone", "date de naissance"]
         CHAMPS_EXCLUS = ["nom", "prénom", "prenom", "email", "mail", "ville", "pays", "adresse"]
 
         lignes_perso = []
@@ -4296,51 +4296,152 @@ def creer_docx(contenu, service, client_nom):
             if not l:
                 continue
             l_low = l.lower()
-            # Inclure si c'est un des 4 champs voulus
             if any(k in l_low for k in CHAMPS_PERSO):
                 lignes_perso.append(l)
-            # Exclure les champs de l'en-tête
             elif not any(k in l_low for k in CHAMPS_EXCLUS) and infos_compl_raw:
-                # Si section dédiée, inclure tout ce qui n'est pas explicitement exclu
                 lignes_perso.append(l)
 
         if lignes_perso:
-            d_space(col_d)
-            d_heading(col_d, "Informations Personnelles")
+            add_section_title(doc, "Informations Personnelles")
             for l in lignes_perso:
-                d_bullet(col_d, l)
+                add_bullet(doc, l)
 
-        # ════════════════════════════════════════════════════════
-        # LETTRE DE MOTIVATION (page séparée si présente)
-        # ════════════════════════════════════════════════════════
+        # ══════════════════════════════════════════════════════════════
+        # ══════════════════════════════════════════════════════════════
+        # 12. LETTRE DE MOTIVATION (page séparée)
+#     Mise en page fidèle au modèle N'dri Melaine :
+#       NOM gras | Tél | Lieu-Date | Objet gras | Salutation
+#       Corps justifié | Formule | Signature gras
+        # ══════════════════════════════════════════════════════════════
         if sections.get("lettre"):
             doc.add_page_break()
-            # Remettre les marges normales pour la lettre
-            doc.sections[0].left_margin  = Cm(2.5)
-            doc.sections[0].right_margin = Cm(2.5)
-            p_tl = doc.add_paragraph()
-            p_tl.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            p_tl.paragraph_format.space_after = Pt(20)
-            r_tl = p_tl.add_run("LETTRE DE MOTIVATION")
-            r_tl.font.name = "Arial"
-            r_tl.font.size = Pt(16)
-            r_tl.bold = True
-            r, g, b = hex_to_rgb(BLEU_SEC)
-            r_tl.font.color.rgb = RGBColor(r, g, b)
 
-            for line in sections["lettre"].split("\n"):
+            # ── Parser les balises Nova de la lettre ─────────────────
+            lettre_raw = sections["lettre"]
+            ltr = {
+                "nom": "", "tel": "", "lieu_date": "", "objet": "",
+                "salutation": "Madame, Monsieur,",
+                "paras": [], "formule": "", "signature": ""
+            }
+            current_para = []
+            in_para = False
+
+            for line in lettre_raw.split("\n"):
                 l = line.strip()
-                if not l:
-                    doc.add_paragraph("")
-                    continue
+                if l.startswith(">>>NOM<<<"):
+                    ltr["nom"] = l.replace(">>>NOM<<<", "").strip()
+                    in_para = False
+                elif l.startswith(">>>TEL<<<"):
+                    ltr["tel"] = l.replace(">>>TEL<<<", "").strip()
+                    in_para = False
+                elif l.startswith(">>>LIEU_DATE<<<"):
+                    ltr["lieu_date"] = l.replace(">>>LIEU_DATE<<<", "").strip()
+                    in_para = False
+                elif l.startswith(">>>OBJET<<<"):
+                    ltr["objet"] = l.replace(">>>OBJET<<<", "").strip()
+                    in_para = False
+                elif l.startswith(">>>SALUTATION<<<"):
+                    ltr["salutation"] = l.replace(">>>SALUTATION<<<", "").strip()
+                    in_para = False
+                elif l.startswith(">>>PARA<<<"):
+                    if current_para:
+                        ltr["paras"].append(" ".join(current_para))
+                    current_para = []
+                    in_para = True
+                    rest = l.replace(">>>PARA<<<", "").strip()
+                    if rest:
+                        current_para.append(rest)
+                elif l.startswith(">>>FORMULE<<<"):
+                    if current_para:
+                        ltr["paras"].append(" ".join(current_para))
+                        current_para = []
+                    ltr["formule"] = l.replace(">>>FORMULE<<<", "").strip()
+                    in_para = False
+                elif l.startswith(">>>SIGNATURE<<<"):
+                    ltr["signature"] = l.replace(">>>SIGNATURE<<<", "").strip()
+                    in_para = False
+                elif in_para and l:
+                    current_para.append(l)
+                elif in_para and not l and current_para:
+                    ltr["paras"].append(" ".join(current_para))
+                    current_para = []
+                    in_para = False
+
+            if current_para:
+                ltr["paras"].append(" ".join(current_para))
+
+            # Fallback si balises absentes : utiliser nom_cv et contact_cv
+            if not ltr["nom"]:        ltr["nom"] = nom_cv
+            if not ltr["tel"] and contact_tel:   ltr["tel"] = contact_tel
+            if not ltr["formule"]:
+                ltr["formule"] = "Dans l'attente de votre réponse, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées."
+            if not ltr["signature"]:  ltr["signature"] = ltr["nom"]
+            if not ltr["paras"] and lettre_raw:
+                # Fallback : lignes brutes
+                ltr["paras"] = [l.strip().lstrip("#-•*").strip()
+                                for l in lettre_raw.split("\n")
+                                if l.strip() and not l.strip().startswith(">>>")]
+
+            # ── Helper lettre ─────────────────────────────────────────
+            def ltr_run(p, text, bold=False, size=11):
+                r = p.add_run(text)
+                r.font.name = "Arial"
+                r.font.size = Pt(size + _sz)
+                r.bold = bold
+                r.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
+                return r
+
+            def ltr_para(doc, space_before=0, space_after=8,
+                         align=WD_ALIGN_PARAGRAPH.LEFT):
                 p = doc.add_paragraph()
-                p.paragraph_format.space_before = Pt(0)
-                p.paragraph_format.space_after  = Pt(6)
-                p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-                run = p.add_run(l.lstrip("#-•*").strip())
-                run.font.name = "Arial"
-                run.font.size = Pt(11)
-                run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x2E)
+                p.paragraph_format.space_before = Pt(space_before)
+                p.paragraph_format.space_after  = Pt(space_after)
+                p.alignment = align
+                return p
+
+            # ── RENDU LETTRE ──────────────────────────────────────────
+
+            # NOM gras (haut gauche)
+            p = ltr_para(doc, space_before=0, space_after=4)
+            ltr_run(p, ltr["nom"], bold=True, size=12)
+
+            # Téléphone
+            if ltr["tel"]:
+                p = ltr_para(doc, space_after=4)
+                ltr_run(p, f"Tél : {ltr['tel']}", size=11)
+
+            # Lieu + Date
+            if ltr["lieu_date"]:
+                p = ltr_para(doc, space_after=16)
+                ltr_run(p, ltr["lieu_date"], size=11)
+
+            # Objet (gras)
+            if ltr["objet"]:
+                p = ltr_para(doc, space_after=16)
+                ltr_run(p, f"Objet : {ltr['objet']}", bold=True, size=11)
+
+            # Salutation
+            p = ltr_para(doc, space_after=12)
+            ltr_run(p, ltr["salutation"], size=11)
+
+            # Corps — paragraphes justifiés
+            for para_text in ltr["paras"]:
+                if not para_text.strip():
+                    continue
+                p = ltr_para(doc, space_after=10,
+                             align=WD_ALIGN_PARAGRAPH.JUSTIFY)
+                ltr_run(p, para_text, size=11)
+
+            # Formule de politesse
+            if ltr["formule"]:
+                p = ltr_para(doc, space_before=10, space_after=6,
+                             align=WD_ALIGN_PARAGRAPH.JUSTIFY)
+                ltr_run(p, ltr["formule"], size=11)
+
+            # Signature gras (bas gauche)
+            p = ltr_para(doc, space_before=20, space_after=0)
+            ltr_run(p, ltr["signature"], bold=True, size=11)
+
 
         buf = BytesIO()
         doc.save(buf)
