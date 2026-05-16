@@ -2895,19 +2895,22 @@ STRUCTURE OBLIGATOIRE — ordre et titres EXACTS
 (1 ligne max — ex: "BTS Finance | Comptabilité | Gestion des Stocks")
 
 ## PROFIL PROFESSIONNEL
-(3 à 5 phrases à la 1ère personne — voir règle ① ci-dessus)
+(OBLIGATOIRE — rédige 2 à 4 phrases de texte pur à la 1ère personne.
+ NE PAS mettre de balises, NE PAS mettre de contenu de lettre ici.
+ Voir règle ① ci-dessus pour le style.)
 
 ## EXPÉRIENCES PROFESSIONNELLES
-Pour chaque poste, format EXACT :
+Pour chaque poste, format EXACT (même si expérience courte ou informelle) :
+NE PAS écrire de paragraphe de lettre ici. NE PAS utiliser NOM:, TEL:, OBJET:.
 
-### Intitulé du groupe d'expérience (ex: Stagiaire Polyvalent — CIE Bouaké)
-Entreprise · Ville · Période
+### Intitulé du poste ou de l'expérience (ex: Stagiaire — Cyber Café Service Claude)
+Entreprise · Ville · Période (ex: Mai 2025 – Mai 2025)
 Missions principales :
 >>>BLEU<<<Titre Mission 1 : description détaillée avec verbe d'action fort.
 >>>BLEU<<<Titre Mission 2 : description détaillée avec verbe d'action fort.
 >>>BLEU<<<Titre Mission 3 : description détaillée avec verbe d'action fort.
->>>BLEU<<<Titre Mission 4 : description détaillée avec verbe d'action fort.
->>>BLEU<<<Titre Mission 5 : description détaillée avec verbe d'action fort.
+(Si expérience très courte ou informelle : 2 à 3 missions suffisent.)
+(Si aucune expérience : écris uniquement "Aucune expérience professionnelle à ce jour." sous ce titre de section.)
 
 ## FORMATION
 - Diplôme — Établissement — Ville (Année)
@@ -2937,61 +2940,69 @@ Missions principales :
 - Téléphone : ...
 - Date de naissance : ...
 
----
+████████████████████████████████████████████████████████████████
+█  STOP — FIN DU CV. NE PAS mélanger ce qui suit avec le CV.  █
+█  Génère d'abord TOUTES les sections CV ci-dessus complètes.  █
+█  La lettre vient APRÈS, séparée, jamais avant ni dedans.     █
+████████████████████████████████████████████████████████████████
 
-# LETTRE DE MOTIVATION
-(génère cette section UNIQUEMENT si le client a demandé la lettre ou les deux)
+## LETTRE DE MOTIVATION
+(génère UNIQUEMENT si le client a demandé la lettre ou les deux)
 
 ════════════════════════════════════════════════════════════
-STRUCTURE OBLIGATOIRE — utilise EXACTEMENT ces balises Nova
-Python les lit mot pour mot pour mettre en page la lettre.
-NE PAS écrire autre chose que le contenu après chaque balise.
+RÔLE : tu rédiges uniquement le TEXTE de la lettre.
+Python applique automatiquement toute la mise en page Word
+(gras, taille, marges, espacement). Ton seul travail : écrire
+un contenu naturel, fluide et professionnel.
+AUCUN marqueur, AUCUN symbole de formatage (pas de **, pas de
+>>>, pas de #, pas de tirets en début de bloc).
 ════════════════════════════════════════════════════════════
 
->>>NOM<<< [Prénom Nom du candidat — tel que fourni]
->>>TEL<<< [Numéro(s) de téléphone]
->>>LIEU_DATE<<< [Ville], le [date du jour en toutes lettres]
->>>OBJET<<< Candidature au poste de [poste visé]
+STRUCTURE EXACTE À RESPECTER (ordre fixe, rien d'autre) :
 
->>>SALUTATION<<< Madame, Monsieur,
+NOM: [Prénom Nom du candidat tel que fourni]
+TEL: [Numéro(s) de téléphone — tel que fourni]
+LIEU_DATE: [Ville], le [date du jour en toutes lettres]
+OBJET: Candidature au poste de [poste visé]
 
->>>PARA<<<
-[Paragraphe 1 — ACCROCHE : phrase d'ouverture percutante, intérêt pour le poste et le secteur.]
+Madame, Monsieur,
 
->>>PARA<<<
-[Paragraphe 2 — VALEUR : qualités, compétences clés, aptitudes en lien direct avec le poste. Phrases longues et fluides.]
+[Paragraphe 1 — ACCROCHE : phrase d'ouverture percutante, intérêt pour le poste et le secteur. Texte continu, pas de retour à la ligne.]
 
->>>PARA<<<
+[Paragraphe 2 — VALEUR : qualités personnelles, compétences clés en lien direct avec le poste. Phrases longues et fluides.]
+
 [Paragraphe 3 — MOTIVATION : apport à l'entreprise, engagement, disponibilité pour entretien.]
 
->>>PARA<<<
-[Paragraphe 4 — DISPONIBILITÉ : disponible pour un entretien, remerciement, formule d'invitation.]
+Dans l'attente de votre réponse, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
 
->>>FORMULE<<< Dans l'attente de votre réponse, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
-
->>>SIGNATURE<<< [Prénom Nom du candidat]
+[Prénom Nom du candidat]
 
 ════════════════════════════════════════════════════════════
-RÈGLES DE RÉDACTION DE LA LETTRE
+RÈGLES DE RÉDACTION
 ════════════════════════════════════════════════════════════
-- Rédige chaque >>>PARA<<< en UN SEUL bloc de texte continu (pas de saut de ligne à l'intérieur).
-- Phrases longues, fluides et professionnelles — inspire-toi du style de cet exemple réel :
+- NOM:, TEL:, LIEU_DATE:, OBJET: sont des étiquettes pour Python — écris-les exactement ainsi.
+- Chaque paragraphe = un seul bloc de texte continu (pas de saut de ligne interne).
+- Sépare chaque paragraphe par UNE ligne vide.
+- NE PAS répéter "Madame, Monsieur" dans le corps.
+- NE PAS inventer de nom d'entreprise — écrire "votre établissement".
+- Accorde bien le genre (masculin/féminin) selon le profil du client.
+- Style inspiré de cet exemple réel :
 
-  Exemple >>>PARA<<< 1 :
   "C'est avec un vif intérêt que je me permets de vous soumettre ma candidature pour un poste de
   vendeuse au sein de votre boulangerie. Passionnée par le commerce et la relation client, je suis
   convaincue que mon profil correspond aux exigences de ce poste."
 
-  Exemple >>>PARA<<< 2 :
   "Dynamique, souriante et dotée d'un excellent sens du contact, je place la satisfaction client
   au cœur de mes priorités. Je suis parfaitement capable d'accueillir et de conseiller la clientèle
   avec professionnalisme, de gérer les encaissements avec rigueur, et de veiller en permanence à la
-  propreté et à la mise en valeur de l'espace de vente."
+  propreté et à la mise en valeur de l'espace de vente. Ma ponctualité, mon sens des responsabilités
+  et ma capacité d'adaptation me permettent de m'intégrer rapidement et efficacement au sein d'une équipe."
 
-- Adapte le ton et les compétences au secteur du client (commerce, santé, BTP, IT...).
-- NE PAS utiliser de Markdown (pas de **, *, #).
-- NE PAS inventer de nom d'entreprise si non fourni — écrire 'votre établissement'.
-- La >>>FORMULE<<< est FIXE — recopie-la telle quelle."""
+  "Intégrer votre établissement représenterait pour moi une formidable opportunité de mettre
+  pleinement en pratique mes compétences, tout en contribuant activement à son rayonnement.
+  Je suis prête à m'investir avec sérieux et énergie pour répondre à vos attentes."
+
+- Adapte le contenu au secteur et au poste visé par le client."""
 
         elif "Création Word" in service:
             prompt = f"""Tu es un expert en rédaction de documents Word professionnels pour Nova Platform. Le client te décrit ce qu'il veut et tu produis le document COMPLET, structuré et prêt à l'emploi.
@@ -3957,6 +3968,13 @@ def creer_docx(contenu, service, client_nom):
             "LETTRE DE MOTIVATION":                      "lettre",
         }
 
+        # Pré-pass : collecter les balises >>> orphelines (mal placées par Gemini)
+        _lettre_orphans = []
+        for ligne in lignes:
+            l_strip = ligne.strip()
+            if l_strip.startswith(">>>") and not l_strip.startswith(">>>PARA"):
+                _lettre_orphans.append(l_strip)
+
         for ligne in lignes:
             l_clean = ligne.strip().lstrip("#").strip().upper()
             matched = None
@@ -3971,11 +3989,30 @@ def creer_docx(contenu, service, client_nom):
                 buffer_lignes = []
             elif section_courante:
                 t = ligne.strip().lstrip("#").strip()
-                if t:
-                    buffer_lignes.append(t)
+                if not t:
+                    continue
+                # Balises >>> hors section lettre → ignorer dans le CV,
+                # elles seront traitées par le parser lettre
+                if t.startswith(">>>") and section_courante != "lettre":
+                    # Récupérer pour la lettre si pas déjà collecté
+                    if t not in _lettre_orphans:
+                        _lettre_orphans.append(t)
+                    continue
+                buffer_lignes.append(t)
 
         if section_courante and buffer_lignes:
             sections[section_courante] = "\n".join(buffer_lignes).strip()
+
+        # Injecter les balises orphelines dans la section lettre si absentes
+        if _lettre_orphans:
+            lettre_existing = sections.get("lettre", "")
+            orphan_text = "\n".join(_lettre_orphans)
+            if lettre_existing:
+                # Fusionner : orphelins d'abord, puis le reste de la lettre
+                if not any(o in lettre_existing for o in _lettre_orphans):
+                    sections["lettre"] = orphan_text + "\n" + lettre_existing
+            else:
+                sections["lettre"] = orphan_text
 
         # ── Extraire nom + contacts ───────────────────────────────────
         infos_raw     = sections.get("infos", "")
@@ -4136,12 +4173,20 @@ def creer_docx(contenu, service, client_nom):
         # ══════════════════════════════════════════════════════════════
         # 3. PROFIL PROFESSIONNEL
         # ══════════════════════════════════════════════════════════════
-        if profil_raw:
+        # Nettoyer profil_raw : supprimer toutes les balises >>> et métadonnées lettre
+        _LETTRE_KW = ("salutation", "agréer", "dans l'attente", "nom:", "tel:",
+                      "lieu_date:", "objet:", "madame, monsieur")
+        profil_lines = []
+        for _l in profil_raw.split("\n"):
+            _lc = _l.strip().lstrip("-•#").strip()
+            if not _lc: continue
+            if _lc.startswith(">>>"): continue
+            if any(k in _lc.lower() for k in _LETTRE_KW): continue
+            profil_lines.append(_lc)
+        if profil_lines:
             add_section_title(doc, "Profil Professionnel")
-            for line in profil_raw.split("\n"):
-                l = line.strip().lstrip("-•#").strip()
-                if l:
-                    add_body_text(doc, l)
+            for line in profil_lines:
+                add_body_text(doc, line)
 
         # ══════════════════════════════════════════════════════════════
         # 4. EXPÉRIENCES PROFESSIONNELLES
@@ -4154,7 +4199,17 @@ def creer_docx(contenu, service, client_nom):
                 if not l:
                     continue
 
-                if l.startswith("###"):
+                if l.startswith(">>>") and not l.startswith(">>>BLEU<<<"):
+                    continue  # balise lettre mal placée
+                # Ligne de lettre infiltrée (pas de date, mots-clés lettre)
+
+                _EXP_LETTRE_KW = ("salutation", "agréer", "dans l'attente",
+                                   "nom:", "tel:", "objet:", "lieu_date:",
+                                   "c'est avec", "je vous soumets",
+                                   "je me permets", "je reste")
+                if any(k in l.lower() for k in _EXP_LETTRE_KW):
+                    continue  # paragraphe de lettre mal placé
+                elif l.startswith("###"):
                     # Intitulé poste : bleu moyen gras
                     add_body_text(doc, l.lstrip("#").strip(), bold=True, color=BLEU_MED, size=12)
 
@@ -4309,78 +4364,82 @@ def creer_docx(contenu, service, client_nom):
         # ══════════════════════════════════════════════════════════════
         # ══════════════════════════════════════════════════════════════
         # 12. LETTRE DE MOTIVATION (page séparée)
-#     Mise en page fidèle au modèle N'dri Melaine :
-#       NOM gras | Tél | Lieu-Date | Objet gras | Salutation
-#       Corps justifié | Formule | Signature gras
+#     Gemini rédige le texte pur (NOM:, TEL:, LIEU_DATE:, OBJET:,
+#     paragraphes séparés par lignes vides, formule, signature).
+#     Python applique tout le formatage Word.
         # ══════════════════════════════════════════════════════════════
         if sections.get("lettre"):
             doc.add_page_break()
 
-            # ── Parser les balises Nova de la lettre ─────────────────
+            # ── Parser la lettre — texte pur, étiquettes NOM: TEL: etc. ─
             lettre_raw = sections["lettre"]
             ltr = {
                 "nom": "", "tel": "", "lieu_date": "", "objet": "",
-                "salutation": "Madame, Monsieur,",
                 "paras": [], "formule": "", "signature": ""
             }
-            current_para = []
-            in_para = False
 
-            for line in lettre_raw.split("\n"):
-                l = line.strip()
-                if l.startswith(">>>NOM<<<"):
-                    ltr["nom"] = l.replace(">>>NOM<<<", "").strip()
-                    in_para = False
-                elif l.startswith(">>>TEL<<<"):
-                    ltr["tel"] = l.replace(">>>TEL<<<", "").strip()
-                    in_para = False
-                elif l.startswith(">>>LIEU_DATE<<<"):
-                    ltr["lieu_date"] = l.replace(">>>LIEU_DATE<<<", "").strip()
-                    in_para = False
-                elif l.startswith(">>>OBJET<<<"):
-                    ltr["objet"] = l.replace(">>>OBJET<<<", "").strip()
-                    in_para = False
-                elif l.startswith(">>>SALUTATION<<<"):
-                    ltr["salutation"] = l.replace(">>>SALUTATION<<<", "").strip()
-                    in_para = False
-                elif l.startswith(">>>PARA<<<"):
-                    if current_para:
-                        ltr["paras"].append(" ".join(current_para))
-                    current_para = []
-                    in_para = True
-                    rest = l.replace(">>>PARA<<<", "").strip()
-                    if rest:
-                        current_para.append(rest)
-                elif l.startswith(">>>FORMULE<<<"):
-                    if current_para:
-                        ltr["paras"].append(" ".join(current_para))
-                        current_para = []
-                    ltr["formule"] = l.replace(">>>FORMULE<<<", "").strip()
-                    in_para = False
-                elif l.startswith(">>>SIGNATURE<<<"):
-                    ltr["signature"] = l.replace(">>>SIGNATURE<<<", "").strip()
-                    in_para = False
-                elif in_para and l:
-                    current_para.append(l)
-                elif in_para and not l and current_para:
-                    ltr["paras"].append(" ".join(current_para))
-                    current_para = []
-                    in_para = False
+            FORMULE_STD = ("Dans l'attente de votre réponse, je vous prie d'agréer,"
+                           " Madame, Monsieur, l'expression de mes salutations distinguées.")
 
-            if current_para:
-                ltr["paras"].append(" ".join(current_para))
+            lignes_lettre = lettre_raw.split("\n")
+            # Séparer en blocs par lignes vides
+            blocs = []
+            bloc_courant = []
+            for ligne in lignes_lettre:
+                l = ligne.strip()
+                if l:
+                    bloc_courant.append(l)
+                else:
+                    if bloc_courant:
+                        blocs.append(" ".join(bloc_courant))
+                    bloc_courant = []
+            if bloc_courant:
+                blocs.append(" ".join(bloc_courant))
 
-            # Fallback si balises absentes : utiliser nom_cv et contact_cv
-            if not ltr["nom"]:        ltr["nom"] = nom_cv
-            if not ltr["tel"] and contact_tel:   ltr["tel"] = contact_tel
-            if not ltr["formule"]:
-                ltr["formule"] = "Dans l'attente de votre réponse, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées."
-            if not ltr["signature"]:  ltr["signature"] = ltr["nom"]
-            if not ltr["paras"] and lettre_raw:
-                # Fallback : lignes brutes
-                ltr["paras"] = [l.strip().lstrip("#-•*").strip()
-                                for l in lettre_raw.split("\n")
-                                if l.strip() and not l.strip().startswith(">>>")]
+            corps_blocs = []  # blocs qui ne sont pas des métadonnées
+            for bloc in blocs:
+                b = bloc.strip()
+                # Étiquettes structurelles
+                if b.upper().startswith("NOM:"):
+                    ltr["nom"] = b.split(":", 1)[1].strip()
+                elif b.upper().startswith("TEL:"):
+                    ltr["tel"] = b.split(":", 1)[1].strip()
+                elif b.upper().startswith("LIEU_DATE:"):
+                    ltr["lieu_date"] = b.split(":", 1)[1].strip()
+                elif b.upper().startswith("OBJET:"):
+                    ltr["objet"] = b.split(":", 1)[1].strip()
+                # Salutation — on la saute (Python l'ajoute)
+                elif b.strip().rstrip(",") in ("Madame", "Monsieur",
+                                               "Madame Monsieur",
+                                               "Madame, Monsieur"):
+                    pass
+                # Formule de politesse
+                elif "salutations" in b.lower() or "agréer" in b.lower():
+                    ltr["formule"] = b
+                # Signature (dernier bloc qui ressemble au nom)
+                elif (not ltr["signature"] and ltr["nom"]
+                      and b.lower() == ltr["nom"].lower()):
+                    ltr["signature"] = b
+                # Marqueurs >>> résiduels — ignorer
+                elif b.startswith(">>>"): pass
+                # Corps de la lettre
+                else:
+                    corps_blocs.append(b)
+
+            # La vraie signature est le dernier bloc corps s'il ressemble au nom
+            if corps_blocs and ltr["nom"]:
+                dernier = corps_blocs[-1]
+                if (ltr["nom"].split()[0].lower() in dernier.lower()
+                        and len(dernier.split()) <= 5):
+                    ltr["signature"] = corps_blocs.pop()
+
+            ltr["paras"] = [b for b in corps_blocs if b]
+
+            # ── Fallbacks ──────────────────────────────────────────────
+            if not ltr["nom"]:      ltr["nom"] = nom_cv
+            if not ltr["tel"] and contact_tel: ltr["tel"] = contact_tel
+            if not ltr["formule"]:  ltr["formule"] = FORMULE_STD
+            if not ltr["signature"]: ltr["signature"] = ltr["nom"]
 
             # ── Helper lettre ─────────────────────────────────────────
             def ltr_run(p, text, bold=False, size=11):
