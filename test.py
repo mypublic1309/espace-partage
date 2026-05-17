@@ -4479,9 +4479,9 @@ def creer_docx(contenu, service, client_nom):
                 p = ltr_para(doc, space_after=16)
                 ltr_run(p, f"Objet : {ltr['objet']}", bold=True, size=11)
 
-            # Salutation
+            # Salutation — toujours fixe
             p = ltr_para(doc, space_after=12)
-            ltr_run(p, ltr["salutation"], size=11)
+            ltr_run(p, "Madame, Monsieur,", size=11)
 
             # Corps — paragraphes justifiés
             for para_text in ltr["paras"]:
