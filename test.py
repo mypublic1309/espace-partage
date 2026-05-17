@@ -7920,6 +7920,9 @@ def main_dashboard():
         "📄 Création Word (depuis zéro)",
         "📋 Rapport de Stage IA",
         "📊 Data & Excel Analytics",
+    ]
+    # Services gratuits pour tout utilisateur connecté (compte suffisant)
+    SERVICES_COMPTE = [
         "📎 Modifier mon Fichier (Word / Excel / PPT)",
     ]
 
@@ -9665,7 +9668,12 @@ Le document livré doit être utilisable immédiatement, sans rien à compléter
                 </span>
             </div>""", unsafe_allow_html=True)
 
-        label_btn = "⚡ GÉNÉRER MAINTENANT AVEC L'IA NOVA" if (premium_actif and service in SERVICES_GEMINI) else "🚀 LANCER LA GÉNÉRATION"
+        if premium_actif and service in SERVICES_GEMINI:
+            label_btn = "⚡ GÉNÉRER MAINTENANT AVEC L'IA NOVA"
+        elif service in SERVICES_COMPTE:
+            label_btn = "🚀 MODIFIER MON DOCUMENT"
+        else:
+            label_btn = "🚀 LANCER LA GÉNÉRATION"
         if "Conversion" not in service and "OCR_AUTO" not in (prompt or "") and "OCR" not in service and "Numérisation" not in service and st.button(label_btn):
             if not user:
                 st.session_state["view"] = "auth"
@@ -9674,6 +9682,11 @@ Le document livré doit être utilisable immédiatement, sans rien à compléter
             elif champs_manquants and "Cahier des charges" in champs_manquants:
                 # Description vide → rediriger vers Nova IA support client
                 st.session_state["view"] = "nova_support_ia"
+                st.rerun()
+
+            elif service in SERVICES_COMPTE and not champs_manquants:
+                # ── SERVICE COMPTE — gratuit pour tout utilisateur connecté ──
+                st.session_state["is_glowing"] = True
                 st.rerun()
 
             elif premium_actif and service in SERVICES_GEMINI and not champs_manquants:
