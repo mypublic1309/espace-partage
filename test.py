@@ -2813,7 +2813,14 @@ RÈGLES DE RÉDACTION
 ════════════════════════════════════════════════
 - Utilise UNIQUEMENT les informations fournies. N'invente aucune donnée personnelle.
 - Si une section est absente des données → OMETS-LA entièrement (pas de placeholder, pas de "N/A").
-- Pour les contacts manquants (tel/email) → écris [À compléter].
+- Pour les contacts (tel/email/ville) : utilise exactement ce que le client a fourni.
+  Si non fourni → OMETS-LES complètement.
+  INTERDIT ABSOLU : écrire [À compléter] ou laisser un champ vide entre crochets.
+  Si une info n'a pas été fournie par le client → la ligne n'existe pas dans le CV.
+- Disponibilité : si le client l'a fournie → ajoute-la dans ## INFORMATIONS PERSONNELLES COMPLÉMENTAIRES
+  sous la forme : Disponibilité : [valeur fournie] (ex: Immédiate / À partir du 01/06/2026)
+- Sports & loisirs : utilise UNIQUEMENT ce que le client a indiqué. N'invente rien.
+  Si le client a dit "non" ou rien → OMETS la section entièrement.
 - Verbes d'action pour les expériences : géré, supervisé, coordonné, développé, optimisé, assuré...
 - Adapte le ton au secteur (finance, BTP, santé, IT, commerce, enseignement...).
 - Rédige en français sauf demande contraire.
@@ -2848,6 +2855,13 @@ RÈGLES SPÉCIALES — LIRE ATTENTIVEMENT
    → Termine par une phrase de motivation claire et personnalisée
    → Accorde bien le genre (masculin/féminin) selon les infos du client
    → N'utilise JAMAIS de Markdown (pas de **, pas de *, pas de #)
+
+   INTERDITS ABSOLUS dans le profil — ces formules sonnent faux et exagéré :
+   ✗ "vision transversale", "leviers de croissance", "environnements compétitifs"
+   ✗ "à fort impact", "expertise approfondie", "pilotage d'initiatives"
+   ✗ "maîtriser les leviers", "allier performance et innovation"
+   ✗ Tout superlatif qui sonne comme un discours de PDG
+   → Le profil doit sonner HUMAIN, simple et sincère — pas comme un robot en costume.
 
 ② EXPÉRIENCES PROFESSIONNELLES — toujours placé APRÈS le PROFIL PROFESSIONNEL, jamais avant.
 
@@ -2892,7 +2906,10 @@ STRUCTURE OBLIGATOIRE — ordre et titres EXACTS
 - Pays : ...
 
 ## TITRE PROFESSIONNEL
-(1 ligne max — ex: "BTS Finance | Comptabilité | Gestion des Stocks")
+(1 ligne max — reprend le diplôme principal + domaines réels du client)
+Exemples corrects : "BTS Finance | Comptabilité" / "Doctorat Marketing | Développement Web"
+INTERDIT : "Expert en...", "Spécialiste Senior...", "Full-Stack...
+Reste factuel : n'invente pas un titre plus élevé que ce que le client a fourni.
 
 ## PROFIL PROFESSIONNEL
 (OBLIGATOIRE — rédige 2 à 4 phrases de texte pur à la 1ère personne.
@@ -2909,8 +2926,39 @@ Missions principales :
 >>>BLEU<<<Titre Mission 1 : description détaillée avec verbe d'action fort.
 >>>BLEU<<<Titre Mission 2 : description détaillée avec verbe d'action fort.
 >>>BLEU<<<Titre Mission 3 : description détaillée avec verbe d'action fort.
-(Si expérience très courte ou informelle : 2 à 3 missions suffisent.)
-(Si aucune expérience : écris uniquement "Aucune expérience professionnelle à ce jour." sous ce titre de section.)
+
+════════════════════════════════════════════════════════════
+RÈGLE MISSIONS — TRÈS IMPORTANTE
+════════════════════════════════════════════════════════════
+Si le client ne précise pas ses missions, tu les DÉDUIS toi-même
+à partir de l'intitulé du poste. C'est ton travail de les inventer
+de façon réaliste et crédible selon le secteur.
+
+Exemples de missions déduites selon le poste :
+
+Poste : Consultant Marketing Digital — Freelance
+>>>BLEU<<<Élaboration de stratégies : conception de plans de communication digitale adaptés aux objectifs des clients.
+>>>BLEU<<<Gestion des réseaux sociaux : création et publication de contenus sur Facebook, Instagram et LinkedIn.
+>>>BLEU<<<Analyse des performances : suivi des indicateurs clés (taux d'engagement, trafic, conversions) et ajustement des campagnes.
+>>>BLEU<<<Référencement naturel : optimisation SEO des sites clients pour améliorer leur visibilité en ligne.
+
+Poste : Caissière — Supermarché
+>>>BLEU<<<Accueil et encaissement : réception des clients et traitement des paiements en espèces et par carte.
+>>>BLEU<<<Gestion des écarts : vérification et équilibrage de la caisse en début et fin de journée.
+>>>BLEU<<<Mise en rayon : participation à la mise en place et au réapprovisionnement des produits.
+
+Poste : Stagiaire Informatique — Cyber Café
+>>>BLEU<<<Assistance clientèle : accompagnement des clients dans l'utilisation des postes informatiques.
+>>>BLEU<<<Maintenance de base : vérification du bon fonctionnement des équipements et signalement des pannes.
+>>>BLEU<<<Gestion des impressions : traitement des demandes d'impression et de scan des clients.
+
+Adapte toujours le vocabulaire et le niveau au secteur et au poste réel du client.
+Missions courtes et informelles : 2 à 3 suffisent.
+Missions longues et qualifiées : 4 à 5.
+
+(Si aucune expérience du tout : écris "Aucune expérience professionnelle à ce jour." — Python masquera la section.)
+INTERDIT : Ne jamais laisser "Missions principales :" sans aucune ligne >>>BLEU<<< après.
+INTERDIT : Ne jamais écrire le contenu de la lettre dans cette section.
 
 ## FORMATION
 - Diplôme — Établissement — Ville (Année)
@@ -2967,11 +3015,14 @@ OBJET: Candidature au poste de [poste visé]
 
 Madame, Monsieur,
 
-[Paragraphe 1 — ACCROCHE : phrase d'ouverture percutante, intérêt pour le poste et le secteur. Texte continu, pas de retour à la ligne.]
+[Paragraphe 1 — ACCROCHE : phrase d'ouverture percutante, intérêt pour le poste et le secteur. Texte continu, pas de retour à la ligne. MINIMUM 2 phrases.]
 
-[Paragraphe 2 — VALEUR : qualités personnelles, compétences clés en lien direct avec le poste. Phrases longues et fluides.]
+[Paragraphe 2 — VALEUR : qualités personnelles, compétences clés en lien direct avec le poste. Phrases longues et fluides. MINIMUM 3 phrases.]
 
-[Paragraphe 3 — MOTIVATION : apport à l'entreprise, engagement, disponibilité pour entretien.]
+[Paragraphe 3 — MOTIVATION : apport à l'entreprise, engagement, disponibilité pour entretien. MINIMUM 2 phrases.]
+
+RÈGLE ABSOLUE : ces 3 paragraphes sont OBLIGATOIRES. Ne jamais passer directement
+de "Madame, Monsieur," à la formule de politesse sans rédiger ces 3 paragraphes.
 
 Dans l'attente de votre réponse, je vous prie d'agréer, Madame, Monsieur, l'expression de mes salutations distinguées.
 
@@ -4193,8 +4244,15 @@ def creer_docx(contenu, service, client_nom):
         #    Poste : bleu gras | Entreprise : noir gras | Date : gris italique
         # ══════════════════════════════════════════════════════════════
         if sections.get("experiences"):
-            add_section_title(doc, "Expériences Professionnelles")
-            for line in sections["experiences"].split("\n"):
+            _exp_raw = sections["experiences"]
+            # Si Gemini a écrit "aucune expérience", ne pas afficher la section
+            _AUCUNE_EXP = ("aucune expérience", "pas d'expérience",
+                           "aucune expérience professionnelle")
+            _exp_vide = (len(_exp_raw.strip()) < 10
+                         or any(k in _exp_raw.lower() for k in _AUCUNE_EXP))
+            if not _exp_vide:
+              add_section_title(doc, "Expériences Professionnelles")
+            for line in _exp_raw.split("\n") if not _exp_vide else []:
                 l = line.strip()
                 if not l:
                     continue
@@ -4215,6 +4273,10 @@ def creer_docx(contenu, service, client_nom):
 
                 elif l.startswith(">>>BLEU<<<"):
                     contenu_bleu = l.replace(">>>BLEU<<<", "").strip()
+                    # Filtrer si c'est du contenu lettre infiltré
+                    _KW_LTR = ("agréer", "salutation", "dans l'attente", "distinguées")
+                    if any(k in contenu_bleu.lower() for k in _KW_LTR):
+                        continue
                     if ":" in contenu_bleu:
                         titre_b, expl = contenu_bleu.split(":", 1)
                         add_mission(doc, titre_b.strip(), expl.strip())
@@ -4242,11 +4304,21 @@ def creer_docx(contenu, service, client_nom):
         # ══════════════════════════════════════════════════════════════
         if sections.get("formation"):
             add_section_title(doc, "Formation")
+            _DIPLOME_RE = r"(BTS|DUT|Licence|Master|BAC|BEPC|Doctorat|Ingénieur|CAP|BEP|CEP|Baccalauréat|DEUG|BT )"
             for line in sections["formation"].split("\n"):
                 l = line.strip().lstrip("-•").strip()
                 if not l:
                     continue
-                if _re.search(r"(BTS|DUT|Licence|Master|BAC|BEPC|BT |CEPE|Doctorat|Ingénieur|CAP|BEP|CEP)", l, _re.I):
+                _est_diplome = bool(_re.search(_DIPLOME_RE, l, _re.I))
+                _sep = "—" if "—" in l else (" - " if " - " in l else None)
+                if _est_diplome and _sep:
+                    _parts = [p.strip() for p in l.split(_sep)]
+                    _diplome = _parts[0]
+                    _etab    = _sep.join(_parts[1:])
+                    add_body_text(doc, _diplome, bold=True, color=BLEU_MED)
+                    if _etab:
+                        add_body_text(doc, _etab, italic=True, color=GRIS_TXT)
+                elif _est_diplome:
                     add_body_text(doc, l, bold=True, color=BLEU_MED)
                 else:
                     add_body_text(doc, l, italic=True, color=GRIS_TXT)
@@ -4255,10 +4327,16 @@ def creer_docx(contenu, service, client_nom):
         # 6. COMPÉTENCES
         # ══════════════════════════════════════════════════════════════
         if sections.get("competences"):
-            add_section_title(doc, "Compétences Professionnelles")
-            for line in sections["competences"].split("\n"):
-                l = line.strip().lstrip("-•").strip()
-                if l:
+            _COMP_EXCLUS = ("salutation", "agréer", "dans l'attente",
+                            "distinguées", "nom:", "tel:", "objet:")
+            comp_lines = [line.strip().lstrip("-•").strip()
+                          for line in sections["competences"].split("\n")
+                          if line.strip().lstrip("-•").strip()
+                          and not line.strip().startswith(">>>")
+                          and not any(k in line.lower() for k in _COMP_EXCLUS)]
+            if comp_lines:
+                add_section_title(doc, "Compétences Professionnelles")
+                for l in comp_lines:
                     add_bullet(doc, l)
 
         # ══════════════════════════════════════════════════════════════
@@ -4342,7 +4420,8 @@ def creer_docx(contenu, service, client_nom):
         infos_compl_raw = sections.get("infos_compl", "")
         source_infos = infos_compl_raw if infos_compl_raw else infos_raw
         CHAMPS_PERSO = ["situation familiale", "résidence", "residence",
-                        "téléphone", "telephone", "date de naissance"]
+                        "téléphone", "telephone", "date de naissance",
+                        "disponibilité", "disponibilite"]
         CHAMPS_EXCLUS = ["nom", "prénom", "prenom", "email", "mail", "ville", "pays", "adresse"]
 
         lignes_perso = []
@@ -4484,6 +4563,12 @@ def creer_docx(contenu, service, client_nom):
             ltr_run(p, "Madame, Monsieur,", size=11)
 
             # Corps — paragraphes justifiés
+            # Si Gemini n'a pas généré de corps, injecter un placeholder
+            if not ltr["paras"]:
+                ltr["paras"] = [
+                    "[Le corps de la lettre n'a pas pu être généré. "
+                    "Veuillez contacter Nova pour une correction.]"
+                ]
             for para_text in ltr["paras"]:
                 if not para_text.strip():
                     continue
@@ -11731,19 +11816,30 @@ CATALOGUE COMPLET DES SERVICES NOVA PLATFORM
      2. Le poste visé → question : "Tu postules pour quel poste ?"
      3. Le secteur d'activité → question : "C'est dans quel secteur ?"
      4. La formation / diplôme(s) → question : "Tu as quel diplôme et dans quel établissement ?"
-     5. Les expériences professionnelles ou stages → question : "Tu as des expériences ou stages ? (poste, entreprise, durée, tâches principales)"
+     5. Les expériences professionnelles ou stages → question : "Tu as des expériences ou stages ? (poste, entreprise, durée, tâches principales) — réponds 'aucun' si non"
      6. Les compétences principales → question : "Cite tes principales compétences (logiciels, outils, savoir-faire)."
      7. Les langues parlées → question : "Tu parles quelles langues et à quel niveau ?"
      8. CV seul, lettre seule ou les deux ? → question : "Tu veux le CV seul, la lettre seule ou les deux ?"
+   → Infos COMPLÉMENTAIRES — poser UNE PAR UNE après les essentielles, SEULEMENT si pas déjà données :
+     A. Téléphone → question : "Ton numéro de téléphone ? (réponds 'non' pour ne pas l'afficher)"
+     B. Email → question : "Ton adresse email ? (réponds 'non' pour ne pas l'afficher)"
+     C. Ville de résidence → question : "Tu es basé(e) dans quelle ville ?"
+     D. Date de naissance → question : "Ta date de naissance ? (réponds 'non' pour ne pas l'afficher)"
+     E. Situation familiale → question : "Ta situation familiale ? (ex : Célibataire, Marié(e), 2 enfants — réponds 'non' pour ignorer)"
+     F. Disponibilité → question : "Ta disponibilité ? (ex : Immédiate, À partir du 01/06/2026)"
+     G. Sports & loisirs → question : "Des sports ou loisirs à mentionner dans le CV ? (ex : football, lecture — réponds 'non' pour ignorer)"
    → RÈGLE SPÉCIALE CV — COLLECTE SÉQUENTIELLE (un champ à la fois, dans cet ordre) :
      Si le client n'a pas encore donné sa formation → pose UNIQUEMENT : "Ta formation ? (ex : BAC, BTS, Licence — précise l'établissement et l'année)"
      Si formation connue mais pas les expériences → pose UNIQUEMENT : "Tu as des expériences ou stages ? (poste, entreprise, durée et 2-3 tâches) — réponds 'aucun' si non"
      Si expériences connues mais pas les compétences → pose UNIQUEMENT : "Tes compétences principales ? (logiciels, outils, savoir-faire)"
      Si compétences connues mais pas les langues → pose UNIQUEMENT : "Les langues que tu parles et ton niveau ? (ex : Français courant, Anglais débutant)"
+     Si langues connues → poser les complémentaires A, B, C, D, E, F, G une par une si pas encore données
      Si tout est connu → RÉCAPITULATIF immédiat
    → RÈGLE D'OR : une seule question à la fois, jamais deux champs dans le même message
-   → RÈGLE RESPECT DU CLIENT : si le client répond "aucun", "pas encore", "je sais pas", "rien", "N/A" ou équivalent pour un champ → accepte sa réponse, note l'absence, passe au champ suivant. Ne repose JAMAIS la même question.
+   → RÈGLE RESPECT DU CLIENT : si le client répond "aucun", "pas", "non", "rien", "N/A", "laisse vide" ou équivalent → accepte, note l'absence, passe au suivant. Ne repose JAMAIS la même question.
    → Dès que tous les champs ont été abordés (même si certains sont vides par choix du client) : RÉCAPITULATIF immédiat
+   → Dans le récapitulatif : inclure téléphone, email, ville, date de naissance, situation familiale,
+     disponibilité et sports/loisirs — uniquement ceux que le client a fournis
 
 6. 📋 RAPPORT DE STAGE IA
    → Infos ESSENTIELLES (dans cet ordre si manquantes) :
