@@ -2809,16 +2809,30 @@ C'est le moteur Nova (Python) qui applique automatiquement :
 TON SEUL TRAVAIL : rédiger un contenu structuré avec les balises ci-dessous.
 
 ════════════════════════════════════════════════
-RÈGLES DE RÉDACTION
+RÈGLES DE RÉDACTION — LIRE AVANT TOUT
 ════════════════════════════════════════════════
-- Utilise UNIQUEMENT les informations fournies. N'invente aucune donnée personnelle.
-- Si une section est absente des données → OMETS-LA entièrement (pas de placeholder, pas de "N/A").
-- Pour les contacts (tel/email/ville) : utilise exactement ce que le client a fourni.
-  Si non fourni → OMETS-LES complètement.
-  INTERDIT ABSOLU : écrire [À compléter] ou laisser un champ vide entre crochets.
-  Si une info n'a pas été fournie par le client → la ligne n'existe pas dans le CV.
-- Disponibilité : si le client l'a fournie → ajoute-la dans ## INFORMATIONS PERSONNELLES COMPLÉMENTAIRES
-  sous la forme : Disponibilité : [valeur fournie] (ex: Immédiate / À partir du 01/06/2026)
+⚠️ RÈGLE ZÉRO — ANTI-HALLUCINATION ABSOLUE :
+Tu n'inventes RIEN. Chaque information du CV doit provenir UNIQUEMENT des données fournies ci-dessus.
+Si une info n'est pas dans les données → elle n'existe pas dans le CV. Jamais de remplacement, jamais d'exemple, jamais de placeholder.
+
+- CONTACTS (téléphone, email, ville, pays) : recopie mot pour mot ce qui est fourni.
+  Si le numéro fourni est "2250171542505" → tu écris exactement "2250171542505", rien d'autre.
+  Si l'email fourni est "testconnaisancen1@gmail.com" → tu écris exactement ça.
+  INTERDIT ABSOLU : inventer un numéro, un email ou une ville fictifs.
+  INTERDIT ABSOLU : écrire [À compléter], +225 07 08 09 10, ou tout contact non fourni.
+
+- FORMATION : utilise UNIQUEMENT les diplômes fournis (CEP, BEPC, BAC, BTS...).
+  INTERDIT ABSOLU : inventer une Licence, un BTS, une Université non mentionnés dans les données.
+  Si le client a juste "CEP" et "BEPC" → tu n'écris que CEP et BEPC, même si ça semble peu.
+
+- EXPÉRIENCES : utilise UNIQUEMENT les expériences fournies.
+  INTERDIT ABSOLU : inventer un poste, une entreprise, une ville non mentionnés.
+
+- DATE DE NAISSANCE : recopie exactement la date fournie, même si elle semble étrange.
+
+- Si une section est absente des données → OMETS-LA entièrement (pas de "N/A").
+- Disponibilité : si fournie → ajoute dans ## INFORMATIONS PERSONNELLES COMPLÉMENTAIRES
+  sous la forme : Disponibilité : [valeur exacte fournie]
 - Sports & loisirs : utilise UNIQUEMENT ce que le client a indiqué. N'invente rien.
   Si le client a dit "non" ou rien → OMETS la section entièrement.
 - Verbes d'action pour les expériences : géré, supervisé, coordonné, développé, optimisé, assuré...
@@ -2989,10 +3003,16 @@ INTERDIT : Ne jamais écrire le contenu de la lettre dans cette section.
 - Date de naissance : ...
 
 ████████████████████████████████████████████████████████████████
-█  STOP — FIN DU CV. NE PAS mélanger ce qui suit avec le CV.  █
-█  Génère d'abord TOUTES les sections CV ci-dessus complètes.  █
-█  La lettre vient APRÈS, séparée, jamais avant ni dedans.     █
+█  STOP — FIN DU CV. RÈGLES CRITIQUES :                        █
+█  1. Génère d'abord TOUTES les sections CV ci-dessus.         █
+█  2. Le contenu de la lettre (NOM:, TEL:, OBJET:, paragraphes █
+█     de corps, formule de politesse) ne doit JAMAIS apparaître █
+█     dans les sections CV (profil, expériences, formation...). █
+█  3. La lettre commence UNIQUEMENT après cette bannière.       █
+█  4. Le profil professionnel du CV ≠ paragraphes de lettre.   █
 ████████████████████████████████████████████████████████████████
+
+---SEPARATION_CV_LETTRE---
 
 ## LETTRE DE MOTIVATION
 (génère UNIQUEMENT si le client a demandé la lettre ou les deux)
@@ -4017,6 +4037,7 @@ def creer_docx(contenu, service, client_nom):
             "QUALITÉS":                                  "qualites",
             "QUALITES":                                  "qualites",
             "LETTRE DE MOTIVATION":                      "lettre",
+            "SEPARATION_CV_LETTRE":                      "lettre",
         }
 
         # Pré-pass : collecter les balises >>> orphelines (mal placées par Gemini)
@@ -4033,6 +4054,9 @@ def creer_docx(contenu, service, client_nom):
                 if key in l_clean:
                     matched = val
                     break
+            # Detecter separateur ---SEPARATION_CV_LETTRE---
+            if not matched and b"---SEPARATION" in l_clean.encode():
+                matched = "lettre"
             if matched:
                 if section_courante and buffer_lignes:
                     sections[section_courante] = "\n".join(buffer_lignes).strip()
@@ -4041,6 +4065,19 @@ def creer_docx(contenu, service, client_nom):
             elif section_courante:
                 t = ligne.strip().lstrip("#").strip()
                 if not t:
+                    continue
+                # Si ligne lettre infiltree dans section CV -> basculer
+                t_low = t.lower()
+                _IS_LETTRE_LINE = (
+                    t_low.startswith("nom:") or t_low.startswith("tel:") or
+                    t_low.startswith("lieu_date:") or t_low.startswith("objet:") or
+                    "agréer" in t_low or "salutations" in t_low
+                )
+                if _IS_LETTRE_LINE and section_courante != "lettre":
+                    if section_courante and buffer_lignes:
+                        sections[section_courante] = "\n".join(buffer_lignes).strip()
+                    section_courante = "lettre"
+                    buffer_lignes = [t]
                     continue
                 # Balises >>> hors section lettre → ignorer dans le CV,
                 # elles seront traitées par le parser lettre
@@ -4074,16 +4111,30 @@ def creer_docx(contenu, service, client_nom):
         contact_tel   = ""
         contact_ville = ""
 
+        # Valeurs placeholders que Gemini peut inventer - a ignorer
+        _FAKE_CONTACTS = [
+            "non fourni", "a completer", "à compléter", "[", "07 08 09",
+            "00 00 00", "exemple", "votre", "candidat@", "email@"
+        ]
+        def _is_fake(val):
+            v = val.lower()
+            return any(f in v for f in _FAKE_CONTACTS)
+
         for line in infos_raw.split("\n"):
             l = line.strip().lstrip("-•").strip()
+            val = l.split(":")[-1].strip() if ":" in l else l
             if any(k in l.lower() for k in ["nom", "prénom", "prenom"]):
-                nom_cv = l.split(":")[-1].strip() if ":" in l else l
+                if val and not _is_fake(val):
+                    nom_cv = val
             if any(k in l.lower() for k in ["email", "mail"]):
-                contact_email = l.split(":")[-1].strip() if ":" in l else l
+                if val and not _is_fake(val):
+                    contact_email = val
             if any(k in l.lower() for k in ["tél", "tel", "téléphone", "telephone"]):
-                contact_tel = l.split(":")[-1].strip() if ":" in l else l
+                if val and not _is_fake(val):
+                    contact_tel = val
             if any(k in l.lower() for k in ["ville", "adresse", "résidence", "residence", "pays"]):
-                contact_ville = l.split(":")[-1].strip() if ":" in l else l
+                if val and not _is_fake(val):
+                    contact_ville = val
 
         parts_contact = []
         if contact_ville: parts_contact.append(f"📍  {contact_ville}")
@@ -4305,9 +4356,14 @@ def creer_docx(contenu, service, client_nom):
         if sections.get("formation"):
             add_section_title(doc, "Formation")
             _DIPLOME_RE = r"(BTS|DUT|Licence|Master|BAC|BEPC|Doctorat|Ingénieur|CAP|BEP|CEP|Baccalauréat|DEUG|BT )"
+            _FORMATION_LETTRE_KW = ("agréer", "salutation", "dans l'attente",
+                                     "nom:", "tel:", "objet:", "lieu_date:",
+                                     "madame, monsieur", "c'est avec")
             for line in sections["formation"].split("\n"):
                 l = line.strip().lstrip("-•").strip()
                 if not l:
+                    continue
+                if any(k in l.lower() for k in _FORMATION_LETTRE_KW):
                     continue
                 _est_diplome = bool(_re.search(_DIPLOME_RE, l, _re.I))
                 _sep = "—" if "—" in l else (" - " if " - " in l else None)
@@ -4424,12 +4480,24 @@ def creer_docx(contenu, service, client_nom):
                         "disponibilité", "disponibilite"]
         CHAMPS_EXCLUS = ["nom", "prénom", "prenom", "email", "mail", "ville", "pays", "adresse"]
 
+        # Balises lettre à exclure des infos perso
+        LETTRE_BALISES_IP = ["nom:", "tel:", "lieu_date:", "objet:", "madame", "monsieur",
+                             "agréer", "salutations", "dans l'attente",
+                             "---separation", "separation_cv"]
+
         lignes_perso = []
         for line in source_infos.split("\n"):
             l = line.strip().lstrip("-•").strip()
             if not l:
                 continue
             l_low = l.lower()
+            # Exclure balises lettre, séparateurs
+            if any(k in l_low for k in LETTRE_BALISES_IP):
+                continue
+            if l.startswith(">>>"):
+                continue
+            if any(c * 3 in l for c in ["═", "─", "█", "="]):
+                continue
             if any(k in l_low for k in CHAMPS_PERSO):
                 lignes_perso.append(l)
             elif not any(k in l_low for k in CHAMPS_EXCLUS) and infos_compl_raw:
