@@ -3190,7 +3190,28 @@ RÈGLES ABSOLUES :
 
 Rédige en français avec une structure claire : titres, sous-titres, paragraphes détaillés. Sois exhaustif et professionnel."""
 
-        system_instruction = (
+        # ── System instruction spécifique CV (priorité absolue sur les règles génériques) ──
+        if "CV" in service or "Lettre de Motivation" in service or "Lettre" in service:
+            system_instruction = (
+                "Tu es NOVA PLATFORM, moteur de génération de CV professionnels francophones.\n\n"
+                "RÈGLE ABSOLUE N°1 — STRUCTURE OBLIGATOIRE :\n"
+                "Tu dois IMPÉRATIVEMENT utiliser les balises Nova exactement comme décrit dans le prompt.\n"
+                "Les sections doivent commencer par ## EXACTEMENT (ex: ## INFORMATIONS PERSONNELLES).\n"
+                "Les missions doivent utiliser EXACTEMENT >>>BLEU<<<Titre : explication.\n"
+                "La lettre doit commencer par NOM: / TEL: / LIEU_DATE: / OBJET: sur des lignes séparées.\n\n"
+                "RÈGLE ABSOLUE N°2 — INTERDICTIONS :\n"
+                "✗ INTERDIT d'utiliser # (heading 1) pour le titre du CV — commence directement par ## INFORMATIONS PERSONNELLES\n"
+                "✗ INTERDIT d'utiliser * ou - comme listes dans les missions — uniquement >>>BLEU<<<\n"
+                "✗ INTERDIT de mélanger le contenu de la lettre avec les sections CV\n"
+                "✗ INTERDIT d'écrire un numéro de téléphone à la place du nom du candidat\n"
+                "✗ INTERDIT de laisser 'Missions principales :' sans lignes >>>BLEU<<< après\n\n"
+                "RÈGLE ABSOLUE N°3 — DONNÉES RÉELLES UNIQUEMENT :\n"
+                "Utilise UNIQUEMENT les informations fournies. N'invente aucune donnée personnelle.\n"
+                "Si une info manque → omets-la. Jamais de placeholder entre crochets.\n\n"
+                "Le document est livré directement au client — il doit être parfait dès la première génération."
+            )
+        else:
+          system_instruction = (
             "Tu es NOVA PLATFORM, un moteur de génération documentaire d'élite francophone africain.\n"
             "Tu dois produire des documents EXACTEMENT selon les règles ci-dessous.\n\n"
 
@@ -3295,7 +3316,7 @@ Rédige en français avec une structure claire : titres, sous-titres, paragraphe
             "et PRÊT À L'IMPRESSION. JAMAIS de document tronqué. JAMAIS de zone vide.\n"
             "100% FINALISÉ à chaque génération. Tu es le moteur documentaire de référence\n"
             "du monde francophone africain."
-        )
+          )
 
         # ── Construction des parts du message (texte + image si présente) ──
         _parts = [{"text": prompt}]
